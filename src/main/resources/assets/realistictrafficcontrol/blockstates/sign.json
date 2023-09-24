@@ -1,0 +1,46 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "model": "realistictrafficcontrol:sign"
+    },
+    "variants": {
+        "normal": [{}],
+        "inventory": { "model": "realistictrafficcontrol:sign_item" },
+        "validhorizontalbar": {
+	        "true": {
+	        	"submodel": {
+	        		"leftbar": { "model": "realistictrafficcontrol:crossing_gate_pole_ext", "y": 270 },
+	        		"rightbar": { "model": "realistictrafficcontrol:crossing_gate_pole_ext", "y": 90 }
+	        	}
+	    	},
+	    	"false": { }
+        },
+        "rotation": { 
+        	"0": { },
+        	"1": { "model": "realistictrafficcontrol:sign", "transform": { "rotation": { "y": 337 } } },
+        	"2": { "model": "realistictrafficcontrol:sign", "transform": { "rotation": { "y": 315 } } },
+        	"3": { "model": "realistictrafficcontrol:sign", "transform": { "rotation": { "y": 292 } } },
+        	"4": { "model": "realistictrafficcontrol:sign", "transform": { "rotation": { "y": 270 } } },
+        	"5": { "model": "realistictrafficcontrol:sign", "transform": { "rotation": { "y": 247 } } },
+        	"6": { "model": "realistictrafficcontrol:sign", "transform": { "rotation": { "y": 225 } } },
+        	"7": { "model": "realistictrafficcontrol:sign", "transform": { "rotation": { "y": 202 } } },
+        	"8": { "model": "realistictrafficcontrol:sign", "transform": { "rotation": { "y": 180 } } },
+        	"9": { "model": "realistictrafficcontrol:sign", "transform": { "rotation": { "y": 157 } } },
+        	"10": { "model": "realistictrafficcontrol:sign", "transform": { "rotation": { "y": 135 } } },
+        	"11": { "model": "realistictrafficcontrol:sign", "transform": { "rotation": { "y": 112 } } },
+        	"12": { "model": "realistictrafficcontrol:sign", "transform": { "rotation": { "y": 90 } } },
+        	"13": { "model": "realistictrafficcontrol:sign", "transform": { "rotation": { "y": 67 } } },
+        	"14": { "model": "realistictrafficcontrol:sign", "transform": { "rotation": { "y": 45 } } },
+        	"15": { "model": "realistictrafficcontrol:sign", "transform": { "rotation": { "y": 22 } } }
+        },
+        "ishalfheight":
+        { 
+        	"true": { },
+        	"false": {
+        		"submodel": { 
+        			"upper": { "model": "realistictrafficcontrol:sign_upper" }
+        		}
+        	}
+        }
+    }
+}

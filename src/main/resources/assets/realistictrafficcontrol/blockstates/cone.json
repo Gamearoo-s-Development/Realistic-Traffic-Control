@@ -1,0 +1,29 @@
+{
+	"forge_marker": 1,
+	"defaults": {
+		"model": "realistictrafficcontrol:cone"
+	},
+	"variants": {
+		"normal": [{}],
+		"inventory": [{}],
+		"rotation":
+        {
+            "0": { "model": "realistictrafficcontrol:cone" },
+	        "1": { "model": "realistictrafficcontrol:cone", "transform": { "rotation": { "y": 337 } } },
+	        "2": { "model": "realistictrafficcontrol:cone", "transform": { "rotation": { "y": 315  } } },
+	        "3": { "model": "realistictrafficcontrol:cone", "transform": { "rotation": { "y": 292 } } },
+	        "4": { "model": "realistictrafficcontrol:cone", "transform": { "rotation": { "y": 270 } } },
+	        "5": { "model": "realistictrafficcontrol:cone", "transform": { "rotation": { "y": 247 } } },
+	        "6": { "model": "realistictrafficcontrol:cone", "transform": { "rotation": { "y": 225 } } },
+	        "7": { "model": "realistictrafficcontrol:cone", "transform": { "rotation": { "y": 202 } } },
+	        "8": { "model": "realistictrafficcontrol:cone", "transform": { "rotation": { "y": 180 } } },
+	        "9": { "model": "realistictrafficcontrol:cone", "transform": { "rotation": { "y": 157 } } },
+	        "10": { "model": "realistictrafficcontrol:cone", "transform": { "rotation": { "y": 135 } } },
+	        "11": { "model": "realistictrafficcontrol:cone", "transform": { "rotation": { "y": 112 } } },
+	        "12": { "model": "realistictrafficcontrol:cone", "transform": { "rotation": { "y": 90 } } },
+	        "13": { "model": "realistictrafficcontrol:cone", "transform": { "rotation": { "y": 67 } } },
+	        "14": { "model": "realistictrafficcontrol:cone", "transform": { "rotation": { "y": 45 } } },
+	        "15": { "model": "realistictrafficcontrol:cone", "transform": { "rotation": { "y": 22 } } }
+        }
+	}
+}

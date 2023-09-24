@@ -1,0 +1,14 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "model": "realistictrafficcontrol:overhead_pole"
+    },
+    "variants": {
+        "normal": [{}],
+        "inventory": [{}],
+        "facing=north": { "model": "realistictrafficcontrol:overhead_pole" },
+        "facing=west": { "model": "realistictrafficcontrol:overhead_pole", "y": 270 },
+        "facing=south": { "model": "realistictrafficcontrol:overhead_pole", "y": 180 },
+        "facing=east": { "model": "realistictrafficcontrol:overhead_pole", "y": 90 }
+    }
+}

@@ -1,0 +1,19 @@
+{ 
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "   ",
+    " C ",
+    "CCC"  ],
+  "key": {
+    "C":
+	  {
+	    "item": "minecraft:concrete",
+	    "data": 2
+	  }
+  },
+  "result": {
+    "item": "realistictrafficcontrol:concrete_barrier",
+    "data": 2,
+    "count": 6
+  }
+}

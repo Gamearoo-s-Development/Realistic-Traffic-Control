@@ -1,0 +1,103 @@
+#blocks
+tile.realistictrafficcontrol.crossing_gate_base.name=Crossing Base
+tile.realistictrafficcontrol.stand.name=Stand
+tile.realistictrafficcontrol.crossing_gate_gate.name=Crossing Gate
+tile.realistictrafficcontrol.crossing_gate_lamps.name=Crossing Lamps
+tile.realistictrafficcontrol.crossing_gate_pole.name=Pole
+tile.realistictrafficcontrol.crossing_gate_crossbuck.name=Crossbuck (Pole)
+tile.realistictrafficcontrol.safetran_type_3.name=SafeTran Type 3
+tile.realistictrafficcontrol.overhead_pole.name=Overhead (Pole)
+tile.realistictrafficcontrol.overhead.name=Overhead
+tile.realistictrafficcontrol.overhead_lamps.name=Overhead Lamps
+tile.realistictrafficcontrol.overhead_crossbuck.name=Overhead Crossbuck
+tile.realistictrafficcontrol.safetran_mechanical.name=SafeTran Mechanical
+tile.realistictrafficcontrol.sign.name=Sign
+tile.realistictrafficcontrol.cone.name=Cone
+tile.realistictrafficcontrol.channelizer.name=Channelizer
+tile.realistictrafficcontrol.drum.name=Drum
+tile.realistictrafficcontrol.street_light_single.name=Street Light (Single)
+tile.realistictrafficcontrol.street_light_double.name=Street Light (Double)
+tile.realistictrafficcontrol.traffic_light_control_box.name=Traffic Light Control Box
+tile.realistictrafficcontrol.wig_wag.name=Wig Wag
+tile.realistictrafficcontrol.shunt_island.name=Island Shunt
+tile.realistictrafficcontrol.shunt_border.name=Border Shunt
+tile.realistictrafficcontrol.type_3_barrier.name=Type 3 Barrier
+tile.realistictrafficcontrol.type_3_barrier_right.name=Type 3 Barrier
+tile.realistictrafficcontrol.traffic_rail.name=Guardrail
+tile.realistictrafficcontrol.wch_bell.name=WCH Electronic Bell
+tile.realistictrafficcontrol.horizontal_pole.name=Horizontal Pole
+tile.realistictrafficcontrol.traffic_sensor_left.name=Traffic Sensor (Left)
+tile.realistictrafficcontrol.traffic_sensor_straight.name=Traffic Sensor (Straight)
+tile.realistictrafficcontrol.pedestrian_button.name=Pedestrian Button
+tile.realistictrafficcontrol.traffic_sensor_right.name=Traffic Sensor (Right)
+
+#items
+item.realistictrafficcontrol.crossing_relay_box.name=Crossing Gate Relay
+item.realistictrafficcontrol.crossing_relay_tuner.name=Tuner
+item.realistictrafficcontrol.traffic_light_frame.name=Traffic Light Frame
+tile.realistictrafficcontrol.street_sign.name=Street Sign
+item.realistictrafficcontrol.traffic_light_5_frame.name=Traffic Light Frame (5 Bulb)
+item.realistictrafficcontrol.traffic_light_doghouse_frame.name=Traffic Light Frame (Doghouse)
+item.realistictrafficcontrol.traffic_light_1_frame.name=Traffic Light Frame (One Bulb)
+item.realistictrafficcontrol.traffic_light_2_frame.name=Traffic Light Frame (Two Bulbs)
+item.realistictrafficcontrol.traffic_light_4_frame.name=Traffic Light Frame (Four Bulbs)
+item.realistictrafficcontrol.traffic_light_6_frame.name=Traffic Light T Frame (Four Bulbs)
+item.realistictrafficcontrol.traffic_light_7_frame.name=Traffic Light Hawk Beacon Frame (Three Bulbs)
+
+realistictrafficcontrol.traffic_light_bulb.green.name=Bulb (Green)
+realistictrafficcontrol.traffic_light_bulb.straightGreen.name=Straight Arrow Bulb (Green)
+realistictrafficcontrol.traffic_light_bulb.yellow.name=Bulb (Yellow)
+realistictrafficcontrol.traffic_light_bulb.straightYellow.name=Straight Arrow Bulb (Yellow)
+realistictrafficcontrol.traffic_light_bulb.red.name=Bulb (Red)
+realistictrafficcontrol.traffic_light_bulb.straightRed.name=Straight Arrow Bulb (Red)
+realistictrafficcontrol.traffic_light_bulb.greenArrowLeft.name=Left Arrow Bulb (Green)
+realistictrafficcontrol.traffic_light_bulb.yellowArrowLeft.name=Left Arrow Bulb (Yellow)
+realistictrafficcontrol.traffic_light_bulb.yellowArrowLeft2.name=Left Arrow Bulb2 (Yellow)
+realistictrafficcontrol.traffic_light_bulb.redArrowLeft.name=Left Arrow Bulb (Red)
+realistictrafficcontrol.traffic_light_bulb.greenArrowRight.name=Right Arrow Bulb (Green)
+realistictrafficcontrol.traffic_light_bulb.yellowArrowRight.name=Right Arrow Bulb (Yellow)
+realistictrafficcontrol.traffic_light_bulb.yellowArrowRight2.name=Right Arrow Bulb2 (Yellow)
+realistictrafficcontrol.traffic_light_bulb.redArrowRight.name=Right Arrow Bulb (Red)
+realistictrafficcontrol.traffic_light_bulb.noRightTurn.name=No Right Turn Bulb
+realistictrafficcontrol.traffic_light_bulb.noLeftTurn.name=No Left Turn Bulb
+realistictrafficcontrol.traffic_light_bulb.cross.name=Cross Bulb
+realistictrafficcontrol.traffic_light_bulb.dont_cross.name=Don't Cross Bulb
+realistictrafficcontrol.concrete_barrier.white.name=White Concrete Barrier
+realistictrafficcontrol.concrete_barrier.orange.name=Orange Concrete Barrier
+realistictrafficcontrol.concrete_barrier.magenta.name=Magenta Concrete Barrier
+realistictrafficcontrol.concrete_barrier.light_blue.name=Light Blue Concrete Barrier
+realistictrafficcontrol.concrete_barrier.yellow.name=Yellow Concrete Barrier
+realistictrafficcontrol.concrete_barrier.lime.name=Lime Concrete Barrier
+realistictrafficcontrol.concrete_barrier.pink.name=Pink Concrete Barrier
+realistictrafficcontrol.concrete_barrier.gray.name=Gray Concrete Barrier
+realistictrafficcontrol.concrete_barrier.silver.name=Light Gray Concrete Barrier
+realistictrafficcontrol.concrete_barrier.cyan.name=Cyan Concrete Barrier
+realistictrafficcontrol.concrete_barrier.purple.name=Purple Concrete Barrier
+realistictrafficcontrol.concrete_barrier.blue.name=Blue Concrete Barrier
+realistictrafficcontrol.concrete_barrier.brown.name=Brown Concrete Barrier
+realistictrafficcontrol.concrete_barrier.green.name=Green Concrete Barrier
+realistictrafficcontrol.concrete_barrier.red.name=Red Concrete Barrier
+realistictrafficcontrol.concrete_barrier.black.name=Black Concrete Barrier
+item.realistictrafficcontrol.traffic_light_card.tier1.name=Traffic Light Card (Tier 1)
+item.realistictrafficcontrol.traffic_light_card.tier2.name=Traffic Light Card (Tier 2)
+item.realistictrafficcontrol.traffic_light_card.tier3.name=Traffic Light Card (Tier 3)
+item.realistictrafficcontrol.traffic_light_card.creative.name=Traffic Light Card (Creative)
+realistictrafficcontrol.traffic_light_bulb.redArrowUTurn.name=U-Turn Arrow Bulb (Red)
+realistictrafficcontrol.traffic_light_bulb.yellowArrowUTurn.name=U-Turn Arrow Bulb (Yellow)
+realistictrafficcontrol.traffic_light_bulb.yellowArrowUTurn2.name=U-Turn Arrow Bulb2 (Yellow)
+realistictrafficcontrol.traffic_light_bulb.greenArrowUTurn.name=U-Turn Arrow Bulb (Green)
+
+#Tab
+itemGroup.Realistc Traffic Control=Realistic Traffic Control
+
+#Keys
+key.entityclassrenderer.toggle=Toggle Entity Class Display
+key.hotreload.toggle=Hot Reload Sign Packs (F3 + Key)
+key.realistictrafficcontrol.category=Realistic Traffic Control
+
+#Tooltips
+realistictrafficcontrol.tooltip.tuner=Use to link components to Crossing Gate Relays or Traffic Light Control Boxes.
+realistictrafficcontrol.tooltip.crossingrelay=Uses Shunts or Redstone to control crossing components.
+realistictrafficcontrol.tooltip.trafficbox=Uses Redstone or Traffic Sensors to control traffic signal components.
+realistictrafficcontrol.tooltip.cone=Can be worn as a hat.
+realistictrafficcontrol.tooltip.help=[Press SHIFT for more info]

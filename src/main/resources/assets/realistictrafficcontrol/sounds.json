@@ -1,0 +1,27 @@
+{
+    "gate": 
+    {
+        "category": "block",
+        "sounds": [ "realistictrafficcontrol:gate" ]
+    },
+    "safetran_type_3":
+    {
+        "category": "block",
+        "sounds": [ "realistictrafficcontrol:safetran_type_3" ]
+    },
+    "safetran_mechanical":
+    {
+        "category": "block",
+        "sounds": [ "realistictrafficcontrol:safetran_mechanical" ]
+    },
+    "wch":
+    {
+    	"category": "block",
+    	"sounds": [ "realistictrafficcontrol:wch" ]
+    },
+	"ped_button":
+    {
+    	"category": "block",
+    	"sounds": [ "realistictrafficcontrol:ped_button" ]
+    }
+}

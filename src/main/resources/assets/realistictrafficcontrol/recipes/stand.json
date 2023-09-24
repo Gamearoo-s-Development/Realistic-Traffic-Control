@@ -1,0 +1,18 @@
+{ 
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " P ",
+    " P ",
+    "PPP"
+	],
+  "key": {
+    "P":
+	{
+	    "item": "realistictrafficcontrol:crossing_gate_pole"
+	}
+  },
+  "result": {
+    "item": "realistictrafficcontrol:stand",
+    "count": 1
+  }
+}

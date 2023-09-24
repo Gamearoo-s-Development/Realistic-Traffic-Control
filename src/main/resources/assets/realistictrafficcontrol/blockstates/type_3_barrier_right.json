@@ -1,0 +1,141 @@
+{
+	"forge_marker": 1,
+	"defaults":
+	{
+		"model": "realistictrafficcontrol:type_3_barrier_bars_right"
+	},
+	"variants":
+	{
+		"normal": [{}],
+		"inventory":
+		{
+			"model": "realistictrafficcontrol:type_3_barrier_bars_right"
+		},
+		
+		"facing=north,isfurthestleft=false,isfurthestright=false": [{}],
+		"facing=north,isfurthestleft=true,isfurthestright=false": 
+		{
+			"model": "realistictrafficcontrol:type_3_barrier_bars_right",
+			"submodel": 
+			{
+				"left": { "model": "realistictrafficcontrol:type_3_barrier_stand_left" }
+			}
+		},
+		"facing=north,isfurthestleft=false,isfurthestright=true": 
+		{
+			"model": "realistictrafficcontrol:type_3_barrier_bars_right",
+			"submodel": 
+			{
+				"right": { "model": "realistictrafficcontrol:type_3_barrier_stand_right" }
+			}
+		},
+		"facing=north,isfurthestleft=true,isfurthestright=true":
+		{
+			"model": "realistictrafficcontrol:type_3_barrier_bars_right",
+			"submodel": 
+			{
+				"left": { "model": "realistictrafficcontrol:type_3_barrier_stand_left" },
+				"right": { "model": "realistictrafficcontrol:type_3_barrier_stand_right" }
+			}
+		},
+		"facing=west,isfurthestleft=false,isfurthestright=false": 
+		{
+			"model": "realistictrafficcontrol:type_3_barrier_bars_right",
+			"y": 270
+		},
+		"facing=west,isfurthestleft=true,isfurthestright=false":
+		{
+			"model": "realistictrafficcontrol:type_3_barrier_bars_right",
+			"y": 270,
+			"submodel": 
+			{
+				"left": { "model": "realistictrafficcontrol:type_3_barrier_stand_left" }
+			}
+		},
+		"facing=west,isfurthestleft=false,isfurthestright=true": 
+		{
+			"model": "realistictrafficcontrol:type_3_barrier_bars_right",
+			"y": 270,
+			"submodel": 
+			{
+				"right": { "model": "realistictrafficcontrol:type_3_barrier_stand_right" }
+			}
+		},
+		"facing=west,isfurthestleft=true,isfurthestright=true": 
+		{
+			"model": "realistictrafficcontrol:type_3_barrier_bars_right",
+			"y": 270,
+			"submodel": 
+			{
+				"left": { "model": "realistictrafficcontrol:type_3_barrier_stand_left" },
+				"right": { "model": "realistictrafficcontrol:type_3_barrier_stand_right" }
+			}
+		},
+		"facing=south,isfurthestleft=false,isfurthestright=false": 
+		{
+			"model": "realistictrafficcontrol:type_3_barrier_bars_right",
+			"y": 180
+		},
+		"facing=south,isfurthestleft=true,isfurthestright=false":
+		{
+			"model": "realistictrafficcontrol:type_3_barrier_bars_right",
+			"y": 180,
+			"submodel": 
+			{
+				"left": { "model": "realistictrafficcontrol:type_3_barrier_stand_left" }
+			}
+		},
+		"facing=south,isfurthestleft=false,isfurthestright=true": 
+		{
+			"model": "realistictrafficcontrol:type_3_barrier_bars_right",
+			"y": 180,
+			"submodel": 
+			{
+				"right": { "model": "realistictrafficcontrol:type_3_barrier_stand_right" }
+			}
+		},
+		"facing=south,isfurthestleft=true,isfurthestright=true": 
+		{
+			"model": "realistictrafficcontrol:type_3_barrier_bars_right",
+			"y": 180,
+			"submodel": 
+			{
+				"left": { "model": "realistictrafficcontrol:type_3_barrier_stand_left" },
+				"right": { "model": "realistictrafficcontrol:type_3_barrier_stand_right" }
+			}
+		},
+		"facing=east,isfurthestleft=false,isfurthestright=false": 
+		{
+			"model": "realistictrafficcontrol:type_3_barrier_bars_right",
+			"y": 90
+		},
+		"facing=east,isfurthestleft=true,isfurthestright=false":
+		{
+			"model": "realistictrafficcontrol:type_3_barrier_bars_right",
+			"y": 90,
+			"submodel": 
+			{
+				"left": { "model": "realistictrafficcontrol:type_3_barrier_stand_left" }
+			}
+		},
+		"facing=east,isfurthestleft=false,isfurthestright=true": 
+		{
+			"model": "realistictrafficcontrol:type_3_barrier_bars_right",
+			"y": 90,
+			"submodel": 
+			{
+				"right": { "model": "realistictrafficcontrol:type_3_barrier_stand_right" }
+			}
+		},
+		"facing=east,isfurthestleft=true,isfurthestright=true": 
+		{
+			"model": "realistictrafficcontrol:type_3_barrier_bars_right",
+			"y": 90,
+			"submodel": 
+			{
+				"left": { "model": "realistictrafficcontrol:type_3_barrier_stand_left" },
+				"right": { "model": "realistictrafficcontrol:type_3_barrier_stand_right" }
+			}
+		}
+	}
+}

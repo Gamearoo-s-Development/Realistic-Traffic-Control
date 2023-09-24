@@ -1,0 +1,11 @@
+{ 
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+        "item": "realistictrafficcontrol:wch_bell"
+    }
+  ],
+  "result": {
+    "item": "realistictrafficcontrol:safetran_type_3"
+  }
+}

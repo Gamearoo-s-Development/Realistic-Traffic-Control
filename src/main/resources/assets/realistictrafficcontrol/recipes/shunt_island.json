@@ -1,0 +1,12 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [
+        {
+            "item": "realistictrafficcontrol:shunt_border"
+        }
+    ],
+    "result": {
+        "item": "realistictrafficcontrol:shunt_island",
+        "count": 1
+    }
+}
