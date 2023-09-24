@@ -5,7 +5,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 
 public class PacketHandler {
-	private static int packetId = 1;
+	private static int packetId = 0;
 	
 	public static SimpleNetworkWrapper INSTANCE = null;
 	
@@ -24,9 +24,9 @@ public class PacketHandler {
 	
 	private static void registerMessages()
 	{
-		 INSTANCE.registerMessage(PacketUpdateSign.Handler.class, PacketUpdateSign.class, nextID(), Side.SERVER);
-	        INSTANCE.registerMessage(PacketSyncableTileEntity.Handler.class, PacketSyncableTileEntity.class, nextID(), Side.SERVER);
-	        INSTANCE.registerMessage(PacketTrafficLightFrameGuiUpdate.Handler.class, PacketTrafficLightFrameGuiUpdate.class, nextID(), Side.SERVER);
-	        INSTANCE.registerMessage(PacketSignPackCheck.Handler.class, PacketSignPackCheck.class, nextID(), Side.CLIENT);
+		INSTANCE.registerMessage(PacketUpdateSign.Handler.class, PacketUpdateSign.class, nextID(), Side.SERVER);
+		INSTANCE.registerMessage(PacketSyncableTileEntity.Handler.class, PacketSyncableTileEntity.class, nextID(), Side.SERVER);
+		INSTANCE.registerMessage(PacketTrafficLightFrameGuiUpdate.Handler.class, PacketTrafficLightFrameGuiUpdate.class, nextID(), Side.SERVER);
+		INSTANCE.registerMessage(PacketSignPackCheck.Handler.class, PacketSignPackCheck.class, nextID(), Side.CLIENT);
 	}
 }

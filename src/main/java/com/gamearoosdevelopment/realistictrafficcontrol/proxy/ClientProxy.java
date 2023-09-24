@@ -82,11 +82,5 @@ public class ClientProxy extends CommonProxy {
 		}
 	}
 	
-	@SubscribeEvent
-	public void onConfigurationChangeEvent(ConfigChangedEvent.OnConfigChangedEvent event)
-	{
-		if(event.getModID().equalsIgnoreCase("realistictrafficcontrol")) {
-			ConfigManager.sync("realistictrafficcontrol", Config.Type.INSTANCE );
-		}
-	}
+
 }
