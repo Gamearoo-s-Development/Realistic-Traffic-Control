@@ -301,7 +301,7 @@ public class CommonProxy {
 		
 
 		ModSounds.initSounds();
-		PacketHandler.registerMessages("realistictrafficcontrol");
+		PacketHandler.registerMessages("trafficcontrol");
 	}
 
 	public void init(FMLInitializationEvent e)
