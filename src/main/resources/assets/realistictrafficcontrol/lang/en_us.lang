@@ -1,6 +1,7 @@
 #blocks
 tile.realistictrafficcontrol.crossing_gate_base.name=Crossing Base
 tile.realistictrafficcontrol.stand.name=Stand
+
 tile.realistictrafficcontrol.crossing_gate_gate.name=Crossing Gate
 tile.realistictrafficcontrol.crossing_gate_lamps.name=Crossing Lamps
 tile.realistictrafficcontrol.crossing_gate_pole.name=Pole
@@ -35,6 +36,14 @@ tile.realistictrafficcontrol.traffic_sensor_right.name=Traffic Sensor (Right)
 item.realistictrafficcontrol.crossing_relay_box.name=Crossing Gate Relay
 item.realistictrafficcontrol.crossing_relay_tuner.name=Tuner
 item.realistictrafficcontrol.traffic_light_frame.name=Traffic Light Frame
+tile.realistictrafficcontrol.traffic_light_cover.name=Traffic Light Framed Covered
+tile.realistictrafficcontrol.traffic_light1_cover.name=Traffic Light Framed Covered (One Bulb)
+tile.realistictrafficcontrol.traffic_light2_cover.name=Traffic Light Framed Covered (Two Bulb)
+tile.realistictrafficcontrol.traffic_light4_cover.name=Traffic Light Framed Covered (Four Bulb)
+tile.realistictrafficcontrol.traffic_light5_cover.name=Traffic Light Framed Covered (Five Bulb)
+tile.realistictrafficcontrol.traffic_light6_cover.name=Traffic Light T Framed Covered (Four Bulb)
+tile.realistictrafficcontrol.traffic_light7_cover.name=Traffic Light Hawk Beacon Framed Covered (Three Bulb)
+tile.realistictrafficcontrol.traffic_lightdoghouse_cover.name=Traffic Light Framed Covered (Doghouse)
 tile.realistictrafficcontrol.street_sign.name=Street Sign
 item.realistictrafficcontrol.traffic_light_5_frame.name=Traffic Light Frame (5 Bulb)
 item.realistictrafficcontrol.traffic_light_doghouse_frame.name=Traffic Light Frame (Doghouse)

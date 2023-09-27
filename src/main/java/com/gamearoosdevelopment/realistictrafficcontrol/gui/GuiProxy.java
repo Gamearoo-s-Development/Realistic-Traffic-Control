@@ -1,7 +1,7 @@
 package com.gamearoosdevelopment.realistictrafficcontrol.gui;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.ModItems;
-import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.CrossingGateGateTileEntity;
+
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.SignTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.StreetSignTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLightControlBoxTileEntity;
@@ -111,15 +111,8 @@ public class GuiProxy implements IGuiHandler {
 					return new GuiType3Barrier(type3Barrier);
 				}
 				break;
-			case GUI_IDs.CROSSING_GATE_GATE:
-				BlockPos preCrossingGatePos = new BlockPos(x, y, z);
-				TileEntity preCrossingGateTE = world.getTileEntity(preCrossingGatePos);
-				if (preCrossingGateTE instanceof CrossingGateGateTileEntity)
-				{
-					CrossingGateGateTileEntity crossingGateTE = (CrossingGateGateTileEntity)preCrossingGateTE;
-					return new CrossingGateGateGui(crossingGateTE);
-				}
-				break;
+			
+				
 			case GUI_IDs.STREET_SIGN:
 				BlockPos preStreetSignPos = new BlockPos(x, y, z);
 				TileEntity preStreetSignTE = world.getTileEntity(preStreetSignPos);
@@ -183,14 +176,13 @@ public class GuiProxy implements IGuiHandler {
 		public static final int TRAFFIC_LIGHT_FRAME = 2;
 		public static final int TRAFFIC_LIGHT_CONTROL_BOX = 3;
 		public static final int TYPE_3_BARRIER = 4;
-		public static final int CROSSING_GATE_GATE = 5;
-		public static final int STREET_SIGN = 6;
-		public static final int TRAFFIC_LIGHT_5_FRAME = 7;
-		public static final int TRAFFIC_LIGHT_DOGHOUSE_FRAME = 8;
-		public static final int TRAFFIC_LIGHT_1_FRAME = 9;
-		public static final int TRAFFIC_LIGHT_2_FRAME = 10;
-		public static final int TRAFFIC_LIGHT_4_FRAME = 11;
-		public static final int TRAFFIC_LIGHT_6_FRAME = 12;
-		public static final int TRAFFIC_LIGHT_7_FRAME = 13;
+		public static final int STREET_SIGN = 5;
+		public static final int TRAFFIC_LIGHT_5_FRAME = 6;
+		public static final int TRAFFIC_LIGHT_DOGHOUSE_FRAME = 7;
+		public static final int TRAFFIC_LIGHT_1_FRAME = 8;
+		public static final int TRAFFIC_LIGHT_2_FRAME = 9;
+		public static final int TRAFFIC_LIGHT_4_FRAME = 10;
+		public static final int TRAFFIC_LIGHT_6_FRAME = 11;
+		public static final int TRAFFIC_LIGHT_7_FRAME = 12;
 	}
 }

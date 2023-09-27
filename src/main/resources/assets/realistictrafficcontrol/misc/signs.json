@@ -20,6 +20,7 @@
       "id": "a71d3bd4-e886-47bd-89e3-9b69cde978ce",
       "front": "circle0.png"
     },
+    
     {
       "name": "Railroad Crossing Ahead",
       "type": "circle",
@@ -6884,6 +6885,62 @@
       "variant": "219",
       "id": "5d29c4ba-33a6-44f5-af11-a15951a7b7b5",
       "front": "square219.png"
+    },
+    {
+      "name": "Square Covered",
+      "type": "misc",
+      "variant": "220",
+      "id": "88712a1f-4a2f-466a-82c0-e570e1d684f6",
+      "front": "covered_square.png",
+      "back": "covered_square_back.png"
+    },
+     {
+      "name": "Circle Covered",
+      "type": "misc",
+      "variant": "221",
+      "id": "98fc362e-8c2f-4017-944d-43dac4dc9cb2",
+      "front": "covered_circle.png",
+      "back": "covered_circ_back.png"
+    },
+    {
+      "name": "Diamond Covered",
+      "type": "misc",
+      "variant": "222",
+      "id": "ffb7e679-5d98-4122-be2b-961bf3dcc796",
+      "front": "covered_diamond.png",
+      "back": "covered_diamond_back.png"
+    },
+    {
+      "name": "Rectangle Covered",
+      "type": "misc",
+      "variant": "223",
+      "id": "102c7c43-86fa-4d16-ac89-83a262a3b58d",
+      "front": "covered_rectangle.png",
+      "back": "covered_rect_back.png"
+    },
+    {
+      "name": "Triangle Covered",
+      "type": "misc",
+      "variant": "224",
+      "id": "69cffd75-a7c5-444c-a3b8-90305db3858c",
+      "front": "covered_triangle.png",
+      "back": "covered_tri_back.png"
+    },
+    {
+      "name": "Stop Covered",
+      "type": "misc",
+      "variant": "225",
+      "id": "04aca3a2-4cc2-4de5-be21-f5dbac2ed0fc",
+      "front": "covered_stop.png",
+      "back": "covered_stop_back.png"
+    },
+    {
+      "name": "Yield Covered",
+      "type": "misc",
+      "variant": "226",
+      "id": "e3df8754-06bf-45b6-abb3-01c39e86e2b3",
+      "front": "covered_yield.png",
+      "back": "covered_yield_back.png"
     },
     {
       "name": "Speed Limit 100 Ahead",

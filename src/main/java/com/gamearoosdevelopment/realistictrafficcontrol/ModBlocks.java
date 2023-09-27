@@ -11,44 +11,29 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class ModBlocks {
 	@ObjectHolder("crossing_gate_base")
 	public static BlockCrossingGateBase crossing_gate_base;
-	@ObjectHolder("crossing_gate_gate")
-	public static BlockCrossingGateGate crossing_gate_gate;
+	
 	@ObjectHolder("stand")
 	public static BlockStand stand;
-	@ObjectHolder("crossing_gate_lamps")
-	public static BlockCrossingGateLamps crossing_gate_lamps;
+	@ObjectHolder("traffic_light_cover")
+	public static BlockTrafficLightCover traffic_light_cover;
+	@ObjectHolder("traffic_light1_cover")
+	public static BlockTrafficLight1Cover traffic_light1_cover;
+	@ObjectHolder("traffic_light2_cover")
+	public static BlockTrafficLight2Cover traffic_light2_cover;
+	@ObjectHolder("traffic_light4_cover")
+	public static BlockTrafficLight4Cover traffic_light4_cover;
+	@ObjectHolder("traffic_light5_cover")
+	public static BlockTrafficLight5Cover traffic_light5_cover;
+	@ObjectHolder("traffic_light6_cover")
+	public static BlockTrafficLight6Cover traffic_light6_cover;
+	@ObjectHolder("traffic_light7_cover")
+	public static BlockTrafficLight7Cover traffic_light7_cover;
+	@ObjectHolder("traffic_lightdoghouse_cover")
+	public static BlockTrafficLightDogHouseCover traffic_lightdoghouse_cover;
+	
 	@ObjectHolder("crossing_gate_pole")
 	public static BlockCrossingGatePole crossing_gate_pole;
-	@ObjectHolder("crossing_gate_crossbuck")
-	public static BlockCrossingGateCrossbuck crossing_gate_crossbuck;
-	@ObjectHolder("safetran_type_3")
-	public static BlockSafetranType3 safetran_type_3;
-	@ObjectHolder("crossing_relay_se")
-	public static BlockCrossingRelaySE crossing_relay_se;
-	@ObjectHolder("crossing_relay_sw")
-	public static BlockCrossingRelaySW crossing_relay_sw;
-	@ObjectHolder("crossing_relay_nw")
-	public static BlockCrossingRelayNW crossing_relay_nw;
-	@ObjectHolder("crossing_relay_ne")
-	public static BlockCrossingRelayNE crossing_relay_ne;
-	@ObjectHolder("crossing_relay_top_sw")
-	public static BlockCrossingRelayTopSW crossing_relay_top_sw;
-	@ObjectHolder("crossing_relay_top_se")
-	public static BlockCrossingRelayTopSE crossing_relay_top_se;
-	@ObjectHolder("crossing_relay_top_nw")
-	public static BlockCrossingRelayTopNW crossing_relay_top_nw;
-	@ObjectHolder("crossing_relay_top_ne")
-	public static BlockCrossingRelayTopNE crossing_relay_top_ne;
-	@ObjectHolder("overhead_pole")
-	public static BlockOverheadPole overhead_pole;
-	@ObjectHolder("overhead")
-	public static BlockOverhead overhead;
-	@ObjectHolder("overhead_lamps")
-	public static BlockOverheadLamps overhead_lamps;
-	@ObjectHolder("overhead_crossbuck")
-	public static BlockOverheadCrossbuck overhead_crossbuck;
-	@ObjectHolder("safetran_mechanical")
-	public static BlockSafetranMechanical safetran_mechanical;
+	
 	@ObjectHolder("sign")
 	public static BlockSign sign;
 	@ObjectHolder("cone")
@@ -67,24 +52,17 @@ public class ModBlocks {
 	public static BlockTrafficLight traffic_light;
 	@ObjectHolder("traffic_light_control_box")
 	public static BlockTrafficLightControlBox traffic_light_control_box;
-	@ObjectHolder("wig_wag")
-	public static BlockWigWag wig_wag;
-	@ObjectHolder("shunt_border")
-	public static BlockShuntBorder shunt_border;
-	@ObjectHolder("shunt_island")
-	public static BlockShuntIsland shunt_island;
+	
 	@ObjectHolder("type_3_barrier")
 	public static BlockType3Barrier type_3_barrier;
 	@ObjectHolder("type_3_barrier_right")
 	public static BlockType3BarrierRight type_3_barrier_right;
-	@ObjectHolder("traffic_rail")
-	public static BlockTrafficRail traffic_rail;
+
 	@ObjectHolder("concrete_barrier")
 	public static BlockConcreteBarrier concrete_barrier;
 	@ObjectHolder("horizontal_pole")
 	public static BlockHorizontalPole horizontal_pole;
-	@ObjectHolder("wch_bell")
-	public static BlockWCHBell wch_bell;
+	
 	@ObjectHolder("traffic_sensor_left")
 	public static BlockTrafficSensorLeft traffic_sensor_left;
 	@ObjectHolder("traffic_sensor_straight")
@@ -119,16 +97,17 @@ public class ModBlocks {
 	{
 		crossing_gate_base.initModel();
 		stand.initModel();
-		crossing_gate_gate.initModel();
-		crossing_gate_lamps.initModel();
+		traffic_light_cover.initModel();
+		traffic_light1_cover.initModel();
+		traffic_light2_cover.initModel();
+		traffic_light4_cover.initModel();
+		traffic_light5_cover.initModel();
+		traffic_light6_cover.initModel();
+		traffic_light7_cover.initModel();
+		traffic_lightdoghouse_cover.initModel();
 		crossing_gate_pole.initModel();
-		crossing_gate_crossbuck.initModel();
-		safetran_type_3.initModel();
-		overhead_pole.initModel();
-		overhead.initModel();
-		overhead_lamps.initModel();
-		overhead_crossbuck.initModel();
-		safetran_mechanical.initModel();
+		
+		
 		sign.initModel();
 		cone.initModel();
 		channelizer.initModel();
@@ -137,15 +116,13 @@ public class ModBlocks {
 		street_light_double.initModel();
 		traffic_light.initModel();
 		traffic_light_control_box.initModel();
-		wig_wag.initModel();
-		shunt_border.initModel();
-		shunt_island.initModel();
+		
 		type_3_barrier.initModel();
 		type_3_barrier_right.initModel();
-		traffic_rail.initModel();
+
 		concrete_barrier.initModel();
 		horizontal_pole.initModel();
-		wch_bell.initModel();
+		
 		traffic_sensor_left.initModel();
 		traffic_sensor_straight.initModel();
 		street_sign.initModel();
