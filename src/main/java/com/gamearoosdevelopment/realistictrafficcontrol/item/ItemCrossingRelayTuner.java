@@ -1,26 +1,22 @@
 package com.gamearoosdevelopment.realistictrafficcontrol.item;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.Config;
-import com.gamearoosdevelopment.realistictrafficcontrol.ModBlocks;
+
 import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficControl;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockBaseTrafficLight;
-import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockLampBase;
+
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockPedestrianButton;
-import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockShuntBorder;
-import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockShuntIsland;
+
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficSensorLeft;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficSensorRight;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficSensorStraight;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.BaseTrafficLightTileEntity;
-import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.BellBaseTileEntity;
-import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.CrossingGateGateTileEntity;
-import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.CrossingLampsTileEntity;
+
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.PedestrianButtonTileEntity;
-import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.RelayTileEntity;
-import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.ShuntBorderTileEntity;
-import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.ShuntIslandTileEntity;
+
+
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLightControlBoxTileEntity;
-import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.WigWagTileEntity;
+
 import com.gamearoosdevelopment.realistictrafficcontrol.util.CustomAngleCalculator;
 
 import net.minecraft.block.state.IBlockState;
@@ -39,7 +35,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
+
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
@@ -113,11 +109,7 @@ public class ItemCrossingRelayTuner extends Item {
 	private void checkUseOnBlock(World world, BlockPos pos, TileEntity te, EntityPlayer player)
 	{
 		IBlockState state = world.getBlockState(pos);
-		if (te instanceof RelayTileEntity)
-		{
-			RelayTileEntity relay = (RelayTileEntity)te;
-			// There are currently no blocks that pair to relay
-		}
+		
 
 		if (te instanceof TrafficLightControlBoxTileEntity)
 		{
@@ -143,7 +135,7 @@ public class ItemCrossingRelayTuner extends Item {
 
 		if (nbt == null || !nbt.hasKey("pairingpos"))
 		{
-			if (te == null || (!(te instanceof RelayTileEntity) && !(te instanceof TrafficLightControlBoxTileEntity)))
+			if (te == null ||  !(te instanceof TrafficLightControlBoxTileEntity))
 			{
 				return false;
 			}
@@ -155,16 +147,7 @@ public class ItemCrossingRelayTuner extends Item {
 			}
 
 			String typeOfPairing = "";
-			if (te instanceof RelayTileEntity)
-			{
-				RelayTileEntity relay = (RelayTileEntity)te;
-				relay = relay.getMaster(world);
-				relayPos = relay.getPos();
-				addTileEntityPosToNBT(nbt, "pairingpos", relay);
-
-				typeOfPairing = "Relay Box";
-			}
-
+			
 			if (te instanceof TrafficLightControlBoxTileEntity)
 			{
 				TrafficLightControlBoxTileEntity controlBox = (TrafficLightControlBoxTileEntity)te;
@@ -184,18 +167,11 @@ public class ItemCrossingRelayTuner extends Item {
 		else
 		{
 			int[] pairingpos = nbt.getIntArray("pairingpos");
-			if (te != null && (te instanceof RelayTileEntity || te instanceof TrafficLightControlBoxTileEntity))
+			if (te != null &&  te instanceof TrafficLightControlBoxTileEntity)
 			{
 				BlockPos relayPos = null;
 				String typeOfPairing = "";
-				if (te instanceof RelayTileEntity)
-				{
-					RelayTileEntity relayTE = (RelayTileEntity)te;
-					relayTE = relayTE.getMaster(world);
-					relayPos = relayTE.getPos();
-
-					typeOfPairing = "Relay Box";
-				}
+				
 
 				if (te instanceof TrafficLightControlBoxTileEntity)
 				{
@@ -217,14 +193,9 @@ public class ItemCrossingRelayTuner extends Item {
 					return false;
 				}
 
-				if (te instanceof RelayTileEntity)
-				{
-					addTileEntityPosToNBT(nbt, "pairingpos", ((RelayTileEntity)te).getMaster(world));
-				}
-				else
-				{
+				
 					addTileEntityPosToNBT(nbt, "pairingpos", te);
-				}
+				
 
 				player.inventory.getCurrentItem().setTagCompound(nbt);
 
@@ -240,7 +211,7 @@ public class ItemCrossingRelayTuner extends Item {
 				BlockPos pos = new BlockPos(pairingpos[0], pairingpos[1], pairingpos[2]);
 				TileEntity teAtPairingPos = world.getTileEntity(pos);
 
-				if (teAtPairingPos == null || (!(teAtPairingPos instanceof RelayTileEntity) && !(teAtPairingPos instanceof TrafficLightControlBoxTileEntity)))
+				if (teAtPairingPos == null || !(teAtPairingPos instanceof TrafficLightControlBoxTileEntity))
 				{
 					nbt.removeTag("pairingpos");
 					player.inventory.getCurrentItem().setTagCompound(nbt);
@@ -267,91 +238,7 @@ public class ItemCrossingRelayTuner extends Item {
 
 	private void checkUseOnTileEntity(World world, TileEntity te, TileEntity pairedTE, EntityPlayer player)
 	{
-		if (pairedTE instanceof RelayTileEntity)
-		{
-			RelayTileEntity relay = (RelayTileEntity)pairedTE;
-			if (te instanceof CrossingGateGateTileEntity)
-			{
-				if (relay.addOrRemoveCrossingGateGate((CrossingGateGateTileEntity)te))
-				{
-					player.sendMessage(new TextComponentString("Paired Crossing Gate to Relay Box"));
-				}
-				else
-				{
-					player.sendMessage(new TextComponentString("Unpaired Crossing Gate from Relay Box"));
-				}
-			}
-
-			if (te instanceof BellBaseTileEntity)
-			{
-				if (relay.addOrRemoveBell((BellBaseTileEntity)te))
-				{
-					player.sendMessage(new TextComponentString("Paired Bell to Relay Box"));
-				}
-				else
-				{
-					player.sendMessage(new TextComponentString("Unpaired Bell from Relay Box"));
-				}
-			}
-
-			if (te instanceof WigWagTileEntity)
-			{
-				if (relay.addOrRemoveWigWag(te.getPos()))
-				{
-					player.sendMessage(new TextComponentString("Paired Wig Wag to Relay Box"));
-				}
-				else
-				{
-					player.sendMessage(new TextComponentString("Unpaired Wig Wag from Relay Box"));
-				}
-			}
-
-			if (te instanceof ShuntBorderTileEntity)
-			{
-				ShuntBorderTileEntity shuntBorderTileEntity = (ShuntBorderTileEntity)te;
-				IBlockState borderBlock = world.getBlockState(te.getPos());
-				EnumFacing borderFacing = borderBlock.getValue(BlockShuntBorder.FACING);
-				if (relay.addOrRemoveShuntBorder(shuntBorderTileEntity.getTrackOrigin(), borderFacing))
-				{
-					shuntBorderTileEntity.addPairedRelayBox(relay.getPos());
-					player.sendMessage(new TextComponentString("Paired Border Shunt to Relay Box"));
-				}
-				else
-				{
-					shuntBorderTileEntity.removePairedRelayBox(relay.getPos());
-					player.sendMessage(new TextComponentString("Unpaired Border Shunt from Relay Box"));
-				}
-			}
-
-			if (te instanceof ShuntIslandTileEntity)
-			{
-				ShuntIslandTileEntity shuntIslandTileEntity = (ShuntIslandTileEntity)te;
-				IBlockState islandBlock = world.getBlockState(te.getPos());
-				EnumFacing islandFacing = islandBlock.getValue(BlockShuntIsland.FACING);
-				if (relay.addOrRemoveShuntIsland(shuntIslandTileEntity.getTrackOrigin(), islandFacing))
-				{
-					shuntIslandTileEntity.addPairedRelayBox(relay.getPos());
-					player.sendMessage(new TextComponentString("Paired Island Shunt to Relay Box"));
-				}
-				else
-				{
-					shuntIslandTileEntity.removePairedRelayBox(relay.getPos());
-					player.sendMessage(new TextComponentString("Unpaired Island Shunt from Relay Box"));
-				}
-			}
-
-			if (te instanceof CrossingLampsTileEntity)
-			{
-				if (relay.addOrRemoveCrossingGateLamp(te.getPos()))
-				{
-					player.sendMessage(new TextComponentString("Paired Crossing Lamps to Relay Box"));
-				}
-				else
-				{
-					player.sendMessage(new TextComponentString("Unpaired Crossing Lamps from Relay Box"));
-				}
-			}
-		}
+		
 
 		if (pairedTE instanceof TrafficLightControlBoxTileEntity)
 		{
