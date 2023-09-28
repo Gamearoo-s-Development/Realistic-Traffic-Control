@@ -65,7 +65,7 @@ public class ModRealisticTrafficControl {
 	{
 		proxy.postInit(e);
 
-		IR_INSTALLED = Loader.isModLoaded("immersiverailroading");
+		IR_INSTALLED = false;
 	}
 	
 	

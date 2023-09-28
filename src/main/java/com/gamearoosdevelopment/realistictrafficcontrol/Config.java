@@ -35,7 +35,7 @@ public class Config {
 				"de.maxhenkel.car.entity.car.base.EntityVehicleBase"
 			};
 	public static int sensorScanHeight = 5;
-	public static int trafficLightCardT1Capacity = 16;
+	public static int trafficLightCardT1Capacity = 20;
 	public static int trafficLightCardT2Capacity = 144;
 	public static int trafficLightCardT3Capacity = 384;
 	public static float trafficLightCardDrawPerBlock = 0.01F;
@@ -64,12 +64,10 @@ public class Config {
 	private static void initGeneralConfig(Configuration cfg)
 	{
 		cfg.addCustomCategoryComment(CATEGORY_GENERAL, "General configuration");
-		islandTimeout = cfg.getInt("islandTimeout", CATEGORY_GENERAL, islandTimeout, 1, 100, "How far (in blocks) should each island shunt scan for the next island shunt?");
-		borderTimeout = cfg.getInt("borderTimeout", CATEGORY_GENERAL, borderTimeout, 1, 2000, "How far (in blocks) should border shunts scan for the next island shunt?");
-		borderTick = cfg.getInt("borderTick", CATEGORY_GENERAL, borderTick, 1, 2000, "How far (in blocks) should border shunts scan for the next island shunt per tick?");
+		
 		sensorClasses = cfg.getStringList("sensorClasses", CATEGORY_TRAFFIC_LIGHT, sensorClasses, "What entity classes will activate the traffic signal sensors?");
 		sensorScanHeight = cfg.getInt("sensorScanHeight", CATEGORY_TRAFFIC_LIGHT, sensorScanHeight, 0, 10, "How far up (in blocks) should traffic signal sensors scan for entities? [Min = 0, Max = 10, Default = 5]");
-		parallelScans = cfg.getInt("parallelScans", CATEGORY_GENERAL, parallelScans, 1, 20, "How many crossing relay boxes should be scanned per tick?  PERFORMANCE NOTE: Total blocks scanned = borderTick * parallelScans.  The higher this number, the amount of blocks scanned per tick is multiplied.");
+		
 		tooltipCharWrapLength = cfg.getInt("tooltipCharWrapLength", CATEGORY_GENERAL, tooltipCharWrapLength, 64, 5412, "How many letters should be rendered in a tooltip before it wraps down to the next line?");
 		trafficLightCardT1Capacity = cfg.getInt("trafficLightCardT1Capacity", CATEGORY_TRAFFIC_LIGHT, trafficLightCardT1Capacity, 1, Integer.MAX_VALUE, "How many traffic lights should be allowed to be paired with a Tier 1 Traffic Light Card?");
 		trafficLightCardT2Capacity = cfg.getInt("trafficLightCardT2Capacity", CATEGORY_TRAFFIC_LIGHT, trafficLightCardT2Capacity, 1, Integer.MAX_VALUE, "How many traffic lights should be allowed to be paired with a Tier 2 Traffic Light Card?");

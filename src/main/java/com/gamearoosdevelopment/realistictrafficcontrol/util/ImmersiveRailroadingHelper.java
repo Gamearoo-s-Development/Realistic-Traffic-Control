@@ -57,6 +57,7 @@ public class ImmersiveRailroadingHelper {
 		return retVal;
 	}
 	
+	
 	public static Vec3d getNextPosition(Vec3d currentPosition, Vec3d motion, World world)
 	{
 		BlockPos currentBlockPos = new BlockPos(currentPosition.x, currentPosition.y, currentPosition.z);
