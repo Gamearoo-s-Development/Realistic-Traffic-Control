@@ -119,6 +119,7 @@ public class CommonProxy {
 	public static void registerBlocks(RegistryEvent.Register<Block> e)
 	{
 		e.getRegistry().register(new BlockCrossingGateBase());
+		e.getRegistry().register(new BlockCrossingGatePole());
 		e.getRegistry().register(new BlockStand());
 		e.getRegistry().register(new BlockTrafficLightCover());
 		e.getRegistry().register(new BlockTrafficLight1Cover());
@@ -129,7 +130,7 @@ public class CommonProxy {
 		e.getRegistry().register(new BlockTrafficLight7Cover());
 		e.getRegistry().register(new BlockTrafficLightDogHouseCover());
 
-		e.getRegistry().register(new BlockCrossingGatePole());
+		
 	
 		e.getRegistry().register(new BlockSign());
 		e.getRegistry().register(new BlockCone());
@@ -204,6 +205,7 @@ public class CommonProxy {
 		}
 
 		e.getRegistry().register(new ItemBlock(ModBlocks.crossing_gate_base).setRegistryName(ModBlocks.crossing_gate_base.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.crossing_gate_pole).setRegistryName(ModBlocks.crossing_gate_pole.getRegistryName()));
 		e.getRegistry().register(new ItemBlock(ModBlocks.stand).setRegistryName(ModBlocks.stand.getRegistryName()));
 		e.getRegistry().register(new ItemBlock(ModBlocks.traffic_light_cover).setRegistryName(ModBlocks.traffic_light_cover.getRegistryName()));
 		e.getRegistry().register(new ItemBlock(ModBlocks.traffic_light1_cover).setRegistryName(ModBlocks.traffic_light1_cover.getRegistryName()));

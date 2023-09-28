@@ -35,6 +35,7 @@ public class BlockTrafficLight1 extends BlockBaseTrafficLight
 	@Override
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
 		int rotation = state.getValue(BlockBaseTrafficLight.ROTATION);
+		
 		if (!CustomAngleCalculator.isCardinal(rotation))
 		{
 			return super.getBoundingBox(state, source, pos);

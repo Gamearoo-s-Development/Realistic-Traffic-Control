@@ -96,6 +96,7 @@ public class ModBlocks {
 	public static void initModels(ModelRegistryEvent e)
 	{
 		crossing_gate_base.initModel();
+		crossing_gate_pole.initModel();
 		stand.initModel();
 		traffic_light_cover.initModel();
 		traffic_light1_cover.initModel();
@@ -105,7 +106,7 @@ public class ModBlocks {
 		traffic_light6_cover.initModel();
 		traffic_light7_cover.initModel();
 		traffic_lightdoghouse_cover.initModel();
-		crossing_gate_pole.initModel();
+		
 		
 		
 		sign.initModel();
