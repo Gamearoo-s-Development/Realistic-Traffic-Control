@@ -28,21 +28,20 @@ import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockStreetLightS
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockStreetSign;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLight;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLight1;
-import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLight1Cover;
+
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLight2;
-import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLight2Cover;
+
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLight4;
-import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLight4Cover;
+
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLight5;
-import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLight5Cover;
+
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLight5Upper;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLight6;
-import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLight6Cover;
+
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLight7;
-import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLight7Cover;
+
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLightControlBox;
-import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLightCover;
-import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLightDogHouseCover;
+
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLightDoghouse;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficSensorLeft;
@@ -53,7 +52,7 @@ import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockType3Barrier
 
 import com.gamearoosdevelopment.realistictrafficcontrol.gui.GuiProxy;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemCone;
-
+import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemCoverHook;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemCrossingRelayTuner;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemStreetSign;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemTrafficLight1Frame;
@@ -121,14 +120,7 @@ public class CommonProxy {
 		e.getRegistry().register(new BlockCrossingGateBase());
 		e.getRegistry().register(new BlockCrossingGatePole());
 		e.getRegistry().register(new BlockStand());
-		e.getRegistry().register(new BlockTrafficLightCover());
-		e.getRegistry().register(new BlockTrafficLight1Cover());
-		e.getRegistry().register(new BlockTrafficLight2Cover());
-		e.getRegistry().register(new BlockTrafficLight4Cover());
-		e.getRegistry().register(new BlockTrafficLight5Cover());
-		e.getRegistry().register(new BlockTrafficLight6Cover());
-		e.getRegistry().register(new BlockTrafficLight7Cover());
-		e.getRegistry().register(new BlockTrafficLightDogHouseCover());
+	
 
 		
 	
@@ -190,6 +182,7 @@ public class CommonProxy {
 	{
 	
 		e.getRegistry().register(new ItemCrossingRelayTuner());
+		e.getRegistry().register(new ItemCoverHook());
 		e.getRegistry().register(new ItemTrafficLightBulb());
 		e.getRegistry().register(new ItemTrafficLightFrame());
 		e.getRegistry().register(new ItemTrafficLight5Frame());
@@ -207,14 +200,7 @@ public class CommonProxy {
 		e.getRegistry().register(new ItemBlock(ModBlocks.crossing_gate_base).setRegistryName(ModBlocks.crossing_gate_base.getRegistryName()));
 		e.getRegistry().register(new ItemBlock(ModBlocks.crossing_gate_pole).setRegistryName(ModBlocks.crossing_gate_pole.getRegistryName()));
 		e.getRegistry().register(new ItemBlock(ModBlocks.stand).setRegistryName(ModBlocks.stand.getRegistryName()));
-		e.getRegistry().register(new ItemBlock(ModBlocks.traffic_light_cover).setRegistryName(ModBlocks.traffic_light_cover.getRegistryName()));
-		e.getRegistry().register(new ItemBlock(ModBlocks.traffic_light1_cover).setRegistryName(ModBlocks.traffic_light1_cover.getRegistryName()));
-		e.getRegistry().register(new ItemBlock(ModBlocks.traffic_light2_cover).setRegistryName(ModBlocks.traffic_light2_cover.getRegistryName()));
-		e.getRegistry().register(new ItemBlock(ModBlocks.traffic_light4_cover).setRegistryName(ModBlocks.traffic_light4_cover.getRegistryName()));
-		e.getRegistry().register(new ItemBlock(ModBlocks.traffic_light5_cover).setRegistryName(ModBlocks.traffic_light5_cover.getRegistryName()));
-		e.getRegistry().register(new ItemBlock(ModBlocks.traffic_light6_cover).setRegistryName(ModBlocks.traffic_light6_cover.getRegistryName()));
-		e.getRegistry().register(new ItemBlock(ModBlocks.traffic_light7_cover).setRegistryName(ModBlocks.traffic_light7_cover.getRegistryName()));
-		e.getRegistry().register(new ItemBlock(ModBlocks.traffic_lightdoghouse_cover).setRegistryName(ModBlocks.traffic_lightdoghouse_cover.getRegistryName()));
+
 	
 		e.getRegistry().register(new ItemBlock(ModBlocks.sign).setRegistryName(ModBlocks.sign.getRegistryName()));
 		e.getRegistry().register(new ItemCone(ModBlocks.cone).setRegistryName(ModBlocks.cone.getRegistryName()));

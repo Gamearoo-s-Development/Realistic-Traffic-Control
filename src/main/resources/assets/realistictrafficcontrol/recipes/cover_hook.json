@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IMM",
+    "IMI",
+    " MB"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:dye",
+	  "data": 0
+    },
+    "M": {
+      "item": "minecraft:iron_ingot"
+    },
+    "B": {
+      "item": "minecraft:dye",
+	  "data": 12
+    }
+  },
+  "result": {
+    "item": "realistictrafficcontrol:cover_hook",
+    "count": 1
+  }
+}

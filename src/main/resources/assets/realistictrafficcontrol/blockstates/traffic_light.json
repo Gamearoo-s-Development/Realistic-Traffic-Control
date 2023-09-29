@@ -40,6 +40,13 @@
 	        	}
 	    	},
 	    	"false": { }
-        }
+        },
+        "cover": {
+        "true": {
+        "submodel": "realistictrafficcontrol:traffic_light_covered"
+        },
+       "false": {}
+        
+	}
 	}
 }

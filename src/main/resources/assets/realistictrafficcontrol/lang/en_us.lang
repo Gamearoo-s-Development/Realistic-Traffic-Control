@@ -34,6 +34,7 @@ tile.realistictrafficcontrol.traffic_sensor_right.name=(RTC) Traffic Sensor (Rig
 
 #items
 item.realistictrafficcontrol.crossing_relay_box.name=(RTC) Crossing Gate Relay
+item.realistictrafficcontrol.cover_hook.name=(RTC) Cover Hook
 item.realistictrafficcontrol.crossing_relay_tuner.name=(RTC) Tuner
 item.realistictrafficcontrol.traffic_light_frame.name=(RTC) Traffic Light Frame
 tile.realistictrafficcontrol.traffic_light_cover.name=(RTC) Traffic Light Framed Covered

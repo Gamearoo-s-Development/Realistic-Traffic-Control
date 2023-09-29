@@ -28,48 +28,64 @@ public class BaseTrafficLightTileEntity extends TileEntity implements ITickable 
 	// Easter egg
 	private int isPigAboveDelay;
 	private boolean isPigAbove;
+	private boolean hasCover;
 	
 	public BaseTrafficLightTileEntity(int bulbCount) {
 		super();
 		BULB_COUNT = bulbCount;
+		hasCover = true; // Assuming no cover by default
 	}
 	
 	public int getBulbCount() { return BULB_COUNT; }
 	
+	  public boolean hasCover() {
+	        return hasCover;
+	    }
+
+	    public void setCover(boolean hasCover2) {
+	        hasCover = hasCover2;
+	        markDirty(); // Mark the TileEntity as dirty to ensure it gets saved
+	        
+	    }
+	
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		int[] bulbTypes = new int[BULB_COUNT];
-		
-		for(int i = 0; i < BULB_COUNT; i++)
-		{
-			EnumTrafficLightBulbTypes bulbTypeInSlot = getBulbTypeBySlot(i);
-			bulbTypes[i] = bulbTypeInSlot != null ? bulbTypeInSlot.getIndex() : -1;
-			compound.setBoolean("active" + i, getActiveBySlot(i));
-			compound.setBoolean("flash" + i, getFlashBySlot(i));
-			compound.setBoolean("allowflash" + i, getAllowFlashBySlot(i));
-		}
-		
-		compound.setIntArray("bulbTypes", bulbTypes);
-		
-		return super.writeToNBT(compound);
+
+        for (int i = 0; i < BULB_COUNT; i++) {
+            EnumTrafficLightBulbTypes bulbTypeInSlot = getBulbTypeBySlot(i);
+            bulbTypes[i] = bulbTypeInSlot != null ? bulbTypeInSlot.getIndex() : -1;
+            compound.setBoolean("active" + i, getActiveBySlot(i));
+            compound.setBoolean("flash" + i, getFlashBySlot(i));
+            compound.setBoolean("allowflash" + i, getAllowFlashBySlot(i));
+        }
+
+        compound.setIntArray("bulbTypes", bulbTypes);
+
+        // Save the cover state
+        compound.setBoolean("cover", hasCover());
+
+        return super.writeToNBT(compound);
 	}
 	
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
-		super.readFromNBT(compound);
-		
-		bulbsBySlot = new HashMap<Integer, EnumTrafficLightBulbTypes>(BULB_COUNT);
-		activeBySlot = new HashMap<Integer, Boolean>(BULB_COUNT);
-		
-		int[] bulbTypes = compound.getIntArray("bulbTypes");
-		
-		for(int i = 0; i < bulbTypes.length; i++)
-		{
-			bulbsBySlot.put(i, EnumTrafficLightBulbTypes.get(bulbTypes[i]));
-			activeBySlot.put(i, compound.getBoolean("active" + i));
-			flashBySlot.put(i, compound.getBoolean("flash" + i));
-			allowFlashBySlot.put(i, compound.hasKey("allowflash" + i) ? compound.getBoolean("allowflash" + i) : true);
-		}
+		 super.readFromNBT(compound);
+
+	        bulbsBySlot = new HashMap<>(BULB_COUNT);
+	        activeBySlot = new HashMap<>(BULB_COUNT);
+
+	        int[] bulbTypes = compound.getIntArray("bulbTypes");
+
+	        for (int i = 0; i < bulbTypes.length; i++) {
+	            bulbsBySlot.put(i, EnumTrafficLightBulbTypes.get(bulbTypes[i]));
+	            activeBySlot.put(i, compound.getBoolean("active" + i));
+	            flashBySlot.put(i, compound.getBoolean("flash" + i));
+	            allowFlashBySlot.put(i, compound.hasKey("allowflash" + i) ? compound.getBoolean("allowflash" + i) : true);
+	        }
+
+	        // Read the cover state
+	        setCover(compound.getBoolean("cover"));
 	}
 	
 	@Override
@@ -83,6 +99,7 @@ public class BaseTrafficLightTileEntity extends TileEntity implements ITickable 
 		});
 		
 		tag.setIntArray("bulbTypes", bulbTypes);
+		tag.setBoolean("cover", hasCover());
 		
 		for(int i = 0; i < BULB_COUNT; i++)
 		{
@@ -91,6 +108,8 @@ public class BaseTrafficLightTileEntity extends TileEntity implements ITickable 
 			tag.setBoolean("allowflash" + i, getAllowFlashBySlot(i));
 		}
 		
+		
+		
 		return tag;
 	}
 	
@@ -98,6 +117,8 @@ public class BaseTrafficLightTileEntity extends TileEntity implements ITickable 
 	public void handleUpdateTag(NBTTagCompound tag) {
 		super.handleUpdateTag(tag);
 		bulbsBySlot = new HashMap<Integer, EnumTrafficLightBulbTypes>();
+		
+		hasCover = tag.getBoolean("cover");
 		
 		int[] bulbTypes = tag.getIntArray("bulbTypes");
 		for(int i = 0; i < bulbTypes.length; i++)
@@ -111,6 +132,8 @@ public class BaseTrafficLightTileEntity extends TileEntity implements ITickable 
 			flashBySlot.put(i, tag.getBoolean("flash" + i));
 			allowFlashBySlot.put(i, tag.hasKey("allowflash" + i) ? tag.getBoolean("allowflash" + i) : true);
 		}
+		
+		
 	}
 	
 	@Override

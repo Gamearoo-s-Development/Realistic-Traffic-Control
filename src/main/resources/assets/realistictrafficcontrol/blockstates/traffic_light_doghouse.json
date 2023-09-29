@@ -40,6 +40,12 @@
 	        	}
 	    	},
 	    	"false": { }
-        }
+        },
+        "cover": {
+        "true": {
+        "submodel": "realistictrafficcontrol:traffic_lightdoghouse_covered"
+        },
+       "false": {}
+       }
 	}
 }

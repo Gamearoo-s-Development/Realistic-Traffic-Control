@@ -14,22 +14,7 @@ public class ModBlocks {
 	
 	@ObjectHolder("stand")
 	public static BlockStand stand;
-	@ObjectHolder("traffic_light_cover")
-	public static BlockTrafficLightCover traffic_light_cover;
-	@ObjectHolder("traffic_light1_cover")
-	public static BlockTrafficLight1Cover traffic_light1_cover;
-	@ObjectHolder("traffic_light2_cover")
-	public static BlockTrafficLight2Cover traffic_light2_cover;
-	@ObjectHolder("traffic_light4_cover")
-	public static BlockTrafficLight4Cover traffic_light4_cover;
-	@ObjectHolder("traffic_light5_cover")
-	public static BlockTrafficLight5Cover traffic_light5_cover;
-	@ObjectHolder("traffic_light6_cover")
-	public static BlockTrafficLight6Cover traffic_light6_cover;
-	@ObjectHolder("traffic_light7_cover")
-	public static BlockTrafficLight7Cover traffic_light7_cover;
-	@ObjectHolder("traffic_lightdoghouse_cover")
-	public static BlockTrafficLightDogHouseCover traffic_lightdoghouse_cover;
+	
 	
 	@ObjectHolder("crossing_gate_pole")
 	public static BlockCrossingGatePole crossing_gate_pole;
@@ -98,14 +83,7 @@ public class ModBlocks {
 		crossing_gate_base.initModel();
 		crossing_gate_pole.initModel();
 		stand.initModel();
-		traffic_light_cover.initModel();
-		traffic_light1_cover.initModel();
-		traffic_light2_cover.initModel();
-		traffic_light4_cover.initModel();
-		traffic_light5_cover.initModel();
-		traffic_light6_cover.initModel();
-		traffic_light7_cover.initModel();
-		traffic_lightdoghouse_cover.initModel();
+		
 		
 		
 		

@@ -23,6 +23,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -39,6 +40,7 @@ public abstract class BlockBaseTrafficLight extends Block {
 	public static PropertyInteger ROTATION = PropertyInteger.create("rotation", 0, 15);
 	public static PropertyBool VALIDHORIZONTALBAR = PropertyBool.create("validhorizontalbar");
 	public static PropertyBool VALIDBACKBAR = PropertyBool.create("validbackbar");
+	public static PropertyBool COVER = PropertyBool.create("cover");
 	public BlockBaseTrafficLight(String name)
 	{
 		super(Material.IRON);
@@ -63,7 +65,7 @@ public abstract class BlockBaseTrafficLight extends Block {
 	
 	@Override
 	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, ROTATION, VALIDBACKBAR, VALIDHORIZONTALBAR);
+		return new BlockStateContainer(this, ROTATION, VALIDBACKBAR, VALIDHORIZONTALBAR, COVER);
 	}
 	
 	@Override
@@ -137,6 +139,19 @@ public abstract class BlockBaseTrafficLight extends Block {
 																		EnumFacing.WEST, EnumFacing.EAST);
 			}
 		}
+		
+		TileEntity tileEntity = worldIn.getTileEntity(pos);
+
+        // Check if the TileEntity exists and is an instance of your custom TileEntity
+        if (tileEntity instanceof BaseTrafficLightTileEntity) {
+            BaseTrafficLightTileEntity baseTrafficLightTileEntity = (BaseTrafficLightTileEntity) tileEntity;
+
+            // Check if your NBT data (e.g., "cover") is present and set to true
+            boolean hasCover = baseTrafficLightTileEntity.hasCover();
+
+            // Update the state with the new COVER property
+            state = state.withProperty(COVER, hasCover);
+        }
 		
 		return state.withProperty(VALIDHORIZONTALBAR, hasValidHorizontalBar).withProperty(VALIDBACKBAR, hasValidBackBar);
 	}
@@ -312,5 +327,74 @@ public abstract class BlockBaseTrafficLight extends Block {
 			ItemStack stack) {
 		super.harvestBlock(worldIn, player, pos, state, te, stack);
 		worldIn.setBlockToAir(pos);
+	}
+	
+	private void toggleCover(World world, BlockPos pos) {
+        IBlockState state = world.getBlockState(pos);
+        boolean hasCover = state.getValue(COVER);
+
+        // Create a new state with the updated COVER property and the existing rotation property
+        IBlockState newState = state.withProperty(COVER, !hasCover);
+        
+        
+
+        // Retrieve the TileEntity at the current position
+        TileEntity tileEntity = world.getTileEntity(pos);
+        
+        
+
+        // Check if the TileEntity exists and is an instance of your custom TileEntity
+        if (tileEntity instanceof BaseTrafficLightTileEntity) {
+            BaseTrafficLightTileEntity baseTrafficLightTileEntity = (BaseTrafficLightTileEntity) tileEntity;
+            
+            baseTrafficLightTileEntity.setCover(!hasCover);
+            // Save the NBT data before updating the block state
+            NBTTagCompound tileEntityNBT = new NBTTagCompound();
+            baseTrafficLightTileEntity.writeToNBT(tileEntityNBT);
+
+            // Set the block state with the new state
+            world.setBlockState(pos, newState);
+
+            // Notify neighbors of the block update
+            world.notifyBlockUpdate(pos, state, newState, 3);
+
+            // Retrieve the TileEntity at the updated position
+            TileEntity updatedTileEntity = world.getTileEntity(pos);
+
+            // Check if the TileEntity exists and is an instance of your custom TileEntity
+            if (updatedTileEntity instanceof BaseTrafficLightTileEntity) {
+                BaseTrafficLightTileEntity updatedTrafficLightTileEntity = (BaseTrafficLightTileEntity) updatedTileEntity;
+
+                // Restore the NBT data after updating the block state
+                updatedTrafficLightTileEntity.readFromNBT(tileEntityNBT);
+
+                // Mark the TileEntity as dirty to ensure changes are saved
+                updatedTrafficLightTileEntity.markDirty();
+                
+                world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 3);
+            }
+        }
+    }
+
+
+
+	
+	@Override
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	    ItemStack heldItem = playerIn.getHeldItem(hand);
+
+	    // Check if the player used their main hand (right-click) and is holding a cover_hook
+	    if (hand == EnumHand.MAIN_HAND && heldItem.getItem() == ModItems.cover_hook) {
+	        if (!worldIn.isRemote) {
+	        	if(!playerIn.isCreative())
+	        	{
+	        	  heldItem.damageItem(1, playerIn);
+	        	}
+	            toggleCover(worldIn, pos); // Toggle the COVER property
+	        }
+	        return true; // Return true to indicate that the block was activated
+	    }
+
+	    return false; // Return false for other cases (e.g., off-hand interaction or not holding cover_hook)
 	}
 }

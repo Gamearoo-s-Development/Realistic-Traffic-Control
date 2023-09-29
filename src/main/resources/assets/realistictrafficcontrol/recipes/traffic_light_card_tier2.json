@@ -1,19 +1,19 @@
 { 
-  "type": "realistictrafficcontrol:traffic_light_cards",
+  "type": "minecraft:crafting_shaped",
   "pattern": [
-    " M ",
+    " T ",
     " C ",
     "   "  ],
   "key": {
-  "M":
+  "T":
 	  {
-	  	"item": "opencomputers:component",
-	  	"data": 6
+	  	"item": "realistictrafficcontrol:traffic_light_card",
+    "data": 0
 	  },
 	"C":
 	  {
-	    "item": "realistictrafficcontrol:traffic_light_card",
-	    "data": 0
+	    "item": "opencomputers:component",
+	    "data": 6
 	  }
   },
   "result": {
