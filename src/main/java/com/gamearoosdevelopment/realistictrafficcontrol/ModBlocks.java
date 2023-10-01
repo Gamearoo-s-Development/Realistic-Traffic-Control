@@ -15,6 +15,9 @@ public class ModBlocks {
 	@ObjectHolder("stand")
 	public static BlockStand stand;
 	
+	@ObjectHolder("generator")
+	public static BlockGenerator generator;
+	
 	
 	@ObjectHolder("crossing_gate_pole")
 	public static BlockCrossingGatePole crossing_gate_pole;
@@ -83,6 +86,7 @@ public class ModBlocks {
 		crossing_gate_base.initModel();
 		crossing_gate_pole.initModel();
 		stand.initModel();
+		generator.initModel();
 		
 		
 		

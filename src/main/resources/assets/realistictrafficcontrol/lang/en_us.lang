@@ -1,6 +1,7 @@
 #blocks
 tile.realistictrafficcontrol.crossing_gate_base.name=(RTC) Crossing Base
 tile.realistictrafficcontrol.stand.name=(RTC) Stand
+tile.realistictrafficcontrol.generator.name=(RTC) Generator
 
 tile.realistictrafficcontrol.crossing_gate_gate.name=(RTC) Crossing Gate
 tile.realistictrafficcontrol.crossing_gate_lamps.name=(RTC) Crossing Lamps

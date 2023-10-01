@@ -6,21 +6,48 @@
 	"variants": {
 		"normal": [{}],
 		"inventory": [{}],
-        "rotation=0": { "model": "realistictrafficcontrol:drum" },
-        "rotation=1": { "model": "realistictrafficcontrol:drum", "transform": { "rotation": { "y": 337 } } },
-        "rotation=2": { "model": "realistictrafficcontrol:drum", "transform": { "rotation": { "y": 315  } } },
-        "rotation=3": { "model": "realistictrafficcontrol:drum", "transform": { "rotation": { "y": 292 } } },
-        "rotation=4": { "model": "realistictrafficcontrol:drum", "transform": { "rotation": { "y": 270 } } },
-        "rotation=5": { "model": "realistictrafficcontrol:drum", "transform": { "rotation": { "y": 247 } } },
-        "rotation=6": { "model": "realistictrafficcontrol:drum", "transform": { "rotation": { "y": 225 } } },
-        "rotation=7": { "model": "realistictrafficcontrol:drum", "transform": { "rotation": { "y": 202 } } },
-        "rotation=8": { "model": "realistictrafficcontrol:drum", "transform": { "rotation": { "y": 180 } } },
-        "rotation=9": { "model": "realistictrafficcontrol:drum", "transform": { "rotation": { "y": 157 } } },
-        "rotation=10": { "model": "realistictrafficcontrol:drum", "transform": { "rotation": { "y": 135 } } },
-        "rotation=11": { "model": "realistictrafficcontrol:drum", "transform": { "rotation": { "y": 112 } } },
-        "rotation=12": { "model": "realistictrafficcontrol:drum", "transform": { "rotation": { "y": 90 } } },
-        "rotation=13": { "model": "realistictrafficcontrol:drum", "transform": { "rotation": { "y": 67 } } },
-        "rotation=14": { "model": "realistictrafficcontrol:drum", "transform": { "rotation": { "y": 45 } } },
-        "rotation=15": { "model": "realistictrafficcontrol:drum", "transform": { "rotation": { "y": 22 } } }
+		"rotation":
+        {
+            "0": {  },
+	        "1": {  "transform": { "rotation": { "y": 337 } } },
+	        "2": {  "transform": { "rotation": { "y": 315  } } },
+	        "3": {  "transform": { "rotation": { "y": 292 } } },
+	        "4": {  "transform": { "rotation": { "y": 270 } } },
+	        "5": {  "transform": { "rotation": { "y": 247 } } },
+	        "6": {  "transform": { "rotation": { "y": 225 } } },
+	        "7": {  "transform": { "rotation": { "y": 202 } } },
+	        "8": {  "transform": { "rotation": { "y": 180 } } },
+	        "9": { "transform": { "rotation": { "y": 157 } } },
+	        "10": {  "transform": { "rotation": { "y": 135 } } },
+	        "11": { "transform": { "rotation": { "y": 112 } } },
+	        "12": {  "transform": { "rotation": { "y": 90 } } },
+	        "13": { "transform": { "rotation": { "y": 67 } } },
+	        "14": {  "transform": { "rotation": { "y": 45 } } },
+	        "15": {  "transform": { "rotation": { "y": 22 } } }
+        },
+        "hight":
+        {
+            "0": { "model": "realistictrafficcontrol:drum" },
+	        "1": { "model": "realistictrafficcontrol:drum1" },
+	        "2": { "model": "realistictrafficcontrol:drum2" },
+	        "3": { "model": "realistictrafficcontrol:drum3"},
+	        "4": { "model": "realistictrafficcontrol:drum4"},
+	        "5": { "model": "realistictrafficcontrol:drum5" },
+	        "6": { "model": "realistictrafficcontrol:drum6" },
+	        "7": { "model": "realistictrafficcontrol:drum7" },
+	        "8": { "model": "realistictrafficcontrol:drum8" },
+	        "9": { "model": "realistictrafficcontrol:drum9" },
+	        "10": { "model": "realistictrafficcontrol:drum10" },
+	        "11": { "model": "realistictrafficcontrol:drum11" },
+	        "12": { "model": "realistictrafficcontrol:drum12" },
+	        "13": { "model": "realistictrafficcontrol:drum13" },
+	        "14": { "model": "realistictrafficcontrol:drum14" },
+	        "15": { "model": "realistictrafficcontrol:drum15" },
+	        "16": {  }
+        }
+        
+
+                
+                
 	}
 }

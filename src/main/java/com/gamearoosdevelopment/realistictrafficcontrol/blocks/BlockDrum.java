@@ -4,6 +4,9 @@ import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficContr
 import com.gamearoosdevelopment.realistictrafficcontrol.util.CustomAngleCalculator;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockSlab;
+import net.minecraft.block.BlockStairs;
+import net.minecraft.block.BlockStairs.EnumHalf;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
@@ -23,6 +26,7 @@ import net.minecraftforge.client.model.ModelLoader;
 public class BlockDrum extends Block {
 
 	public static final PropertyInteger ROTATION = PropertyInteger.create("rotation", 0, 15);
+	public static PropertyInteger HIGHT = PropertyInteger.create("hight", 0, 1000);
 	
 	public BlockDrum()
 	{
@@ -38,6 +42,13 @@ public class BlockDrum extends Block {
 	public void initModel()
 	{
 		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), 0, new ModelResourceLocation(getRegistryName(), "inventory"));
+	}
+	
+	@Override
+	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+		double heightOfBlockBelow = getBlockHeight(worldIn, pos);
+		
+		return state.withProperty(HIGHT, (int)(heightOfBlockBelow * 16));
 	}
 	
 	@Override
@@ -58,7 +69,7 @@ public class BlockDrum extends Block {
 	
 	@Override
 	public BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, ROTATION);
+		return new BlockStateContainer(this, ROTATION, HIGHT);
 	}
 	
 	@Override
@@ -73,8 +84,33 @@ public class BlockDrum extends Block {
 	
 	@Override
 	public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY,
-			float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
-		return getDefaultState().withProperty(ROTATION, CustomAngleCalculator.getRotationForYaw(placer.rotationYaw));
+	        float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
+	    
+	    //BlockPos blockBelowPos = pos.down();
+	    
+	    double heightOfBlockBelow =  getBlockHeight(world, pos);
+	    
+	    return getDefaultState().withProperty(ROTATION, CustomAngleCalculator.getRotationForYaw(placer.rotationYaw)).withProperty(HIGHT, (int)(heightOfBlockBelow * 16));
+	}
+
+	public double getBlockHeight(IBlockAccess world, BlockPos pos) {
+		BlockPos blockBelowPos = pos.down();
+	    IBlockState blockStateBelow = world.getBlockState(blockBelowPos);
+	    Block blockBelow = blockStateBelow.getBlock();
+
+	    // Check if the block below is a slab or a block with variable height
+	    if (blockBelow instanceof BlockSlab) {
+	        // For slabs, the height is 0.5 blocks
+	        return 0.5;
+	    } else if (blockBelow instanceof BlockStairs) {
+	        // For stairs, the height is determined by the specific block state
+	        EnumHalf half = blockStateBelow.getValue(BlockStairs.HALF);
+	        return (half == EnumHalf.BOTTOM) ? 1.0 : 0.5;
+	    } else {
+	        // For other blocks, get the maximum Y-coordinate of the collision bounding box
+	        AxisAlignedBB boundingBox = blockBelow.getBoundingBox(blockStateBelow, world, blockBelowPos);
+	        return boundingBox.maxY - boundingBox.minY;
+	    }
 	}
 	
 	@Override
@@ -91,4 +127,5 @@ public class BlockDrum extends Block {
 	public boolean causesSuffocation(IBlockState state) {
 		return false;
 	}
+	
 }

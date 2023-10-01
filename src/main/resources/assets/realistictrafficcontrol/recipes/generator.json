@@ -1,0 +1,32 @@
+{ 
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "RMR",
+    "MSM",
+    "WOW"
+	],
+  "key": {
+    "O": {
+      "item": "minecraft:dye",
+	  "data": 14
+    },
+    "M": {
+      "item": "minecraft:iron_ingot"
+    },
+    "R": {
+    "item": "minecraft:dye",
+	  "data": 1
+    },
+    "S": {
+    "item": "minecraft:redstone"
+    },
+    "W": {
+    "item": "minecraft:wool",
+	  "data": 7
+    }
+  },
+  "result": {
+    "item": "realistictrafficcontrol:generator",
+    "count": 1
+  }
+}
