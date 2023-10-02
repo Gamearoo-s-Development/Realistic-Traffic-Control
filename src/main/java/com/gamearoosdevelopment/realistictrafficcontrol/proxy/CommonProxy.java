@@ -129,21 +129,34 @@ public class CommonProxy {
 		e.getRegistry().register(new BlockCone());
 		e.getRegistry().register(new BlockChannelizer());
 		e.getRegistry().register(new BlockDrum());
+		if(!ModRealisticTrafficControl.TC_INSTALLED)
+		{
 		e.getRegistry().register(new BlockStreetLightSingle());
+		}
 		e.getRegistry().register(new BlockLightSource());
+		if(!ModRealisticTrafficControl.TC_INSTALLED)
+		{
 		e.getRegistry().register(new BlockStreetLightDouble());
+		}
 		e.getRegistry().register(new BlockTrafficLight());
 		e.getRegistry().register(new BlockTrafficLightControlBox());
-	
+		if(!ModRealisticTrafficControl.TC_INSTALLED)
+		{
 		e.getRegistry().register(new BlockType3Barrier());
 		e.getRegistry().register(new BlockType3BarrierRight());
-	
+		}
+		if(!ModRealisticTrafficControl.TC_INSTALLED)
+		{
 		e.getRegistry().register(new BlockConcreteBarrier());
+		}
 		e.getRegistry().register(new BlockHorizontalPole());
 	
 		e.getRegistry().register(new BlockTrafficSensorLeft());
 		e.getRegistry().register(new BlockTrafficSensorStraight());
+		if(!ModRealisticTrafficControl.TC_INSTALLED)
+		{
 		e.getRegistry().register(new BlockStreetSign());
+		}
 		e.getRegistry().register(new BlockTrafficLight5());
 		e.getRegistry().register(new BlockTrafficLight5Upper());
 		e.getRegistry().register(new BlockTrafficLightDoghouse());
@@ -209,13 +222,19 @@ public class CommonProxy {
 		e.getRegistry().register(new ItemTrafficLightControlBox(ModBlocks.traffic_light_control_box).setRegistryName(ModBlocks.traffic_light_control_box.getRegistryName()));
 		e.getRegistry().register(new ItemCone(ModBlocks.channelizer).setRegistryName(ModBlocks.channelizer.getRegistryName()));
 		e.getRegistry().register(new ItemCone(ModBlocks.drum).setRegistryName(ModBlocks.drum.getRegistryName()));
+		if(!ModRealisticTrafficControl.TC_INSTALLED)
+		{
 		e.getRegistry().register(new ItemBlock(ModBlocks.street_light_single).setRegistryName(ModBlocks.street_light_single.getRegistryName()));
 		e.getRegistry().register(new ItemBlock(ModBlocks.street_light_double).setRegistryName(ModBlocks.street_light_double.getRegistryName()));
+		}
 
-	
+		if(!ModRealisticTrafficControl.TC_INSTALLED)
+		{
 		e.getRegistry().register(new ItemBlock(ModBlocks.type_3_barrier).setRegistryName(ModBlocks.type_3_barrier.getRegistryName()));
 		e.getRegistry().register(new ItemBlock(ModBlocks.type_3_barrier_right).setRegistryName(ModBlocks.type_3_barrier_right.getRegistryName()));
-		
+		}
+		if(!ModRealisticTrafficControl.TC_INSTALLED)
+		{
 		e.getRegistry().register(new ItemBlock(ModBlocks.concrete_barrier)
 		{
 			public boolean getHasSubtypes() { return true; }
@@ -233,11 +252,15 @@ public class CommonProxy {
 
 
 		}.setRegistryName(ModBlocks.concrete_barrier.getRegistryName()));
+		}
 		e.getRegistry().register(new ItemBlock(ModBlocks.horizontal_pole).setRegistryName(ModBlocks.horizontal_pole.getRegistryName()));
 	
 		e.getRegistry().register(new ItemBlock(ModBlocks.traffic_sensor_left).setRegistryName(ModBlocks.traffic_sensor_left.getRegistryName()));
 		e.getRegistry().register(new ItemBlock(ModBlocks.traffic_sensor_straight).setRegistryName(ModBlocks.traffic_sensor_straight.getRegistryName()));
+		if(!ModRealisticTrafficControl.TC_INSTALLED)
+		{
 		e.getRegistry().register(new ItemStreetSign(ModBlocks.street_sign).setRegistryName(ModBlocks.street_sign.getRegistryName()));
+		}
 		e.getRegistry().register(new ItemBlock(ModBlocks.pedestrian_button).setRegistryName(ModBlocks.pedestrian_button.getRegistryName()));
 		e.getRegistry().register(new ItemBlock(ModBlocks.traffic_sensor_right).setRegistryName(ModBlocks.traffic_sensor_right.getRegistryName()));
 	}

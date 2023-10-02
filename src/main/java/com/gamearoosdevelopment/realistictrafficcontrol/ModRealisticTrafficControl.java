@@ -22,10 +22,11 @@ import net.minecraftforge.fml.relauncher.Side;
 @Mod(modid = "realistictrafficcontrol", version = ModRealisticTrafficControl.VERSION, name = "Realistic Traffic Control", useMetadata = true)
 public class ModRealisticTrafficControl {
 	public static final String MODID = "realistictrafficcontrol";
-	public static final String VERSION = "0.5.0 Beta 1.12.2";
+	public static final String VERSION = "0.6.0 Beta 1.12.2";
 	public static final String MODNAME = "Realistic Traffic Control";
 	public static boolean IR_INSTALLED = false;
 	public static boolean OC_INSTALLED = false;
+	public static boolean TC_INSTALLED = false;
 	public static CreativeTabs CREATIVE_TAB = new CreativeTabs("Realistc Traffic Control") {
 
 		@Override
@@ -50,6 +51,7 @@ public class ModRealisticTrafficControl {
 	public void preInit(FMLPreInitializationEvent e)
 	{
 		OC_INSTALLED = Loader.isModLoaded("opencomputers");
+		TC_INSTALLED = Loader.isModLoaded("trafficcontrol");
 		logger = e.getModLog();
 		proxy.preInit(e);
 	}

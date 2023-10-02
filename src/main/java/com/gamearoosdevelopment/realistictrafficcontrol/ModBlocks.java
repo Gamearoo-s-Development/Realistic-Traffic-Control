@@ -95,20 +95,28 @@ public class ModBlocks {
 		cone.initModel();
 		channelizer.initModel();
 		drum.initModel();
+		if(!ModRealisticTrafficControl.TC_INSTALLED)
+		{
 		street_light_single.initModel();
 		street_light_double.initModel();
+		}
 		traffic_light.initModel();
 		traffic_light_control_box.initModel();
-		
+		if(!ModRealisticTrafficControl.TC_INSTALLED)
+		{
 		type_3_barrier.initModel();
 		type_3_barrier_right.initModel();
-
+		
 		concrete_barrier.initModel();
+		}
 		horizontal_pole.initModel();
 		
 		traffic_sensor_left.initModel();
 		traffic_sensor_straight.initModel();
+		if(!ModRealisticTrafficControl.TC_INSTALLED)
+		{
 		street_sign.initModel();
+		}
 		traffic_light_5.initModel();
 		traffic_light_doghouse.initModel();
 		traffic_light_1.initModel();

@@ -1,7 +1,7 @@
 {
 	"type": "minecraft:crafting_shaped",
 	"pattern": [
-		"#R#",
+		"# #",
 		"#E#",
 		"###"
 	],
@@ -10,9 +10,7 @@
 			"item": "minecraft:stone",
 			"data": 0
 		},
-		"R": {
-			"item": "minecraft:redstone"
-		},
+		
 		"E": {
 			"item": "minecraft:redstone_block"
 		}

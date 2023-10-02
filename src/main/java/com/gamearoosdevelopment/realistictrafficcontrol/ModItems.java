@@ -42,7 +42,10 @@ public class ModItems {
 		cover_hook.initModel();
 		traffic_light_bulb.initModel();
 		traffic_light_frame.initModel();
+		if(!ModRealisticTrafficControl.TC_INSTALLED)
+		{
 		street_sign.initModel();
+		}
 		traffic_light_5_frame.initModel();
 		traffic_light_doghouse_frame.initModel();
 		traffic_light_1_frame.initModel();
