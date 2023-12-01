@@ -24,6 +24,10 @@ public class ModBlocks {
 	
 	@ObjectHolder("sign")
 	public static BlockSign sign;
+	
+	
+	
+	
 	@ObjectHolder("cone")
 	public static BlockCone cone;
 	@ObjectHolder("channelizer")
@@ -92,6 +96,7 @@ public class ModBlocks {
 		
 		
 		sign.initModel();
+		
 		cone.initModel();
 		channelizer.initModel();
 		drum.initModel();
