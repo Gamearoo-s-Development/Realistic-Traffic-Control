@@ -19,6 +19,7 @@ import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -41,6 +42,7 @@ public abstract class BlockBaseTrafficLight extends Block {
 	public static PropertyBool VALIDHORIZONTALBAR = PropertyBool.create("validhorizontalbar");
 	public static PropertyBool VALIDBACKBAR = PropertyBool.create("validbackbar");
 	public static PropertyBool COVER = PropertyBool.create("cover");
+	public static PropertyBool POLE = PropertyBool.create("pole");
 	public BlockBaseTrafficLight(String name)
 	{
 		super(Material.IRON);
@@ -65,7 +67,7 @@ public abstract class BlockBaseTrafficLight extends Block {
 	
 	@Override
 	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, ROTATION, VALIDBACKBAR, VALIDHORIZONTALBAR, COVER);
+		return new BlockStateContainer(this, ROTATION, VALIDBACKBAR, VALIDHORIZONTALBAR, COVER, POLE);
 	}
 	
 	@Override
@@ -148,8 +150,10 @@ public abstract class BlockBaseTrafficLight extends Block {
 
             // Check if your NBT data (e.g., "cover") is present and set to true
             boolean hasCover = baseTrafficLightTileEntity.hasCover();
+            boolean hasPole = baseTrafficLightTileEntity.hasPole();
 
             // Update the state with the new COVER property
+            state = state.withProperty(POLE, hasPole);
             state = state.withProperty(COVER, hasCover);
         }
 		
@@ -376,6 +380,52 @@ public abstract class BlockBaseTrafficLight extends Block {
         }
     }
 
+	private void togglePole(World world, BlockPos pos) {
+        IBlockState state = world.getBlockState(pos);
+        boolean hasPole = state.getValue(POLE);
+
+        // Create a new state with the updated COVER property and the existing rotation property
+        IBlockState newState = state.withProperty(POLE, !hasPole);
+        
+        
+
+        // Retrieve the TileEntity at the current position
+        TileEntity tileEntity = world.getTileEntity(pos);
+        
+        
+
+        // Check if the TileEntity exists and is an instance of your custom TileEntity
+        if (tileEntity instanceof BaseTrafficLightTileEntity) {
+            BaseTrafficLightTileEntity baseTrafficLightTileEntity = (BaseTrafficLightTileEntity) tileEntity;
+            
+            baseTrafficLightTileEntity.setPole(!hasPole);
+            // Save the NBT data before updating the block state
+            NBTTagCompound tileEntityNBT = new NBTTagCompound();
+            baseTrafficLightTileEntity.writeToNBT(tileEntityNBT);
+
+            // Set the block state with the new state
+            world.setBlockState(pos, newState);
+
+            // Notify neighbors of the block update
+            world.notifyBlockUpdate(pos, state, newState, 3);
+
+            // Retrieve the TileEntity at the updated position
+            TileEntity updatedTileEntity = world.getTileEntity(pos);
+
+            // Check if the TileEntity exists and is an instance of your custom TileEntity
+            if (updatedTileEntity instanceof BaseTrafficLightTileEntity) {
+                BaseTrafficLightTileEntity updatedTrafficLightTileEntity = (BaseTrafficLightTileEntity) updatedTileEntity;
+
+                // Restore the NBT data after updating the block state
+                updatedTrafficLightTileEntity.readFromNBT(tileEntityNBT);
+
+                // Mark the TileEntity as dirty to ensure changes are saved
+                updatedTrafficLightTileEntity.markDirty();
+                
+                world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 3);
+            }
+        }
+    }
 
 
 	
@@ -391,6 +441,15 @@ public abstract class BlockBaseTrafficLight extends Block {
 	        	  heldItem.damageItem(1, playerIn);
 	        	}
 	            toggleCover(worldIn, pos); // Toggle the COVER property
+	        }
+	        return true; // Return true to indicate that the block was activated
+	    } else  if (hand == EnumHand.MAIN_HAND && heldItem.getItem() == Items.STICK) {
+	        if (!worldIn.isRemote) {
+	        	if(!playerIn.isCreative())
+	        	{
+	        	  heldItem.damageItem(1, playerIn);
+	        	}
+	            togglePole(worldIn, pos); // Toggle the COVER property
 	        }
 	        return true; // Return true to indicate that the block was activated
 	    }

@@ -1,0 +1,36 @@
+{
+	"credit": "Model generated using MrCrayfish's Model Creator (http://mrcrayfish.com/modelcreator/)",
+	"textures": {
+		"0": "realistictrafficcontrol:blocks/generic"
+	},
+	"elements": [
+		{
+			"name": "EXT",
+			"from": [-6, 7, 7],
+			"to": [0, 9, 9],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 8, 8]},
+			"faces": {
+				"north": {"uv": [0, 0, 2, 16], "rotation": 90, "texture": "#0"},
+				"east": {"uv": [0, 0, 2, 2], "rotation": 270, "texture": "#0"},
+				"south": {"uv": [4, 0, 6, 16], "rotation": 270, "texture": "#0"},
+				"west": {"uv": [0, 0, 2, 2], "rotation": 270, "texture": "#0"},
+				"up": {"uv": [2, 0, 4, 16], "rotation": 270, "texture": "#0"},
+				"down": {"uv": [6, 0, 8, 16], "rotation": 270, "texture": "#0"}
+			}
+		},
+		{
+			"name": "EXT",
+			"from": [16, 7, 7],
+			"to": [20, 9, 9],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 8, 8]},
+			"faces": {
+				"north": {"uv": [0, 0, 2, 16], "rotation": 90, "texture": "#0"},
+				"east": {"uv": [0, 0, 2, 2], "rotation": 270, "texture": "#0"},
+				"south": {"uv": [4, 0, 6, 16], "rotation": 270, "texture": "#0"},
+				"west": {"uv": [0, 0, 2, 2], "rotation": 270, "texture": "#0"},
+				"up": {"uv": [2, 0, 4, 16], "rotation": 270, "texture": "#0"},
+				"down": {"uv": [6, 0, 8, 16], "rotation": 270, "texture": "#0"}
+			}
+		}
+	]
+}

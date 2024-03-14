@@ -29,11 +29,13 @@ public class BaseTrafficLightTileEntity extends TileEntity implements ITickable 
 	private int isPigAboveDelay;
 	private boolean isPigAbove;
 	private boolean hasCover;
+	private boolean hasPole;
 	
 	public BaseTrafficLightTileEntity(int bulbCount) {
 		super();
 		BULB_COUNT = bulbCount;
-		hasCover = true; // Assuming no cover by default
+		hasCover = true; // Assuming  cover by default
+		hasPole = false; // Assuming no pole by default
 	}
 	
 	public int getBulbCount() { return BULB_COUNT; }
@@ -41,9 +43,21 @@ public class BaseTrafficLightTileEntity extends TileEntity implements ITickable 
 	  public boolean hasCover() {
 	        return hasCover;
 	    }
+	  
+	  public boolean hasPole() {
+	        return hasPole;
+	    }
 
 	    public void setCover(boolean hasCover2) {
 	        hasCover = hasCover2;
+	       
+	        markDirty(); // Mark the TileEntity as dirty to ensure it gets saved
+	        
+	    }
+	    
+	    public void setPole(boolean hasPole2) {
+	        hasPole = hasPole2;
+	       
 	        markDirty(); // Mark the TileEntity as dirty to ensure it gets saved
 	        
 	    }
@@ -64,6 +78,7 @@ public class BaseTrafficLightTileEntity extends TileEntity implements ITickable 
 
         // Save the cover state
         compound.setBoolean("cover", hasCover());
+        compound.setBoolean("pole", hasPole());
 
         return super.writeToNBT(compound);
 	}
@@ -86,6 +101,7 @@ public class BaseTrafficLightTileEntity extends TileEntity implements ITickable 
 
 	        // Read the cover state
 	        setCover(compound.getBoolean("cover"));
+	        setPole(compound.getBoolean("pole"));
 	}
 	
 	@Override
@@ -100,6 +116,7 @@ public class BaseTrafficLightTileEntity extends TileEntity implements ITickable 
 		
 		tag.setIntArray("bulbTypes", bulbTypes);
 		tag.setBoolean("cover", hasCover());
+		tag.setBoolean("pole", hasPole());
 		
 		for(int i = 0; i < BULB_COUNT; i++)
 		{
@@ -119,6 +136,7 @@ public class BaseTrafficLightTileEntity extends TileEntity implements ITickable 
 		bulbsBySlot = new HashMap<Integer, EnumTrafficLightBulbTypes>();
 		
 		hasCover = tag.getBoolean("cover");
+		hasPole = tag.getBoolean("pole");
 		
 		int[] bulbTypes = tag.getIntArray("bulbTypes");
 		for(int i = 0; i < bulbTypes.length; i++)

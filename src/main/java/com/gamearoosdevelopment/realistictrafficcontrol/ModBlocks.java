@@ -42,6 +42,8 @@ public class ModBlocks {
 	public static BlockStreetLightDouble street_light_double;
 	@ObjectHolder("traffic_light")
 	public static BlockTrafficLight traffic_light;
+	@ObjectHolder("traffic_light_hoz")
+	public static BlockTrafficLightHoz traffic_light_hoz;
 	@ObjectHolder("traffic_light_control_box")
 	public static BlockTrafficLightControlBox traffic_light_control_box;
 	
@@ -63,6 +65,8 @@ public class ModBlocks {
 	public static BlockStreetSign street_sign;
 	@ObjectHolder("traffic_light_5")
 	public static BlockTrafficLight5 traffic_light_5;
+	@ObjectHolder("traffic_light_5_hoz")
+	public static BlockTrafficLight5Hoz traffic_light_5_hoz;
 	@ObjectHolder("traffic_light_5_upper")
 	public static BlockTrafficLight5Upper traffic_light_5_upper;
 	@ObjectHolder("traffic_light_doghouse")
@@ -71,12 +75,18 @@ public class ModBlocks {
 	public static BlockTrafficLight1 traffic_light_1;
 	@ObjectHolder("traffic_light_2")
 	public static BlockTrafficLight2 traffic_light_2;
+	@ObjectHolder("traffic_light_2_hoz")
+	public static BlockTrafficLight2Hoz traffic_light_2_hoz;
+	
 	@ObjectHolder("traffic_light_4")
 	public static BlockTrafficLight4 traffic_light_4;
+	@ObjectHolder("traffic_light_4_hoz")
+	public static BlockTrafficLight4Hoz traffic_light_4_hoz;
 	@ObjectHolder("traffic_light_6")
 	public static BlockTrafficLight6 traffic_light_6;
 	@ObjectHolder("traffic_light_7")
 	public static BlockTrafficLight7 traffic_light_7;
+	
 	
 	@ObjectHolder("pedestrian_button")
 	public static BlockPedestrianButton pedestrian_button;
@@ -123,14 +133,18 @@ public class ModBlocks {
 		street_sign.initModel();
 		}
 		traffic_light_5.initModel();
+		traffic_light_5_hoz.initModel();
 		traffic_light_doghouse.initModel();
 		traffic_light_1.initModel();
 		traffic_light_2.initModel();
+		traffic_light_2_hoz.initModel();
 		traffic_light_4.initModel();
+		traffic_light_4_hoz.initModel();
 		pedestrian_button.initModel();
 		traffic_sensor_right.initModel();
 		traffic_light_6.initModel();
 		traffic_light_7.initModel();
+		traffic_light_hoz.initModel();
 		
 	}
 }

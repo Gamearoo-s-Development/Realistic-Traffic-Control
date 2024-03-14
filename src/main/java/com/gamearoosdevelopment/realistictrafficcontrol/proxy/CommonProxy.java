@@ -16,6 +16,8 @@ import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockCrossingGate
 
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockCrossingGatePole;
 
+
+
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockDrum;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockGenerator;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockHorizontalPole;
@@ -31,11 +33,11 @@ import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLight
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLight1;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLight2;
-
+import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLight2Hoz;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLight4;
-
+import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLight4Hoz;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLight5;
-
+import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLight5Hoz;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLight5Upper;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLight6;
 
@@ -44,7 +46,7 @@ import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLight
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLightControlBox;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLightDoghouse;
-
+import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficLightHoz;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficSensorLeft;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficSensorRight;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficSensorStraight;
@@ -58,8 +60,11 @@ import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemCrossingRelayTu
 import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemStreetSign;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemTrafficLight1Frame;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemTrafficLight2Frame;
+import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemTrafficLight2HozFrame;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemTrafficLight4Frame;
+import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemTrafficLight4HozFrame;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemTrafficLight5Frame;
+import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemTrafficLight5HozFrame;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemTrafficLight6Frame;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemTrafficLight7Frame;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemTrafficLightBulb;
@@ -67,6 +72,7 @@ import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemTrafficLightCar
 import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemTrafficLightControlBox;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemTrafficLightDoghouseFrame;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemTrafficLightFrame;
+import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemTrafficLightHozFrame;
 import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketHandler;
 import com.gamearoosdevelopment.realistictrafficcontrol.signs.SignRepository;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.ConcreteBarrierTileEntity;
@@ -78,13 +84,17 @@ import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.StreetLightDo
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.StreetLightSingleTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.StreetSignTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLight1TileEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLight2HozTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLight2TileEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLight4HozTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLight4TileEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLight5HozTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLight5TileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLight6TileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLight7TileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLightControlBoxTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLightDoghouseTileEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLightHozTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLightTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.Type3BarrierTileEntity;
 
@@ -122,8 +132,7 @@ public class CommonProxy {
 		e.getRegistry().register(new BlockCrossingGatePole());
 		e.getRegistry().register(new BlockStand());
 		e.getRegistry().register(new BlockGenerator());
-
-		
+			
 	
 		e.getRegistry().register(new BlockSign());
 		e.getRegistry().register(new BlockCone());
@@ -139,6 +148,7 @@ public class CommonProxy {
 		e.getRegistry().register(new BlockStreetLightDouble());
 		}
 		e.getRegistry().register(new BlockTrafficLight());
+		e.getRegistry().register(new BlockTrafficLightHoz());
 		e.getRegistry().register(new BlockTrafficLightControlBox());
 		if(!ModRealisticTrafficControl.TC_INSTALLED)
 		{
@@ -158,11 +168,14 @@ public class CommonProxy {
 		e.getRegistry().register(new BlockStreetSign());
 		}
 		e.getRegistry().register(new BlockTrafficLight5());
+		e.getRegistry().register(new BlockTrafficLight5Hoz());
 		e.getRegistry().register(new BlockTrafficLight5Upper());
 		e.getRegistry().register(new BlockTrafficLightDoghouse());
 		e.getRegistry().register(new BlockTrafficLight1());
 		e.getRegistry().register(new BlockTrafficLight2());
+		e.getRegistry().register(new BlockTrafficLight2Hoz());
 		e.getRegistry().register(new BlockTrafficLight4());
+		e.getRegistry().register(new BlockTrafficLight4Hoz());
 		e.getRegistry().register(new BlockTrafficLight6());
 		e.getRegistry().register(new BlockTrafficLight7());
 		e.getRegistry().register(new BlockPedestrianButton());
@@ -174,6 +187,7 @@ public class CommonProxy {
 		GameRegistry.registerTileEntity(StreetLightSingleTileEntity.class, ModRealisticTrafficControl.MODID + "_streetsignsingle");
 		GameRegistry.registerTileEntity(StreetLightDoubleTileEntity.class, ModRealisticTrafficControl.MODID + "_streetlightdouble");
 		GameRegistry.registerTileEntity(TrafficLightTileEntity.class, ModRealisticTrafficControl.MODID + "_trafficlight");
+		GameRegistry.registerTileEntity(TrafficLightHozTileEntity.class, ModRealisticTrafficControl.MODID + "_trafficlighthoz");
 		GameRegistry.registerTileEntity(TrafficLightControlBoxTileEntity.class, ModRealisticTrafficControl.MODID + "_trafficlightcontrolbox");
 		
 		GameRegistry.registerTileEntity(Type3BarrierTileEntity.class, ModRealisticTrafficControl.MODID + "_type3barrier");
@@ -181,11 +195,14 @@ public class CommonProxy {
 		
 		GameRegistry.registerTileEntity(StreetSignTileEntity.class, ModRealisticTrafficControl.MODID + "_streetsign");
 		GameRegistry.registerTileEntity(TrafficLight5TileEntity.class, ModRealisticTrafficControl.MODID + "_trafficlight5");
+		GameRegistry.registerTileEntity(TrafficLight5HozTileEntity.class, ModRealisticTrafficControl.MODID + "_trafficlight5hoz");
 		GameRegistry.registerTileEntity(TrafficLightDoghouseTileEntity.class, ModRealisticTrafficControl.MODID + "_trafficlightdoghouse");
 		
 		GameRegistry.registerTileEntity(TrafficLight1TileEntity.class, ModRealisticTrafficControl.MODID + "_trafficlight1");
 		GameRegistry.registerTileEntity(TrafficLight2TileEntity.class, ModRealisticTrafficControl.MODID + "_trafficlight2");
+		GameRegistry.registerTileEntity(TrafficLight2HozTileEntity.class, ModRealisticTrafficControl.MODID + "_trafficlight2hoz");
 		GameRegistry.registerTileEntity(TrafficLight4TileEntity.class, ModRealisticTrafficControl.MODID + "_trafficlight4");
+		GameRegistry.registerTileEntity(TrafficLight4HozTileEntity.class, ModRealisticTrafficControl.MODID + "_trafficlight4hoz");
 		GameRegistry.registerTileEntity(TrafficLight6TileEntity.class, ModRealisticTrafficControl.MODID + "_trafficlight6");
 		GameRegistry.registerTileEntity(TrafficLight7TileEntity.class, ModRealisticTrafficControl.MODID + "_trafficlight7");
 		GameRegistry.registerTileEntity(PedestrianButtonTileEntity.class, ModRealisticTrafficControl.MODID + "_pedestrianbutton");
@@ -199,11 +216,15 @@ public class CommonProxy {
 		e.getRegistry().register(new ItemCoverHook());
 		e.getRegistry().register(new ItemTrafficLightBulb());
 		e.getRegistry().register(new ItemTrafficLightFrame());
+		e.getRegistry().register(new ItemTrafficLightHozFrame());
 		e.getRegistry().register(new ItemTrafficLight5Frame());
+		e.getRegistry().register(new ItemTrafficLight5HozFrame());
 		e.getRegistry().register(new ItemTrafficLightDoghouseFrame());
 		e.getRegistry().register(new ItemTrafficLight1Frame());
 		e.getRegistry().register(new ItemTrafficLight2Frame());
+		e.getRegistry().register(new ItemTrafficLight2HozFrame());
 		e.getRegistry().register(new ItemTrafficLight4Frame());
+		e.getRegistry().register(new ItemTrafficLight4HozFrame());
 		e.getRegistry().register(new ItemTrafficLight6Frame());
 		e.getRegistry().register(new ItemTrafficLight7Frame());
 		if(ModRealisticTrafficControl.OC_INSTALLED)
@@ -215,13 +236,14 @@ public class CommonProxy {
 		e.getRegistry().register(new ItemBlock(ModBlocks.crossing_gate_pole).setRegistryName(ModBlocks.crossing_gate_pole.getRegistryName()));
 		e.getRegistry().register(new ItemBlock(ModBlocks.stand).setRegistryName(ModBlocks.stand.getRegistryName()));
 		e.getRegistry().register(new ItemBlock(ModBlocks.generator).setRegistryName(ModBlocks.generator.getRegistryName()));
-
+		
 	
 		e.getRegistry().register(new ItemBlock(ModBlocks.sign).setRegistryName(ModBlocks.sign.getRegistryName()));
 		e.getRegistry().register(new ItemCone(ModBlocks.cone).setRegistryName(ModBlocks.cone.getRegistryName()));
 		e.getRegistry().register(new ItemTrafficLightControlBox(ModBlocks.traffic_light_control_box).setRegistryName(ModBlocks.traffic_light_control_box.getRegistryName()));
 		e.getRegistry().register(new ItemCone(ModBlocks.channelizer).setRegistryName(ModBlocks.channelizer.getRegistryName()));
 		e.getRegistry().register(new ItemCone(ModBlocks.drum).setRegistryName(ModBlocks.drum.getRegistryName()));
+		
 		if(!ModRealisticTrafficControl.TC_INSTALLED)
 		{
 		e.getRegistry().register(new ItemBlock(ModBlocks.street_light_single).setRegistryName(ModBlocks.street_light_single.getRegistryName()));

@@ -94,6 +94,13 @@
         "submodel": "realistictrafficcontrol:traffic_light6_covered"
         },
        "false": {}
-       }
+       },
+	 "pole": {
+        "true": {
+        
+        },
+       "false": {}
+        
+	}
 	}
 }

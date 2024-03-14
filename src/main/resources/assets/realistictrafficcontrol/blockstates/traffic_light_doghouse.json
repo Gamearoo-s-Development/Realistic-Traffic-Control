@@ -46,6 +46,13 @@
         "submodel": "realistictrafficcontrol:traffic_lightdoghouse_covered"
         },
        "false": {}
-       }
+       },
+	 "pole": {
+        "true": {
+        
+        },
+       "false": {}
+        
+	}
 	}
 }
