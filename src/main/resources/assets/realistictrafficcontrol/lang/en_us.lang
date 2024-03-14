@@ -38,20 +38,18 @@ item.realistictrafficcontrol.crossing_relay_box.name=(RTC) Crossing Gate Relay
 item.realistictrafficcontrol.cover_hook.name=(RTC) Cover Hook
 item.realistictrafficcontrol.crossing_relay_tuner.name=(RTC) Tuner
 item.realistictrafficcontrol.traffic_light_frame.name=(RTC) Traffic Light Frame
-tile.realistictrafficcontrol.traffic_light_cover.name=(RTC) Traffic Light Framed Covered
-tile.realistictrafficcontrol.traffic_light1_cover.name=(RTC) Traffic Light Framed Covered (One Bulb)
-tile.realistictrafficcontrol.traffic_light2_cover.name=(RTC) Traffic Light Framed Covered (Two Bulb)
-tile.realistictrafficcontrol.traffic_light4_cover.name=(RTC) Traffic Light Framed Covered (Four Bulb)
-tile.realistictrafficcontrol.traffic_light5_cover.name=(RTC) Traffic Light Framed Covered (Five Bulb)
-tile.realistictrafficcontrol.traffic_light6_cover.name=(RTC) Traffic Light T Framed Covered (Four Bulb)
-tile.realistictrafficcontrol.traffic_light7_cover.name=(RTC) Traffic Light Hawk Beacon Framed Covered (Three Bulb)
-tile.realistictrafficcontrol.traffic_lightdoghouse_cover.name=(RTC) Traffic Light Framed Covered (Doghouse)
+item.realistictrafficcontrol.traffic_light_hoz_frame.name=(RTC) Traffic Light Frame Horizontal
+
+
 tile.realistictrafficcontrol.street_sign.name=(RTC) Street Sign
 item.realistictrafficcontrol.traffic_light_5_frame.name=(RTC) Traffic Light Frame (5 Bulb)
+item.realistictrafficcontrol.traffic_light_5_hoz_frame.name=(RTC) Traffic Light Frame Horizontal (5 Bulb)
 item.realistictrafficcontrol.traffic_light_doghouse_frame.name=(RTC) Traffic Light Frame (Doghouse)
 item.realistictrafficcontrol.traffic_light_1_frame.name=(RTC) Traffic Light Frame (One Bulb)
 item.realistictrafficcontrol.traffic_light_2_frame.name=(RTC) Traffic Light Frame (Two Bulbs)
+item.realistictrafficcontrol.traffic_light_2_hoz_frame.name=(RTC) Traffic Light Frame Horizontal (Two Bulbs)
 item.realistictrafficcontrol.traffic_light_4_frame.name=(RTC) Traffic Light Frame (Four Bulbs)
+item.realistictrafficcontrol.traffic_light_4_hoz_frame.name=(RTC) Traffic Light Frame Horizontal (Four Bulbs)
 item.realistictrafficcontrol.traffic_light_6_frame.name=(RTC) Traffic Light T Frame (Four Bulbs)
 item.realistictrafficcontrol.traffic_light_7_frame.name=(RTC) Traffic Light Hawk Beacon Frame (Three Bulbs)
 

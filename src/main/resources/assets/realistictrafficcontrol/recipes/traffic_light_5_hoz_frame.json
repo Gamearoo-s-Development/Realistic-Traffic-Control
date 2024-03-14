@@ -1,0 +1,22 @@
+{ 
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "   ",
+    "IL ",
+    "   "  ],
+  "key": {
+  "I":
+	  {
+	  	"item": "realistictrafficcontrol:traffic_light_4_hoz_frame"
+	  },
+	  "L":
+	  {
+	  "item": "realistictrafficcontrol:traffic_light_1_frame"
+	  }
+	
+  },
+  "result": {
+    "item": "realistictrafficcontrol:traffic_light_5_hoz_frame",
+    "count": 1
+  }
+}
