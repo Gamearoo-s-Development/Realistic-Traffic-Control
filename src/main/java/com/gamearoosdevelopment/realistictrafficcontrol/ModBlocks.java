@@ -22,6 +22,9 @@ public class ModBlocks {
 	@ObjectHolder("crossing_gate_pole")
 	public static BlockCrossingGatePole crossing_gate_pole;
 	
+	@ObjectHolder("pole")
+	public static BlockPole pole;
+	
 	@ObjectHolder("sign")
 	public static BlockSign sign;
 	
@@ -99,6 +102,7 @@ public class ModBlocks {
 	{
 		crossing_gate_base.initModel();
 		crossing_gate_pole.initModel();
+		pole.initModel();
 		stand.initModel();
 		generator.initModel();
 		

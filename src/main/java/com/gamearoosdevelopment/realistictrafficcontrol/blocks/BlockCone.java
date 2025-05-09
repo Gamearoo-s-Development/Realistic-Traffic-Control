@@ -45,9 +45,11 @@ public class BlockCone extends Block {
 
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
-		double heightOfBlockBelow = getBlockHeight(worldIn, pos);
+	
 		
-		return state.withProperty(HIGHT, (int)(heightOfBlockBelow * 16));
+		
+		
+		return state.withProperty(HIGHT, (int)(16));
 	}
 	
 
@@ -101,9 +103,16 @@ public class BlockCone extends Block {
 	    
 	    //BlockPos blockBelowPos = pos.down();
 	    
-	    double heightOfBlockBelow =  getBlockHeight(world, pos);
+		
+		
+
+
+
+	  
 	    
-	    return getDefaultState().withProperty(ROTATION, CustomAngleCalculator.getRotationForYaw(placer.rotationYaw)).withProperty(HIGHT, (int)(heightOfBlockBelow * 16));
+	    return getDefaultState()
+	            .withProperty(ROTATION, CustomAngleCalculator.getRotationForYaw(placer.rotationYaw))
+	            .withProperty(HIGHT, 16);
 	}
 
 	public double getBlockHeight(IBlockAccess world, BlockPos pos) {

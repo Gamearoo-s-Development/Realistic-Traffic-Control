@@ -93,6 +93,18 @@ public abstract class BlockBaseTrafficLight extends Block {
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
 		boolean hasValidHorizontalBar = false;
+		boolean autoValidHorizontalBar = true;
+
+		TileEntity tileEntity2 = worldIn.getTileEntity(pos);
+		if (tileEntity2 instanceof BaseTrafficLightTileEntity) {
+		    BaseTrafficLightTileEntity baseTE = (BaseTrafficLightTileEntity) tileEntity2;
+
+		    if (baseTE.isHorizontalBarSuppressed()) {
+		    	autoValidHorizontalBar = false;
+		    	
+		    }
+		}
+
 		boolean hasValidBackBar = false;
 		
 		int rotation = state.getValue(ROTATION);
@@ -102,41 +114,47 @@ public abstract class BlockBaseTrafficLight extends Block {
 		{
 			if (CustomAngleCalculator.isNorth(rotation))
 			{
+				if(autoValidHorizontalBar) {
 				hasValidHorizontalBar = getValidStateForAttachableSubModels(worldIn.getBlockState(pos.west()),
 																				EnumFacing.WEST, EnumFacing.EAST) ||
 										getValidStateForAttachableSubModels(worldIn.getBlockState(pos.east()),
 																				EnumFacing.WEST, EnumFacing.EAST);
+				}
 				
 				hasValidBackBar = getValidStateForAttachableSubModels(worldIn.getBlockState(pos.north()), 
 																				EnumFacing.NORTH, EnumFacing.SOUTH);
 			}
 			else if (CustomAngleCalculator.isSouth(rotation))
 			{
+				if(autoValidHorizontalBar) {
 				hasValidHorizontalBar = getValidStateForAttachableSubModels(worldIn.getBlockState(pos.west()),
 																EnumFacing.WEST, EnumFacing.EAST) ||
 										getValidStateForAttachableSubModels(worldIn.getBlockState(pos.east()),
 																EnumFacing.WEST, EnumFacing.EAST);
-										
+				}
 				hasValidBackBar = getValidStateForAttachableSubModels(worldIn.getBlockState(pos.south()), 
 																	EnumFacing.NORTH, EnumFacing.SOUTH);
 			}
 			else if (CustomAngleCalculator.isWest(rotation))
 			{
+				if(autoValidHorizontalBar) {
 				hasValidHorizontalBar = getValidStateForAttachableSubModels(worldIn.getBlockState(pos.north()),
 																EnumFacing.NORTH, EnumFacing.SOUTH) ||
 										getValidStateForAttachableSubModels(worldIn.getBlockState(pos.south()),
 																EnumFacing.NORTH, EnumFacing.SOUTH);
+				}
 				
 				hasValidBackBar = getValidStateForAttachableSubModels(worldIn.getBlockState(pos.west()), 
 																	EnumFacing.WEST, EnumFacing.EAST);
 			}
 			else if (CustomAngleCalculator.isEast(rotation))
 			{
+				if(autoValidHorizontalBar) {
 				hasValidHorizontalBar = getValidStateForAttachableSubModels(worldIn.getBlockState(pos.north()),
 																	EnumFacing.NORTH, EnumFacing.SOUTH) ||
 										getValidStateForAttachableSubModels(worldIn.getBlockState(pos.south()),
 																	EnumFacing.NORTH, EnumFacing.SOUTH);
-				
+				}
 					hasValidBackBar = getValidStateForAttachableSubModels(worldIn.getBlockState(pos.east()), 
 																		EnumFacing.WEST, EnumFacing.EAST);
 			}
@@ -156,8 +174,12 @@ public abstract class BlockBaseTrafficLight extends Block {
             state = state.withProperty(POLE, hasPole);
             state = state.withProperty(COVER, hasCover);
         }
+		if(autoValidHorizontalBar) {
+			return state.withProperty(VALIDHORIZONTALBAR, hasValidHorizontalBar).withProperty(VALIDBACKBAR, hasValidBackBar);
+		} else {
+			return state.withProperty(VALIDHORIZONTALBAR, false).withProperty(VALIDBACKBAR, hasValidBackBar);
+		}
 		
-		return state.withProperty(VALIDHORIZONTALBAR, hasValidHorizontalBar).withProperty(VALIDBACKBAR, hasValidBackBar);
 	}
 	
 	public static boolean getValidStateForAttachableSubModels(IBlockState state, EnumFacing... validFacings)
@@ -423,6 +445,9 @@ public abstract class BlockBaseTrafficLight extends Block {
                 updatedTrafficLightTileEntity.markDirty();
                 
                 world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 3);
+                world.markBlockRangeForRenderUpdate(pos, pos);
+                world.notifyNeighborsOfStateChange(pos, state.getBlock(), false);
+
             }
         }
     }
@@ -452,7 +477,21 @@ public abstract class BlockBaseTrafficLight extends Block {
 	            togglePole(worldIn, pos); // Toggle the COVER property
 	        }
 	        return true; // Return true to indicate that the block was activated
+	    } else if (hand == EnumHand.MAIN_HAND && heldItem.getItem() == Items.BLAZE_ROD) {
+	        if (!worldIn.isRemote) {
+	            TileEntity tileEntity = worldIn.getTileEntity(pos);
+	            if (tileEntity instanceof BaseTrafficLightTileEntity) {
+	                BaseTrafficLightTileEntity baseTE = (BaseTrafficLightTileEntity) tileEntity;
+	                boolean newState = !baseTE.isHorizontalBarSuppressed();
+	                baseTE.setHorizontalBarSuppressed(newState);
+	                baseTE.markDirty();
+	                IBlockState currentState = worldIn.getBlockState(pos);
+	                worldIn.notifyBlockUpdate(pos, currentState, currentState, 3);
+	            }
+	        }
+	        return true;
 	    }
+
 
 	    return false; // Return false for other cases (e.g., off-hand interaction or not holding cover_hook)
 	}

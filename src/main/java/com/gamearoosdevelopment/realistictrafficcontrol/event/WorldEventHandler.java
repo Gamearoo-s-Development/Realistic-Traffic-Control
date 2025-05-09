@@ -1,7 +1,7 @@
 package com.gamearoosdevelopment.realistictrafficcontrol.event;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficControl;
-import com.gamearoosdevelopment.realistictrafficcontrol.scanner.Scanner;
+//import com.gamearoosdevelopment.realistictrafficcontrol.scanner.Scanner;
 
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -20,8 +20,8 @@ public class WorldEventHandler {
 		
 		try
 		{
-			Scanner thread = new Scanner(e.getWorld());
-			Scanner.ScannersByWorld.put(e.getWorld().provider.getDimension(), thread);
+			//Scanner thread = new Scanner(e.getWorld());
+		//	Scanner.ScannersByWorld.put(e.getWorld().provider.getDimension(), thread);
 		}
 		catch(Exception ex)
 		{
@@ -37,7 +37,7 @@ public class WorldEventHandler {
 			return;
 		}
 		
-		Scanner.ScannersByWorld.remove(e.getWorld().provider.getDimension());
+		//Scanner.ScannersByWorld.remove(e.getWorld().provider.getDimension());
 	}
 	
 	@SubscribeEvent
@@ -48,10 +48,10 @@ public class WorldEventHandler {
 			return;
 		}
 		
-		Scanner thread = Scanner.ScannersByWorld.get(e.world.provider.getDimension());
-		if (thread != null)
-		{
-			thread.tick(e.world);
-		}
+		//Scanner thread = Scanner.ScannersByWorld.get(e.world.provider.getDimension());
+		//if (thread != null)
+	//	{
+		//	thread.tick(e.world);
+		//}
 	}
 }

@@ -48,7 +48,7 @@ public class BlockDrum extends Block {
 	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
 		double heightOfBlockBelow = getBlockHeight(worldIn, pos);
 		
-		return state.withProperty(HIGHT, (int)(heightOfBlockBelow * 16));
+		return state.withProperty(HIGHT, (int)(16));
 	}
 	
 	@Override

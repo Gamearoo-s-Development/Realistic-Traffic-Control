@@ -103,7 +103,7 @@ public class BlockChannelizer extends Block {
 	    
 	    double heightOfBlockBelow =  getBlockHeight(world, pos);
 	    
-	    return getDefaultState().withProperty(ROTATION, CustomAngleCalculator.getRotationForYaw(placer.rotationYaw)).withProperty(HIGHT, (int)(heightOfBlockBelow * 16));
+	    return getDefaultState().withProperty(ROTATION, CustomAngleCalculator.getRotationForYaw(placer.rotationYaw)).withProperty(HIGHT, (int)(16));
 	}
 
 	public double getBlockHeight(IBlockAccess world, BlockPos pos) {

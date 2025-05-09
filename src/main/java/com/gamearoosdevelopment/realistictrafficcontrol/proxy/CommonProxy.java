@@ -24,7 +24,7 @@ import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockHorizontalPo
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockLightSource;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockPedestrianButton;
-
+import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockPole;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockSign;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockStreetLightDouble;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockStreetLightSingle;
@@ -130,6 +130,7 @@ public class CommonProxy {
 	{
 		e.getRegistry().register(new BlockCrossingGateBase());
 		e.getRegistry().register(new BlockCrossingGatePole());
+		e.getRegistry().register(new BlockPole());
 		e.getRegistry().register(new BlockStand());
 		e.getRegistry().register(new BlockGenerator());
 			
@@ -234,6 +235,7 @@ public class CommonProxy {
 
 		e.getRegistry().register(new ItemBlock(ModBlocks.crossing_gate_base).setRegistryName(ModBlocks.crossing_gate_base.getRegistryName()));
 		e.getRegistry().register(new ItemBlock(ModBlocks.crossing_gate_pole).setRegistryName(ModBlocks.crossing_gate_pole.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.pole).setRegistryName(ModBlocks.pole.getRegistryName()));
 		e.getRegistry().register(new ItemBlock(ModBlocks.stand).setRegistryName(ModBlocks.stand.getRegistryName()));
 		e.getRegistry().register(new ItemBlock(ModBlocks.generator).setRegistryName(ModBlocks.generator.getRegistryName()));
 		

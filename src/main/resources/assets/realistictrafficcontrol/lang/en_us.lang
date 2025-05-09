@@ -6,6 +6,7 @@ tile.realistictrafficcontrol.generator.name=(RTC) Generator
 tile.realistictrafficcontrol.crossing_gate_gate.name=(RTC) Crossing Gate
 tile.realistictrafficcontrol.crossing_gate_lamps.name=(RTC) Crossing Lamps
 tile.realistictrafficcontrol.crossing_gate_pole.name=(RTC) Pole
+tile.realistictrafficcontrol.pole.name=(RTC) Pole (No Hoz Connection)
 tile.realistictrafficcontrol.crossing_gate_crossbuck.name=(RTC) Crossbuck (Pole)
 tile.realistictrafficcontrol.safetran_type_3.name=(RTC) SafeTran Type 3
 tile.realistictrafficcontrol.overhead_pole.name=(RTC) Overhead (Pole)

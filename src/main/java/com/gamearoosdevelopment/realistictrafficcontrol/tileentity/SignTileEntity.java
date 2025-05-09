@@ -21,10 +21,22 @@ public class SignTileEntity extends TileEntity {
 	private UUID id = null;
 	private ArrayList<String> textLines = null;
 	
+	private boolean suppressHorizontalBar = false;
+
+	public boolean isHorizontalBarSuppressed() {
+	    return suppressHorizontalBar;
+	}
+
+	public void setHorizontalBarSuppressed(boolean suppress) {
+	    this.suppressHorizontalBar = suppress;
+	    markDirty();
+	}
+
+	
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
-		
+		 
 		typeLegacy = compound.getInteger("type");
 		variantLegacy = compound.getInteger("variant");
 		if (compound.hasKey("signid"))
@@ -47,12 +59,14 @@ public class SignTileEntity extends TileEntity {
 				i++;
 			}
 		}
+		suppressHorizontalBar = compound.getBoolean("suppressHorizontalBar");
 	}
 	
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {		
 		compound.setInteger("type", typeLegacy);
 		compound.setInteger("variant", variantLegacy);
+		 
 		
 		if (id != null)
 		{
@@ -66,6 +80,7 @@ public class SignTileEntity extends TileEntity {
 				compound.setString("text" + i, textLines.get(i));
 			}
 		}
+		compound.setBoolean("suppressHorizontalBar", suppressHorizontalBar);
 		
 		return super.writeToNBT(compound);
 	}
@@ -234,6 +249,7 @@ public class SignTileEntity extends TileEntity {
 		NBTTagCompound compound = super.getUpdateTag();
 		compound.setInteger("type", typeLegacy);
 		compound.setInteger("variant", variantLegacy);
+		
 		if (id != null)
 		{
 			compound.setTag("signid", NBTUtil.createUUIDTag(id));
@@ -246,6 +262,8 @@ public class SignTileEntity extends TileEntity {
 				compound.setString("text" + i, textLines.get(i));
 			}
 		}
+		
+		compound.setBoolean("suppressHorizontalBar", suppressHorizontalBar);
 		
 		return compound;
 	}
@@ -278,7 +296,7 @@ public class SignTileEntity extends TileEntity {
 		}
 		
 		IBlockState state = world.getBlockState(getPos());
-			
+		suppressHorizontalBar = tag.getBoolean("suppressHorizontalBar");
 		world.notifyBlockUpdate(getPos(), state, state, 3);
 	}
 

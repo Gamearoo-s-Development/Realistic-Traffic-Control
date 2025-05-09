@@ -20,6 +20,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -83,7 +84,18 @@ public class BlockSign extends Block implements ITileEntityProvider {
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
 		boolean validHorizontalBar = false;
+		boolean autoValidHorizontalBar = true;
 		boolean isHalfHeight = false;
+		
+		TileEntity tileEntity2 = worldIn.getTileEntity(pos);
+		if (tileEntity2 instanceof SignTileEntity) {
+			SignTileEntity baseTE = (SignTileEntity) tileEntity2;
+
+		    if (baseTE.isHorizontalBarSuppressed()) {
+		    	autoValidHorizontalBar = false;
+		    	
+		    }
+		}
 		
 		int rotation = state.getValue(ROTATION);
 		boolean isCardinal = CustomAngleCalculator.isCardinal(rotation);
@@ -108,8 +120,11 @@ public class BlockSign extends Block implements ITileEntityProvider {
 				isHalfHeight = signTE.getSign().getHalfHeight();
 			}
 		}
-		
+		if(autoValidHorizontalBar) {
 		return state.withProperty(VALIDHORIZONTALBAR, validHorizontalBar).withProperty(ISHALFHEIGHT, isHalfHeight);
+		} else {
+			return state.withProperty(VALIDHORIZONTALBAR, false).withProperty(ISHALFHEIGHT, isHalfHeight);
+		}
 	}
 	
 	private boolean getValidStateForAttachableSubModels(IBlockState signState, IBlockState state, EnumFacing... validFacings)
@@ -161,22 +176,37 @@ public class BlockSign extends Block implements ITileEntityProvider {
 	
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn,
-			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		if (!worldIn.isRemote)
-		{
-			return true;
-		}
-		
-		TileEntity te = worldIn.getTileEntity(pos);
-		if (!(te instanceof SignTileEntity))
-		{
-			return false;
-		}
-		
-		playerIn.openGui(ModRealisticTrafficControl.instance, GuiProxy.GUI_IDs.SIGN, worldIn, pos.getX(), pos.getY(), pos.getZ());
-		return true;
+	        EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	    ItemStack heldItem = playerIn.getHeldItem(hand);
+
+	    if (hand == EnumHand.MAIN_HAND && heldItem.getItem() == Items.BLAZE_ROD) {
+	        if (!worldIn.isRemote) {
+	            TileEntity tileEntity = worldIn.getTileEntity(pos);
+	            if (tileEntity instanceof SignTileEntity) {
+	                SignTileEntity baseTE = (SignTileEntity) tileEntity;
+	                boolean newState = !baseTE.isHorizontalBarSuppressed();
+	                baseTE.setHorizontalBarSuppressed(newState);
+	                baseTE.markDirty();
+
+	                // Force re-render
+	                IBlockState currentState = worldIn.getBlockState(pos);
+	                worldIn.notifyBlockUpdate(pos, currentState, currentState, 3);
+	                worldIn.markBlockRangeForRenderUpdate(pos, pos);
+	                worldIn.notifyNeighborsOfStateChange(pos, state.getBlock(), false);
+
+	            }
+	        }
+	        return true;
+	    }
+
+	    // Only open GUI if not holding blaze rod
+	    if (worldIn.isRemote) {
+	        playerIn.openGui(ModRealisticTrafficControl.instance, GuiProxy.GUI_IDs.SIGN,
+	                         worldIn, pos.getX(), pos.getY(), pos.getZ());
+	    }
+	    return true;
 	}
-	
+
 	@Override
 	public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY,
 			float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {

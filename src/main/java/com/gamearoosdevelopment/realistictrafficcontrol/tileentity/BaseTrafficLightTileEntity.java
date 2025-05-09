@@ -31,6 +31,18 @@ public class BaseTrafficLightTileEntity extends TileEntity implements ITickable 
 	private boolean hasCover;
 	private boolean hasPole;
 	
+	private boolean suppressHorizontalBar = false;
+
+	public boolean isHorizontalBarSuppressed() {
+	    return suppressHorizontalBar;
+	}
+
+	public void setHorizontalBarSuppressed(boolean suppress) {
+	    this.suppressHorizontalBar = suppress;
+	    markDirty();
+	}
+
+	
 	public BaseTrafficLightTileEntity(int bulbCount) {
 		super();
 		BULB_COUNT = bulbCount;
@@ -75,10 +87,13 @@ public class BaseTrafficLightTileEntity extends TileEntity implements ITickable 
         }
 
         compound.setIntArray("bulbTypes", bulbTypes);
+        
+
 
         // Save the cover state
         compound.setBoolean("cover", hasCover());
         compound.setBoolean("pole", hasPole());
+        compound.setBoolean("suppressHorizontalBar", suppressHorizontalBar);
 
         return super.writeToNBT(compound);
 	}
@@ -98,10 +113,14 @@ public class BaseTrafficLightTileEntity extends TileEntity implements ITickable 
 	            flashBySlot.put(i, compound.getBoolean("flash" + i));
 	            allowFlashBySlot.put(i, compound.hasKey("allowflash" + i) ? compound.getBoolean("allowflash" + i) : true);
 	        }
+	        
+	       
+
 
 	        // Read the cover state
 	        setCover(compound.getBoolean("cover"));
 	        setPole(compound.getBoolean("pole"));
+	        suppressHorizontalBar = compound.getBoolean("suppressHorizontalBar");
 	}
 	
 	@Override
@@ -114,10 +133,11 @@ public class BaseTrafficLightTileEntity extends TileEntity implements ITickable 
 			bulbTypes[key] = value != null ? value.getIndex() : -1;
 		});
 		
+
 		tag.setIntArray("bulbTypes", bulbTypes);
 		tag.setBoolean("cover", hasCover());
 		tag.setBoolean("pole", hasPole());
-		
+		tag.setBoolean("suppressHorizontalBar", suppressHorizontalBar);
 		for(int i = 0; i < BULB_COUNT; i++)
 		{
 			tag.setBoolean("active" + i, getActiveBySlot(i));
@@ -150,6 +170,9 @@ public class BaseTrafficLightTileEntity extends TileEntity implements ITickable 
 			flashBySlot.put(i, tag.getBoolean("flash" + i));
 			allowFlashBySlot.put(i, tag.hasKey("allowflash" + i) ? tag.getBoolean("allowflash" + i) : true);
 		}
+		
+		suppressHorizontalBar = tag.getBoolean("suppressHorizontalBar");
+
 		
 		
 	}

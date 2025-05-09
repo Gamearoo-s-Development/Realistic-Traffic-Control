@@ -25,26 +25,25 @@
 	        "14": {  "transform": { "rotation": { "y": 45 } } },
 	        "15": {  "transform": { "rotation": { "y": 22 } } }
         },
-        "hight":
-        {
-            "0": { "model": "realistictrafficcontrol:channelizer" },
-	        "1": { "model": "realistictrafficcontrol:channelizer1" },
-	        "2": { "model": "realistictrafficcontrol:channelizer2" },
-	        "3": { "model": "realistictrafficcontrol:channelizer3"},
-	        "4": { "model": "realistictrafficcontrol:channelizer4"},
-	        "5": { "model": "realistictrafficcontrol:channelizer5" },
-	        "6": { "model": "realistictrafficcontrol:channelizer6" },
-	        "7": { "model": "realistictrafficcontrol:channelizer7" },
-	        "8": { "model": "realistictrafficcontrol:channelizer8" },
-	        "9": { "model": "realistictrafficcontrol:channelizer9" },
-	        "10": { "model": "realistictrafficcontrol:channelizer10" },
-	        "11": { "model": "realistictrafficcontrol:channelizer11" },
-	        "12": { "model": "realistictrafficcontrol:channelizer12" },
-	        "13": { "model": "realistictrafficcontrol:channelizer13" },
-	        "14": { "model": "realistictrafficcontrol:channelizer14" },
-	        "15": { "model": "realistictrafficcontrol:channelizer15" },
-	        "16": {  }
-        }
+		"hight": {
+				"0": { "transform": { "translation": [0, -1, 0] } }, 
+				"1": { "transform": { "translation": [0, -2, 0] } }, 
+				"2": { "transform": { "translation": [0, -3, 0] } }, 
+				"3": { "transform": { "translation": [0, -4, 0] } }, 
+				"4": { "transform": { "translation": [0, -5, 0] } }, 
+				"5": { "transform": { "translation": [0, -6, 0] } }, 
+				"6": { "transform": { "translation": [0, -7, 0] } }, 
+				"7": { "transform": { "translation": [0, -8, 0] } }, 
+				"8": { "transform": { "translation": [0, -9, 0] } }, 
+				"9": { "transform": { "translation": [0, -10, 0] } }, 
+				"10": { "transform": { "translation": [0, -11, 0] } }, 
+				"11": { "transform": { "translation": [0, -12, 0] } }, 
+				"12": { "transform": { "translation": [0, -13, 0] } }, 
+				"13": { "transform": { "translation": [0, -14, 0] } }, 
+				"14": { "transform": { "translation": [0, -15, 0] } }, 
+				"15": { "transform": { "translation": [0, -16, 0] } }, 
+				"16": {}
+			}
         
 
                 

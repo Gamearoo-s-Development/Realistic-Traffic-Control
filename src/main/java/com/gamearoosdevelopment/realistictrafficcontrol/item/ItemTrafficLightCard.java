@@ -7,7 +7,11 @@ import java.util.stream.Collectors;
 import com.gamearoosdevelopment.realistictrafficcontrol.Config;
 import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficControl;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockBaseTrafficLight;
+import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficSensorLeft;
+import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficSensorRight;
+import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficSensorStraight;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
@@ -100,101 +104,111 @@ public class ItemTrafficLightCard extends Item {
 		}
 	}
 	
+	
 	@Override
 	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand,
-			EnumFacing facing, float hitX, float hitY, float hitZ) {		
-		if (worldIn.isRemote || !(worldIn.getBlockState(pos).getBlock() instanceof BlockBaseTrafficLight))
-		{
-			return EnumActionResult.PASS;
-		}
-		
-		ItemStack heldStack;
-		if (hand == EnumHand.MAIN_HAND)
-		{
-			heldStack = player.getHeldItemMainhand();
-		}
-		else
-		{
-			heldStack = player.getHeldItemOffhand();
-		}
-		
-		NBTTagCompound stackTag = heldStack.getTagCompound();
-		if (stackTag == null)
-		{
-			stackTag = new NBTTagCompound();
-			heldStack.setTagCompound(stackTag);
-		}
-		int maxTrafficLights = getMaxTrafficLights(heldStack.getMetadata());
-		
-		boolean didRemoveLight = false;
-		
-		HashSet<String> keysToRemove = new HashSet<>();
-		for(String key : stackTag.getKeySet())
-		{
-			if (!key.startsWith("light"))
-			{
-				continue;
-			}
-			
-			if (stackTag.getLong(key) == pos.toLong())
-			{
-				keysToRemove.add(key);
-				didRemoveLight = true;
-			}
-		}
-		
-		if (didRemoveLight)
-		{
-			for(String keyToRemove : keysToRemove)
-			{
-				stackTag.removeTag(keyToRemove);
-			}
-			
-			player.sendMessage(new TextComponentString(String.format("Removed traffic light at [%s, %s, %s]", pos.getX(), pos.getY(), pos.getZ())));
-			return EnumActionResult.SUCCESS;
-		}
-		
-		int totalLightsAdded = 0;
-		HashSet<Integer> addedNumbers = new HashSet<>();
-		for(String key : stackTag.getKeySet())
-		{
-			if (key.startsWith("light") && stackTag.getLong(key) != 0)
-			{
-				totalLightsAdded++;
-				try
-				{
-					addedNumbers.add(Integer.parseInt(key.substring(5)));
-				}
-				catch(Exception ex) {}
-			}
-		}
-		
-		if (totalLightsAdded >= maxTrafficLights)
-		{
-			player.sendMessage(new TextComponentString("Card is full! Remove a traffic light or upgrade this card."));
-		}
-		else
-		{
-			int nextEmptyNumber = 0;
-			while(addedNumbers.contains(nextEmptyNumber))
-			{
-				nextEmptyNumber++;
-			}
-			stackTag.setLong("light" + nextEmptyNumber, pos.toLong());
-			totalLightsAdded++;
-			
-			String format = "Added traffic light at [%s, %s, %s].";
-			if (maxTrafficLights != Integer.MAX_VALUE)
-			{
-				format += " %s/%s slots remaining.";
-			}
-			TextComponentString message = new TextComponentString(String.format(format, pos.getX(), pos.getY(), pos.getZ(), maxTrafficLights - totalLightsAdded, maxTrafficLights));
-			// Figure out how to be able to copy block pos ID (#toLong())?
-			player.sendMessage(message);
-		}
-		
-		return EnumActionResult.SUCCESS;
+	        EnumFacing facing, float hitX, float hitY, float hitZ) {
+	    if (worldIn.isRemote) return EnumActionResult.PASS;
+
+	    Block block = worldIn.getBlockState(pos).getBlock();
+	    boolean isTrafficLight = block instanceof BlockBaseTrafficLight;
+	    boolean isSensor = block instanceof BlockTrafficSensorLeft
+	                    || block instanceof BlockTrafficSensorRight
+	                    || block instanceof BlockTrafficSensorStraight;
+
+	    if (!isTrafficLight && !isSensor) return EnumActionResult.PASS;
+
+	    ItemStack heldStack = (hand == EnumHand.MAIN_HAND)
+	        ? player.getHeldItemMainhand()
+	        : player.getHeldItemOffhand();
+
+	    NBTTagCompound stackTag = heldStack.getTagCompound();
+	    if (stackTag == null) {
+	        stackTag = new NBTTagCompound();
+	        heldStack.setTagCompound(stackTag);
+	    }
+
+	    long id = pos.toLong();
+
+	    // --- Sensor Pairing Logic ---
+	    if (isSensor) {
+	        int maxSensors = ItemTrafficLightCard.getMaxSensors();
+	        HashSet<Long> sensors = new HashSet<>();
+	        for (int i = 0; i < maxSensors; i++) {
+	            if (stackTag.hasKey("sensor" + i)) {
+	                sensors.add(stackTag.getLong("sensor" + i));
+	            }
+	        }
+
+	        if (sensors.contains(id)) {
+	            for (int i = 0; i < maxSensors; i++) {
+	                if (stackTag.hasKey("sensor" + i) && stackTag.getLong("sensor" + i) == id) {
+	                    stackTag.removeTag("sensor" + i);
+	                    player.sendMessage(new TextComponentString(String.format("Unpaired sensor at [%d, %d, %d]", pos.getX(), pos.getY(), pos.getZ())));
+	                    return EnumActionResult.SUCCESS;
+	                }
+	            }
+	        } else {
+	            if (sensors.size() >= maxSensors) {
+	                player.sendMessage(new TextComponentString("Card has reached max sensor capacity."));
+	                return EnumActionResult.SUCCESS;
+	            }
+	            for (int i = 0; i < maxSensors; i++) {
+	                if (!stackTag.hasKey("sensor" + i)) {
+	                    stackTag.setLong("sensor" + i, id);
+	                    player.sendMessage(new TextComponentString(String.format("Paired sensor at [%d, %d, %d]", pos.getX(), pos.getY(), pos.getZ())));
+	                    return EnumActionResult.SUCCESS;
+	                }
+	            }
+	        }
+	    }
+
+	    // --- Traffic Light Pairing Logic ---
+	    if (isTrafficLight) {
+	        int maxTrafficLights = ItemTrafficLightCard.getMaxTrafficLights(heldStack.getMetadata());
+
+	        // Unpair if already present
+	        HashSet<String> keysToRemove = new HashSet<>();
+	        for (String key : stackTag.getKeySet()) {
+	            if (key.startsWith("light") && stackTag.getLong(key) == id) {
+	                keysToRemove.add(key);
+	            }
+	        }
+	        if (!keysToRemove.isEmpty()) {
+	            for (String k : keysToRemove) stackTag.removeTag(k);
+	            player.sendMessage(new TextComponentString(String.format("Removed traffic light at [%d, %d, %d]", pos.getX(), pos.getY(), pos.getZ())));
+	            return EnumActionResult.SUCCESS;
+	        }
+
+	        // Add new light
+	        int totalLights = 0;
+	        HashSet<Integer> usedSlots = new HashSet<>();
+	        for (String key : stackTag.getKeySet()) {
+	            if (key.startsWith("light")) {
+	                totalLights++;
+	                try {
+	                    usedSlots.add(Integer.parseInt(key.substring(5)));
+	                } catch (Exception ignored) {}
+	            }
+	        }
+
+	        if (totalLights >= maxTrafficLights) {
+	            player.sendMessage(new TextComponentString("Card is full! Remove a traffic light or upgrade this card."));
+	        } else {
+	            int nextSlot = 0;
+	            while (usedSlots.contains(nextSlot)) nextSlot++;
+	            stackTag.setLong("light" + nextSlot, id);
+	            String msg = String.format("Added traffic light at [%d, %d, %d].", pos.getX(), pos.getY(), pos.getZ());
+	            if (maxTrafficLights != Integer.MAX_VALUE) {
+	                msg += String.format(" %d/%d slots remaining.", maxTrafficLights - totalLights - 1, maxTrafficLights);
+	            }
+	            player.sendMessage(new TextComponentString(msg));
+	        }
+	    }
+
+	    return EnumActionResult.SUCCESS;
 	}
+
 	
 	@SideOnly(Side.CLIENT)
 	@Override
@@ -218,4 +232,9 @@ public class ItemTrafficLightCard extends Item {
 		tooltip.add("" + TextFormatting.DARK_PURPLE + TextFormatting.ITALIC + totalUsed + "/" + maxAvailable + " slots filled");
 		super.addInformation(stack, worldIn, tooltip, flagIn);
 	}
+	
+	public static int getMaxSensors() {
+	    return 20; // Or make it configurable
+	}
+
 }
