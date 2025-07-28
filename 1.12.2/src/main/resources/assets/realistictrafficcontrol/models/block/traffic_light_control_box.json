@@ -1,0 +1,94 @@
+{
+	"credit": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
+	"textures": {
+		"traffic_light_control_box_back": "realistictrafficcontrol:blocks/traffic_light_control_box_back",
+		"traffic_light_control_box": "realistictrafficcontrol:blocks/traffic_light_control_box",
+		"nether_brick": "realistictrafficcontrol:blocks/lightgraynoisy",
+		"generic": "realistictrafficcontrol:blocks/generic"
+	},
+	"elements": [
+		{
+			"name": "Cube",
+			"from": [0.5, 1, 3],
+			"to": [15.5, 20, 13],
+			"faces": {
+				"north": {"uv": [0, 0, 10, 16], "texture": "#traffic_light_control_box_back"},
+				"east": {"uv": [9, 0, 10, 15], "texture": "#generic"},
+				"south": {"uv": [0, 0, 10, 16], "texture": "#traffic_light_control_box"},
+				"west": {"uv": [8, 0, 10, 16], "texture": "#generic"}
+			}
+		},
+		{
+			"name": "Cube",
+			"from": [3.75, 11, 13],
+			"to": [4.25, 11.5, 14],
+			"faces": {
+				"east": {"uv": [0, 0, 1, 0.5], "texture": "#generic"},
+				"west": {"uv": [0, 0, 1, 0.5], "texture": "#generic"},
+				"up": {"uv": [0, 0, 0.5, 1], "texture": "#generic"},
+				"down": {"uv": [0, 0, 0.5, 1], "texture": "#generic"}
+			}
+		},
+		{
+			"name": "Cube",
+			"from": [3.75, 8.5, 13.5],
+			"to": [4.25, 11.5, 14],
+			"faces": {
+				"north": {"uv": [0, 0, 0.5, 3], "texture": "#generic"},
+				"east": {"uv": [0, 0, 0.5, 3], "texture": "#generic"},
+				"south": {"uv": [0, 0, 0.5, 3], "texture": "#generic"},
+				"west": {"uv": [0, 0, 0.5, 3], "texture": "#generic"},
+				"down": {"uv": [0, 0, 0.5, 0.5], "texture": "#generic"}
+			}
+		},
+		{
+			"name": "Cube",
+			"from": [0, 20, 3],
+			"to": [16, 22, 13.5],
+			"faces": {
+				"north": {"uv": [0, 0, 9, 1], "texture": "#generic"},
+				"east": {"uv": [0, 0, 8.5, 1], "texture": "#generic"},
+				"south": {"uv": [0, 0, 10, 1], "texture": "#generic"},
+				"west": {"uv": [0, 0, 8.5, 1], "texture": "#generic"},
+				"up": {"uv": [0, 0, 3, 1.5], "texture": "#generic"},
+				"down": {"uv": [0, 0, 3, 2.5], "texture": "#generic"}
+			}
+		},
+		{
+			"name": "Cube",
+			"from": [0, 0, 2.5],
+			"to": [16, 2, 13.5],
+			"faces": {
+				"north": {"uv": [0, 4.5, 16, 7.75], "texture": "#nether_brick"},
+				"east": {"uv": [0, 9.25, 15.5, 12.5], "texture": "#nether_brick"},
+				"south": {"uv": [0, 12.75, 16, 16], "texture": "#nether_brick"},
+				"west": {"uv": [0.5, 0, 16, 3.25], "texture": "#nether_brick"},
+				"up": {"uv": [0, 0, 16, 10.5], "texture": "#nether_brick"},
+				"down": {"uv": [0, 0, 16, 10.75], "texture": "#nether_brick"}
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [75, 45, 0],
+			"translation": [0, 2.5, 0],
+			"scale": [0.375, 0.375, 0.375]
+		},
+		"firstperson_righthand": {
+			"rotation": [0, 45, 0],
+			"scale": [0.4, 0.4, 0.4]
+		},
+		"ground": {
+			"translation": [0, 3, 0],
+			"scale": [0.25, 0.25, 0.25]
+		},
+		"gui": {
+			"rotation": [30, 225, 0],
+			"translation": [0, -1.75, 0],
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"fixed": {
+			"scale": [0.5, 0.5, 0.5]
+		}
+	}
+}

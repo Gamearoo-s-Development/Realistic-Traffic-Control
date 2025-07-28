@@ -1,0 +1,33 @@
+{
+	"forge_marker": 1,
+	"defaults": {
+		"model": "realistictrafficcontrol:channelizer"
+	},
+	"variants": {
+		"normal": [{}],
+		"inventory": [{}],
+		"rotation":
+        {
+            "0": {  },
+	        "1": {  "transform": { "rotation": { "y": 337 } } },
+	        "2": {  "transform": { "rotation": { "y": 315  } } },
+	        "3": {  "transform": { "rotation": { "y": 292 } } },
+	        "4": {  "transform": { "rotation": { "y": 270 } } },
+	        "5": {  "transform": { "rotation": { "y": 247 } } },
+	        "6": {  "transform": { "rotation": { "y": 225 } } },
+	        "7": {  "transform": { "rotation": { "y": 202 } } },
+	        "8": {  "transform": { "rotation": { "y": 180 } } },
+	        "9": { "transform": { "rotation": { "y": 157 } } },
+	        "10": {  "transform": { "rotation": { "y": 135 } } },
+	        "11": { "transform": { "rotation": { "y": 112 } } },
+	        "12": {  "transform": { "rotation": { "y": 90 } } },
+	        "13": { "transform": { "rotation": { "y": 67 } } },
+	        "14": {  "transform": { "rotation": { "y": 45 } } },
+	        "15": {  "transform": { "rotation": { "y": 22 } } }
+        }
+        
+
+                
+                
+	}
+}
