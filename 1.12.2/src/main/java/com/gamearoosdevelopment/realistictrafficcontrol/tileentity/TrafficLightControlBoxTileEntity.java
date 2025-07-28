@@ -1,8 +1,8 @@
 package com.gamearoosdevelopment.realistictrafficcontrol.tileentity;
 
 import java.util.ArrayList;
-import dan200.computercraft.api.peripheral.IPeripheralProvider;
-import li.cil.oc.common.capabilities.Capabilities;
+
+
 import dan200.computercraft.api.peripheral.IPeripheral;
 
 import java.util.Arrays;
@@ -41,11 +41,9 @@ import net.minecraft.world.World;
 
 import net.minecraftforge.common.util.Constants.NBT;
 
-import dan200.computercraft.api.peripheral.IPeripheral;
+
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.capabilities.CapabilityManager;
 
 
 
