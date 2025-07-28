@@ -129,10 +129,7 @@ public class BlockSign extends Block implements ITileEntityProvider {
 	
 	private boolean getValidStateForAttachableSubModels(IBlockState signState, IBlockState state, EnumFacing... validFacings)
 	{
-		if (state.getBlock() == ModBlocks.crossing_gate_pole)
-		{
-			return true;
-		}
+		
 		
 		if (state.getBlock() == ModBlocks.horizontal_pole)
 		{

@@ -26,7 +26,7 @@ import net.minecraftforge.client.model.ModelLoader;
 public class BlockDrum extends Block {
 
 	public static final PropertyInteger ROTATION = PropertyInteger.create("rotation", 0, 15);
-	public static PropertyInteger HIGHT = PropertyInteger.create("hight", 0, 1000);
+	
 	
 	public BlockDrum()
 	{
@@ -44,12 +44,7 @@ public class BlockDrum extends Block {
 		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), 0, new ModelResourceLocation(getRegistryName(), "inventory"));
 	}
 	
-	@Override
-	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
-		double heightOfBlockBelow = getBlockHeight(worldIn, pos);
-		
-		return state.withProperty(HIGHT, (int)(16));
-	}
+	
 	
 	@Override
 	public boolean isOpaqueCube(IBlockState state) {
@@ -69,7 +64,7 @@ public class BlockDrum extends Block {
 	
 	@Override
 	public BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, ROTATION, HIGHT);
+		return new BlockStateContainer(this, ROTATION);
 	}
 	
 	@Override
@@ -90,7 +85,7 @@ public class BlockDrum extends Block {
 	    
 	    double heightOfBlockBelow =  getBlockHeight(world, pos);
 	    
-	    return getDefaultState().withProperty(ROTATION, CustomAngleCalculator.getRotationForYaw(placer.rotationYaw)).withProperty(HIGHT, (int)(heightOfBlockBelow * 16));
+	    return getDefaultState().withProperty(ROTATION, CustomAngleCalculator.getRotationForYaw(placer.rotationYaw));
 	}
 
 	public double getBlockHeight(IBlockAccess world, BlockPos pos) {

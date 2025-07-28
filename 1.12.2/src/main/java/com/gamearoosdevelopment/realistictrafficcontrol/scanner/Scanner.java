@@ -7,9 +7,10 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.UUID;
 
-import com.gamearoosdevelopment.realistictrafficcontrol.Config;
+import 
+com.gamearoosdevelopment.realistictrafficcontrol.Config;
 import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficControl;
-
+import com.gamearoosdevelopment.realistictrafficcontrol.util.ImmersiveRailroadingHelper;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.Tuple;
 
 import net.minecraft.tileentity.TileEntity;
@@ -72,24 +73,50 @@ public class Scanner
 				}
 				
 				ScanRequest request = scanSession.getScanRequest();
-				while(scanSession.getBlocksScannedThisSession() < Config.borderTimeout && scanSession.getBlocksScannedThisTick() < Config.borderTick && request != null)
+				while(scanSession.getBlocksScannedThisSession() <  scanSession.getBlocksScannedThisTick()  && request != null)
 				{
 					Vec3d lastPosition = scanSession.getLastPosition();
 					Vec3d motion = scanSession.getMotion();
 					if (lastPosition == null)
 					{
 						lastPosition = new Vec3d(request.getStartingPos());
+						
+						// Put us in a certain position by IR's standards
+						lastPosition = ImmersiveRailroadingHelper.getNextPosition(lastPosition, new Vec3d(0, 0, 0), world); 
+						
 						motion = new Vec3d(request.getStartDirection().getDirectionVec());
 					}
 					
-					
+					Vec3d nextPosition = ImmersiveRailroadingHelper.getNextPosition(lastPosition, motion, world);
 					scanSession.addBlockScannedThisTick();
+					if (nextPosition.equals(lastPosition))
+					{
+						ScanCompleteData completeData = new ScanCompleteData(request, true, false, false);
+						scanSession.getScanSubscriber().onScanComplete(completeData);
+						if (completeData.getContinueScanningForTileEntity())
+						{
+							scanSession.popRequest();
+						}
+						
+						if (!completeData.getContinueScanningForTileEntity() || scanSession.getScanRequest() == null)
+						{
+							tryFindNextSubscriber(scanSession, world);
+						}
+
+						request = scanSession.getScanRequest();
+						continue;
+					}
 					
+					motion = new Vec3d(nextPosition.x - lastPosition.x,
+									   nextPosition.y - lastPosition.y,
+									   nextPosition.z - lastPosition.z);
 					
-					
-					
-					
-					
+					Tuple<Boolean, Boolean> trainResultHere = checkPosition(nextPosition, motion, world);
+					if (trainResultHere.getFirst())
+					{
+						scanSession.setFoundTrain(true);
+						scanSession.setTrainMovingTowardsDestination(scanSession.isTrainMovingTowardsDestination() || trainResultHere.getSecond());
+					}
 					
 					boolean whileLoopContinue = false;
 					for(BlockPos endingPos : request.getEndingPositions())
@@ -97,7 +124,24 @@ public class Scanner
 						AxisAlignedBB endingBB = new AxisAlignedBB(endingPos);
 						endingBB = endingBB.expand(-1, -1, -1).expand(1, 1, 1);
 						
-						
+						if (endingBB.contains(nextPosition))
+						{
+							ScanCompleteData data = new ScanCompleteData(request, false, scanSession.isFoundTrain(), scanSession.isTrainMovingTowardsDestination());
+							scanSession.getScanSubscriber().onScanComplete(data);
+							if (data.getContinueScanningForTileEntity())
+							{
+								scanSession.popRequest();
+							}
+							
+							if (!data.getContinueScanningForTileEntity() || data.getScanRequest() == null)
+							{
+								tryFindNextSubscriber(scanSession, world);
+							}
+							
+							request = scanSession.getScanRequest();
+							whileLoopContinue = true;
+							break;
+						}
 					}
 					
 					if (whileLoopContinue)
@@ -105,7 +149,7 @@ public class Scanner
 						continue;
 					}
 					
-					
+					scanSession.setLastPosition(nextPosition);
 					scanSession.setMotion(motion);
 				}
 				
@@ -115,23 +159,7 @@ public class Scanner
 					tryFindNextSubscriber(scanSession, world);
 				}
 				
-				if (scanSession.getBlocksScannedThisSession() >= Config.borderTimeout)
-				{
-					ScanCompleteData timeout = new ScanCompleteData(request, true, false, false);
-					scanSession.getScanSubscriber().onScanComplete(timeout);
-					
-					if (timeout.getContinueScanningForTileEntity())
-					{
-						scanSession.popRequest();
-					}
-					
-					if (!timeout.getContinueScanningForTileEntity() || scanSession.getScanRequest() == null)
-					{
-						tryFindNextSubscriber(scanSession, world);
-					}
-					
-					request = scanSession.getScanRequest();
-				}
+				
 			}
 			
 			// Cleanup tick-based variables
@@ -204,8 +232,22 @@ public class Scanner
 		
 	private Tuple<Boolean, Boolean> checkPosition(Vec3d position, Vec3d motion, World world)
 	{		
-		
-		
+		net.minecraft.util.Tuple<UUID, Vec3d> moveableRollingStockNearby = ImmersiveRailroadingHelper.getStockNearby(position, world);
+		if (moveableRollingStockNearby != null)
+		{
+			Vec3d stockVelocity = moveableRollingStockNearby.getSecond();
+			
+			if (stockVelocity.x == 0 && stockVelocity.y == 0 && stockVelocity.z == 0)
+			{
+				return new Tuple<Boolean, Boolean>(true, false);
+			}
+			
+			EnumFacing stockMovementFacing = EnumFacing.getFacingFromVector((float)stockVelocity.x, (float)stockVelocity.y, (float)stockVelocity.z);
+			EnumFacing motionFacing = EnumFacing.getFacingFromVector((float)motion.x, (float)motion.y, (float)motion.z);
+			
+			boolean trainMovingTowardsDestination = motionFacing.equals(stockMovementFacing);
+			return new Tuple<Boolean, Boolean>(true, trainMovingTowardsDestination);
+		}
 		
 		return new Tuple<Boolean, Boolean>(false, false);
 	}

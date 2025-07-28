@@ -24,7 +24,7 @@ import net.minecraftforge.client.model.ModelLoader;
 
 public class BlockCone extends Block {
 	public static PropertyInteger ROTATION = PropertyInteger.create("rotation", 0, 15);
-	public static PropertyInteger HIGHT = PropertyInteger.create("hight", 0, 1000);
+	
 	public BlockCone()
 	{
 		super(Material.ROCK);
@@ -43,14 +43,7 @@ public class BlockCone extends Block {
 		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), 0, new ModelResourceLocation(getRegistryName(), "inventory"));
 	}
 
-	@Override
-	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
 	
-		
-		
-		
-		return state.withProperty(HIGHT, (int)(16));
-	}
 	
 
 	@Override
@@ -84,7 +77,7 @@ public class BlockCone extends Block {
 
 	@Override
 	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, ROTATION, HIGHT);
+		return new BlockStateContainer(this, ROTATION);
 	}
 
 	@Override
@@ -111,8 +104,8 @@ public class BlockCone extends Block {
 	  
 	    
 	    return getDefaultState()
-	            .withProperty(ROTATION, CustomAngleCalculator.getRotationForYaw(placer.rotationYaw))
-	            .withProperty(HIGHT, 16);
+	            .withProperty(ROTATION, CustomAngleCalculator.getRotationForYaw(placer.rotationYaw));
+	            
 	}
 
 	public double getBlockHeight(IBlockAccess world, BlockPos pos) {

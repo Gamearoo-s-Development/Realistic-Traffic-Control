@@ -31,6 +31,7 @@ tile.realistictrafficcontrol.wch_bell.name=(RTC) WCH Electronic Bell
 tile.realistictrafficcontrol.horizontal_pole.name=(RTC) Horizontal Pole
 tile.realistictrafficcontrol.traffic_sensor_left.name=(RTC) Traffic Sensor (Left)
 tile.realistictrafficcontrol.traffic_sensor_straight.name=(RTC) Traffic Sensor (Straight)
+tile.realistictrafficcontrol.redstone_sensor.name=(RTC) Traffic Sensor (Redstone)
 tile.realistictrafficcontrol.pedestrian_button.name=(RTC) Pedestrian Button
 tile.realistictrafficcontrol.traffic_sensor_right.name=(RTC) Traffic Sensor (Right)
 

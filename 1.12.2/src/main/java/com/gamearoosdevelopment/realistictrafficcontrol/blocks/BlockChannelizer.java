@@ -25,7 +25,7 @@ import net.minecraftforge.client.model.ModelLoader;
 
 public class BlockChannelizer extends Block {
 	public static PropertyInteger ROTATION = PropertyInteger.create("rotation", 0, 15); 
-	public static PropertyInteger HIGHT = PropertyInteger.create("hight", 0, 1000);
+	
 	public BlockChannelizer()
 	{
 		super(Material.ROCK);
@@ -42,12 +42,7 @@ public class BlockChannelizer extends Block {
 		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), 0, new ModelResourceLocation(getRegistryName(), "inventory"));
 	}
 	
-	@Override
-	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
-		double heightOfBlockBelow = getBlockHeight(worldIn, pos);
-		
-		return state.withProperty(HIGHT, (int)(heightOfBlockBelow * 16));
-	}
+	
 	
 	@Override
 	public boolean isOpaqueCube(IBlockState state) {
@@ -82,7 +77,7 @@ public class BlockChannelizer extends Block {
 	
 	@Override
 	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, ROTATION, HIGHT);
+		return new BlockStateContainer(this, ROTATION);
 	}
 	
 	@Override
@@ -103,7 +98,7 @@ public class BlockChannelizer extends Block {
 	    
 	    double heightOfBlockBelow =  getBlockHeight(world, pos);
 	    
-	    return getDefaultState().withProperty(ROTATION, CustomAngleCalculator.getRotationForYaw(placer.rotationYaw)).withProperty(HIGHT, (int)(16));
+	    return getDefaultState().withProperty(ROTATION, CustomAngleCalculator.getRotationForYaw(placer.rotationYaw));
 	}
 
 	public double getBlockHeight(IBlockAccess world, BlockPos pos) {

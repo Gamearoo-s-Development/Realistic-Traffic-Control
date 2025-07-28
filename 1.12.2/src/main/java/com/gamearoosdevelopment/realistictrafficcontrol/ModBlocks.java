@@ -19,8 +19,11 @@ public class ModBlocks {
 	public static BlockGenerator generator;
 	
 	
+	
+	
 	@ObjectHolder("crossing_gate_pole")
 	public static BlockCrossingGatePole crossing_gate_pole;
+	
 	
 	@ObjectHolder("pole")
 	public static BlockPole pole;
@@ -95,6 +98,8 @@ public class ModBlocks {
 	public static BlockPedestrianButton pedestrian_button;
 	@ObjectHolder("traffic_sensor_right")
 	public static BlockTrafficSensorRight traffic_sensor_right;
+	@ObjectHolder("redstone_sensor")
+	public static BlockRedstoneSensor redstone_sensor;
 	
 
 	@SideOnly(Side.CLIENT)
@@ -107,6 +112,8 @@ public class ModBlocks {
 		generator.initModel();
 		
 		
+	
+	
 		
 		
 		sign.initModel();
@@ -146,6 +153,7 @@ public class ModBlocks {
 		traffic_light_4_hoz.initModel();
 		pedestrian_button.initModel();
 		traffic_sensor_right.initModel();
+		redstone_sensor.initModel();
 		traffic_light_6.initModel();
 		traffic_light_7.initModel();
 		traffic_light_hoz.initModel();

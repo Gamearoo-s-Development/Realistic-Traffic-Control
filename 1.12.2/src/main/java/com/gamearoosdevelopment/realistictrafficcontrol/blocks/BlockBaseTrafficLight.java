@@ -85,10 +85,7 @@ public abstract class BlockBaseTrafficLight extends Block {
 		return false;
 	}
 	
-	@Override
-	public float getAmbientOcclusionLightValue(IBlockState state) {
-		return 1;
-	}
+
 	
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
@@ -194,10 +191,7 @@ public abstract class BlockBaseTrafficLight extends Block {
 			}
 		}
 		
-		if (state.getBlock() == ModBlocks.crossing_gate_pole)
-		{
-			return true;
-		}
+		
 		
 		if (state.getBlock() instanceof BlockBaseTrafficLight)
 		{
@@ -296,7 +290,7 @@ public abstract class BlockBaseTrafficLight extends Block {
 		{
 			if (((BaseTrafficLightTileEntity)te).anyActive())
 			{
-				return 15;
+				return 0;
 			}
 		}
 		
