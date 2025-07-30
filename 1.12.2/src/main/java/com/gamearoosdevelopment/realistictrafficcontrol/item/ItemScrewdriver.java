@@ -65,7 +65,7 @@ public class ItemScrewdriver extends Item
             		if (hasRotationProperty.getRotationFacing() != null)
             		{
             			hasRotationProperty.setRotationFacing(player.isSneaking() ? hasRotationProperty.getRotationFacing().rotateYCCW() : hasRotationProperty.getRotationFacing().rotateY());
-                		playScrewdriverSound(player, pos);
+                		
             			return EnumActionResult.SUCCESS;
             		}
             		else if (hasRotationProperty.getRotationInt() != -1)
@@ -83,7 +83,7 @@ public class ItemScrewdriver extends Item
             			}
             			
             			hasRotationProperty.setRotationInt(newRotation);
-                		playScrewdriverSound(player, pos);
+                		
             			return EnumActionResult.SUCCESS;
             		}
 	            }
@@ -123,7 +123,7 @@ public class ItemScrewdriver extends Item
 	                world.notifyBlockUpdate(pos, state, newState, 3);
 	                
 	                if(!player.isCreative()) {player.getHeldItem(hand).damageItem(1, player);}
-	                playScrewdriverSound(player, pos);
+	               
 
 	                return EnumActionResult.SUCCESS;
 	        	}
@@ -133,14 +133,7 @@ public class ItemScrewdriver extends Item
     	return EnumActionResult.PASS;
     }
 
-	private void playScrewdriverSound(EntityPlayer player, BlockPos pos) {
-		ServerSideSoundPacket packet = new ServerSideSoundPacket();
-		packet.modID = ModRealisticTrafficControl.MODID;
-		packet.soundName = "screwdriver";
-		packet.pos = pos;
-		packet.volume = 0.25F;
-		PacketHandler.INSTANCE.sendToAllAround(packet, new NetworkRegistry.TargetPoint(player.dimension, player.posX, player.posY, player.posZ, 25));
-	}
+	
     
     @Override
 	@SideOnly(Side.CLIENT)
