@@ -62,6 +62,11 @@ public class BlockSign extends Block implements ITileEntityProvider {
 	}
 	
 	@Override
+	public boolean isTopSolid(IBlockState state) {
+	    return false;
+	}
+	
+	@Override
 	protected BlockStateContainer createBlockState() {
 		return new BlockStateContainer(this, ROTATION, VALIDHORIZONTALBAR, ISHALFHEIGHT);
 	}

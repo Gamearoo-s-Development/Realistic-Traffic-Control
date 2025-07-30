@@ -10,6 +10,8 @@ public class BlockType3Barrier extends BlockType3BarrierBase {
 	protected String getName() {
 		return "type_3_barrier";
 	}
+	
+	
 
 	@Override
 	public Block getBlockInstance() {

@@ -41,6 +41,10 @@ public class BlockHorizontalPole extends Block {
 	protected BlockStateContainer createBlockState() {
 		return new BlockStateContainer(this, FACING);
 	}
+	@Override
+	public boolean isTopSolid(IBlockState state) {
+	    return false;
+	}
 	
 	@Override
 	public int getMetaFromState(IBlockState state) {

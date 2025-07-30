@@ -44,7 +44,10 @@ public class BlockCone extends Block {
 	}
 
 	
-	
+	@Override
+	public boolean isTopSolid(IBlockState state) {
+	    return false;
+	}
 
 	@Override
 	public boolean isOpaqueCube(IBlockState state) {

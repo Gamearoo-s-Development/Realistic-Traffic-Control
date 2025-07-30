@@ -92,6 +92,11 @@ public class BlockCPole extends Block {
 	public boolean isFullCube(IBlockState state) {
 		return false;
 	}
+	
+	@Override
+	public boolean isTopSolid(IBlockState state) {
+	    return false;
+	}
 
 	@Override
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {

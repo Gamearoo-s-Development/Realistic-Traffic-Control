@@ -45,7 +45,10 @@ public class BlockGenerator extends Block {
 		return false;
 	}
 
-	
+	@Override
+	public boolean isTopSolid(IBlockState state) {
+	    return false;
+	}
 
 	@Override
 	public boolean causesSuffocation(IBlockState state)

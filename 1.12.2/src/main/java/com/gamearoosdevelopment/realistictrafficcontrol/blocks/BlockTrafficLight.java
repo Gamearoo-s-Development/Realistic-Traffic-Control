@@ -29,6 +29,8 @@ public class BlockTrafficLight extends BlockBaseTrafficLight {
 	public TileEntity createTileEntity(World world, IBlockState state) {
 		return new TrafficLightTileEntity();
 	}
+	
+	
 
 	@Override
 	protected BaseItemTrafficLightFrame getItemVersionOfBlock() {

@@ -45,6 +45,10 @@ public class BlockLightSource extends Block {
 			EnumFacing side) {
 		return false;
 	}
+	@Override
+	public boolean isTopSolid(IBlockState state) {
+	    return false;
+	}
 	
 	@Override
 	public boolean isCollidable() {

@@ -119,7 +119,10 @@ public class BlockRedstoneSensor extends Block implements ITileEntityProvider {
         return new TileEntityRedstoneSensor();
     }
 
-   
+    @Override
+    public boolean isTopSolid(IBlockState state) {
+        return false;
+    }
 
     @Override
     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {

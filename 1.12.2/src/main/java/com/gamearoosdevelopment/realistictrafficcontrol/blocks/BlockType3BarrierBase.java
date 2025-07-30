@@ -52,6 +52,11 @@ public abstract class BlockType3BarrierBase extends Block {
 	}
 	
 	@Override
+	public boolean isTopSolid(IBlockState state) {
+	    return false;
+	}
+	
+	@Override
 	protected BlockStateContainer createBlockState() {
 		return new BlockStateContainer.Builder(this).add(FACING).add(ISFURTHESTLEFT).add(ISFURTHESTRIGHT).build();
 	}
