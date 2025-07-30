@@ -52,6 +52,11 @@ public class BlockStreetSign extends Block {
 	}
 	
 	@Override
+	public boolean isTopSolid(IBlockState state) {
+	    return false;
+	}
+	
+	@Override
 	public boolean isNormalCube(IBlockState state, IBlockAccess world, BlockPos pos) {
 		return false;
 	}

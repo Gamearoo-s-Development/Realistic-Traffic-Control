@@ -53,6 +53,11 @@ public class BlockStreetLightDouble extends Block implements ITileEntityProvider
 	}
 	
 	@Override
+	public boolean isTopSolid(IBlockState state) {
+	    return false;
+	}
+	
+	@Override
 	public int getMetaFromState(IBlockState state) {
 		return CustomAngleCalculator.rotationToMeta(state.getValue(ROTATION));
 	}

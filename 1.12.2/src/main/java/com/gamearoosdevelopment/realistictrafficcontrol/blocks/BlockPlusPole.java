@@ -97,6 +97,10 @@ public class BlockPlusPole extends Block {
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
 		return new AxisAlignedBB(0.4325, 0, 0.4325, 0.5575, 1, 0.5575);
 	}
+	@Override
+	public boolean isTopSolid(IBlockState state) {
+	    return false;
+	}
 
 	@Override
 	public boolean causesSuffocation(IBlockState state) {

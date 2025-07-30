@@ -66,6 +66,11 @@ public abstract class BlockBaseTrafficLight extends Block {
 	}
 	
 	@Override
+	public boolean isTopSolid(IBlockState state) {
+	    return false;
+	}
+	
+	@Override
 	protected BlockStateContainer createBlockState() {
 		return new BlockStateContainer(this, ROTATION, VALIDBACKBAR, VALIDHORIZONTALBAR, COVER, POLE);
 	}

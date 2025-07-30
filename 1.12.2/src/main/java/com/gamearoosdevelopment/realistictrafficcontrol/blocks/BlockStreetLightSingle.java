@@ -57,6 +57,11 @@ public class BlockStreetLightSingle extends Block implements ITileEntityProvider
 	}
 	
 	@Override
+	public boolean isTopSolid(IBlockState state) {
+	    return false;
+	}
+	
+	@Override
 	public boolean isOpaqueCube(IBlockState state) {
 		return false;
 	}

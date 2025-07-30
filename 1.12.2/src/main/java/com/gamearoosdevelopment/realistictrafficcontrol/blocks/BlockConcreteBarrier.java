@@ -47,6 +47,11 @@ public class BlockConcreteBarrier extends Block {
 	}
 	
 	@Override
+	public boolean isTopSolid(IBlockState state) {
+	    return false;
+	}
+	
+	@Override
 	protected BlockStateContainer createBlockState() {
 		return new BlockStateContainer(this, DYE, FACING);
 	}

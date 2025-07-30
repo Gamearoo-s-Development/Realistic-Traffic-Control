@@ -42,7 +42,10 @@ public class BlockChannelizer extends Block {
 		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), 0, new ModelResourceLocation(getRegistryName(), "inventory"));
 	}
 	
-	
+	@Override
+	public boolean isTopSolid(IBlockState state) {
+	    return false;
+	}
 	
 	@Override
 	public boolean isOpaqueCube(IBlockState state) {

@@ -44,7 +44,7 @@ public class SignRenderer extends TileEntitySpecialRenderer<SignTileEntity> {
 		texManager.bindTexture(sign.getFrontImageResourceLocation());
 		GlStateManager.translate(x, y, z);
 		if (rotation == -90) {
-		GlStateManager.translate(1.4, 0.4, 0.41);
+		GlStateManager.translate(1.44, 0.4, 0.41);
 		} else if (rotation == 0) {
 			GlStateManager.translate(0.4, 0.4, -0.44);
 			} else if (rotation == -180)  {

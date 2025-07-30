@@ -38,6 +38,10 @@ public class BlockUTPole extends Block {
 		setLightOpacity(1);
 		setHardness(2f);
 	}
+	@Override
+	public boolean isTopSolid(IBlockState state) {
+	    return false;
+	}
 
 	public void initModel()
 	{
