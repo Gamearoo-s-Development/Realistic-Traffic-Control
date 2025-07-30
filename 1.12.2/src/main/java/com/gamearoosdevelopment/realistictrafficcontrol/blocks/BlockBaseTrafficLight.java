@@ -90,7 +90,7 @@ public abstract class BlockBaseTrafficLight extends Block {
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
 		boolean hasValidHorizontalBar = false;
-		boolean autoValidHorizontalBar = true;
+		boolean autoValidHorizontalBar = false;
 
 		TileEntity tileEntity2 = worldIn.getTileEntity(pos);
 		if (tileEntity2 instanceof BaseTrafficLightTileEntity) {
@@ -155,7 +155,11 @@ public abstract class BlockBaseTrafficLight extends Block {
 					hasValidBackBar = getValidStateForAttachableSubModels(worldIn.getBlockState(pos.east()), 
 																		EnumFacing.WEST, EnumFacing.EAST);
 			}
+			
+			
 		}
+		
+		
 		
 		TileEntity tileEntity = worldIn.getTileEntity(pos);
 
@@ -462,29 +466,8 @@ public abstract class BlockBaseTrafficLight extends Block {
 	            toggleCover(worldIn, pos); // Toggle the COVER property
 	        }
 	        return true; // Return true to indicate that the block was activated
-	    } else  if (hand == EnumHand.MAIN_HAND && heldItem.getItem() == Items.STICK) {
-	        if (!worldIn.isRemote) {
-	        	if(!playerIn.isCreative())
-	        	{
-	        	  heldItem.damageItem(1, playerIn);
-	        	}
-	            togglePole(worldIn, pos); // Toggle the COVER property
-	        }
-	        return true; // Return true to indicate that the block was activated
-	    } else if (hand == EnumHand.MAIN_HAND && heldItem.getItem() == Items.BLAZE_ROD) {
-	        if (!worldIn.isRemote) {
-	            TileEntity tileEntity = worldIn.getTileEntity(pos);
-	            if (tileEntity instanceof BaseTrafficLightTileEntity) {
-	                BaseTrafficLightTileEntity baseTE = (BaseTrafficLightTileEntity) tileEntity;
-	                boolean newState = !baseTE.isHorizontalBarSuppressed();
-	                baseTE.setHorizontalBarSuppressed(newState);
-	                baseTE.markDirty();
-	                IBlockState currentState = worldIn.getBlockState(pos);
-	                worldIn.notifyBlockUpdate(pos, currentState, currentState, 3);
-	            }
-	        }
-	        return true;
-	    }
+	    } 
+	    
 
 
 	    return false; // Return false for other cases (e.g., off-hand interaction or not holding cover_hook)

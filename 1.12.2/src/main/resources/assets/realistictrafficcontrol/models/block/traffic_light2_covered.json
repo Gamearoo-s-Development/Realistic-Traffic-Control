@@ -2,18 +2,19 @@
 	"credit": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
 	"textures": {
 		"0": "realistictrafficcontrol:blocks/black",
+		"3": "realistictrafficcontrol:blocks/out_of_service",
 		"4": "realistictrafficcontrol:blocks/lightcovergeneric",
 		"particle": "realistictrafficcontrol:blocks/generic"
 	},
 	"elements": [
 		{
-			"from": [4, 1, 12],
-			"to": [12, 16, 14.5],
+			"from": [4, 1, -4],
+			"to": [12, 16, -1.5],
 			"rotation": {"angle": 0, "axis": "z", "origin": [8, 8, 8]},
 			"faces": {
 				"north": {"uv": [2.66667, 0, 13.33333, 16], "texture": "#4"},
 				"east": {"uv": [0, 0, 2.5, 15], "texture": "#0"},
-				"south": {"uv": [2.75, 0, 13.33333, 16], "texture": "#4"},
+				"south": {"uv": [2.75, 0, 13.33333, 16], "texture": "#3"},
 				"west": {"uv": [0, 0, 2.5, 15], "texture": "#0"},
 				"up": {"uv": [0, 0, 8, 2.5], "texture": "#0"},
 				"down": {"uv": [0, 0, 8, 2.5], "texture": "#0"}

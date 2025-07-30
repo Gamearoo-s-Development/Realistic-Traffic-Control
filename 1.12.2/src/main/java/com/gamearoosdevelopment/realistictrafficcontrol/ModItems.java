@@ -39,6 +39,8 @@ public class ModItems {
 	public static ItemTrafficLight4HozFrame traffic_light_4_hoz_frame;
 	@ObjectHolder("traffic_light_6_frame")
 	public static BaseItemTrafficLightFrame traffic_light_6_frame;
+	@ObjectHolder("traffic_light_8_frame")
+	public static BaseItemTrafficLightFrame traffic_light_8_frame;
 	@ObjectHolder("traffic_light_7_frame")
 	public static BaseItemTrafficLightFrame traffic_light_7_frame;
 	@ObjectHolder("traffic_light_card")
@@ -68,6 +70,7 @@ public class ModItems {
 		traffic_light_4_frame.initModel();
 		traffic_light_4_hoz_frame.initModel();
 		traffic_light_6_frame.initModel();
+		traffic_light_8_frame.initModel();
 		traffic_light_7_frame.initModel();
 		screwdriver.initModel();
 		if (ModRealisticTrafficControl.OC_INSTALLED)

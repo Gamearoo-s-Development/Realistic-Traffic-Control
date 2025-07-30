@@ -22,7 +22,7 @@ public class TrafficLight4HozRenderer extends BaseTrafficLightRenderer
 	@Override
 	protected double getBulbZLocation()
 	{
-		return 10.25;
+		return -5.6;
 	}
 	
 	@Override

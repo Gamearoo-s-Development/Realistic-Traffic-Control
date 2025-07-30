@@ -1,5 +1,6 @@
 package com.gamearoosdevelopment.realistictrafficcontrol.blocks;
 
+import com.gamearoosdevelopment.realistictrafficcontrol.ModBlocks;
 import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficControl;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.CustomAngleCalculator;
 
@@ -7,7 +8,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyInteger;
-import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -21,18 +21,19 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 
-public class BlockCrossingGatePole extends Block implements IHorizontalPoleConnectable {
+public class BlockCPole extends Block {
 	public static PropertyBool NORTH = PropertyBool.create("north");
 	public static PropertyBool WEST = PropertyBool.create("west");
 	public static PropertyBool SOUTH = PropertyBool.create("south");
 	public static PropertyBool EAST = PropertyBool.create("east");
 	public static PropertyInteger ROTATION = PropertyInteger.create("rotation", 0, 15);
 
-	public BlockCrossingGatePole()
+	public BlockCPole()
 	{
+		
 		super(Material.IRON);
-		setRegistryName("crossing_gate_pole");
-		setUnlocalizedName(ModRealisticTrafficControl.MODID + ".crossing_gate_pole");
+		setRegistryName("c_pole");
+		setUnlocalizedName(ModRealisticTrafficControl.MODID + ".c_pole");
 		setCreativeTab(ModRealisticTrafficControl.CREATIVE_TAB);
 		setLightOpacity(1);
 		setHardness(2f);
@@ -42,16 +43,6 @@ public class BlockCrossingGatePole extends Block implements IHorizontalPoleConne
 	{
 		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), 0, new ModelResourceLocation(getRegistryName(), "inventory"));
 	}
-	
-	@Override
-    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) 
-	{
-        if (face == EnumFacing.UP)
-        {
-            return BlockFaceShape.UNDEFINED;
-        }
-        return super.getBlockFaceShape(worldIn, state, pos, face);
-    }
 
 	@Override
 	protected BlockStateContainer createBlockState() {
@@ -62,12 +53,11 @@ public class BlockCrossingGatePole extends Block implements IHorizontalPoleConne
 	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
 		int rotation = state.getValue(ROTATION);
 		boolean isCardinal = CustomAngleCalculator.isCardinal(rotation);
-		EnumFacing myFacing = CustomAngleCalculator.getFacingFromRotation(rotation);
 
-		boolean north = isCardinal && getStateIsValidForSubModel(pos, worldIn, myFacing);
-		boolean west = isCardinal && getStateIsValidForSubModel(pos, worldIn, myFacing.rotateYCCW());
-		boolean south = isCardinal && getStateIsValidForSubModel(pos, worldIn, myFacing.getOpposite());
-		boolean east = isCardinal && getStateIsValidForSubModel(pos, worldIn, myFacing.rotateY());
+		boolean north = isCardinal && getStateIsValidForSubModel(rotation, pos, worldIn, EnumFacing.NORTH);
+		boolean west = isCardinal && getStateIsValidForSubModel(rotation, pos, worldIn, EnumFacing.WEST);
+		boolean south = isCardinal && getStateIsValidForSubModel(rotation, pos, worldIn, EnumFacing.SOUTH);
+		boolean east = isCardinal && getStateIsValidForSubModel(rotation, pos, worldIn, EnumFacing.EAST);
 
 		return state
 				.withProperty(NORTH, north)
@@ -75,15 +65,11 @@ public class BlockCrossingGatePole extends Block implements IHorizontalPoleConne
 				.withProperty(SOUTH, south)
 				.withProperty(EAST, east);
 	}
-	
-	private boolean getStateIsValidForSubModel(BlockPos pos, IBlockAccess world, EnumFacing direction)
+
+	public boolean getStateIsValidForSubModel(int rotation, BlockPos currentPos, IBlockAccess world, EnumFacing facing)
 	{
-		IBlockState otherState = world.getBlockState(pos.offset(direction));
-		if (otherState.getBlock() instanceof IHorizontalPoleConnectable)
-		{
-			return ((IHorizontalPoleConnectable)otherState.getBlock()).canConnectHorizontalPole(otherState, direction.getOpposite());
-		}
 		
+
 		return false;
 	}
 
@@ -127,10 +113,5 @@ public class BlockCrossingGatePole extends Block implements IHorizontalPoleConne
 	public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY,
 			float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
 		return getDefaultState().withProperty(ROTATION, CustomAngleCalculator.getRotationForYaw(placer.rotationYaw));
-	}
-
-	@Override
-	public boolean canConnectHorizontalPole(IBlockState state, EnumFacing fromFacing) {
-		return CustomAngleCalculator.isCardinal(state.getValue(ROTATION));
 	}
 }

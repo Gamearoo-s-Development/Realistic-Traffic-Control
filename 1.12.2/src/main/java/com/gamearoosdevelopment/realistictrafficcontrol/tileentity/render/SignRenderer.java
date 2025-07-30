@@ -28,6 +28,7 @@ public class SignRenderer extends TileEntitySpecialRenderer<SignTileEntity> {
 			return;
 		}
 		
+		
 		TextureManager texManager = Minecraft.getMinecraft().getRenderManager().renderEngine;
 				
 		IBlockState block = te.getWorld().getBlockState(te.getPos());
@@ -37,12 +38,22 @@ public class SignRenderer extends TileEntitySpecialRenderer<SignTileEntity> {
 		}
 		float rotation = block.getValue(BlockSign.ROTATION) * -22.5F;
 		
+		
+		
 		GlStateManager.pushMatrix();
 		texManager.bindTexture(sign.getFrontImageResourceLocation());
 		GlStateManager.translate(x, y, z);
-		GlStateManager.translate(0.5, 0.5, 0.5);
+		if (rotation == -90) {
+		GlStateManager.translate(1.4, 0.4, 0.41);
+		} else if (rotation == 0) {
+			GlStateManager.translate(0.4, 0.4, -0.44);
+			} else if (rotation == -180)  {
+				GlStateManager.translate(0.6, 0.4, 1.44);
+			} else {
+			GlStateManager.translate(-0.44, 0.4, 0.59);
+		}
 		GlStateManager.rotate(rotation, 0, 1, 0);
-		GlStateManager.translate(-0.5, -0.5, 0.06875);
+		GlStateManager.translate(-0.4, -0.4, 0.06875);
 		
 		// Draw front
 		Tessellator tess = Tessellator.getInstance();

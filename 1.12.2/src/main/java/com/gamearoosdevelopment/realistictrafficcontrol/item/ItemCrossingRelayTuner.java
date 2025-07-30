@@ -66,7 +66,7 @@ public class ItemCrossingRelayTuner extends Item {
 	{
 		if(GuiScreen.isShiftKeyDown())
 		{
-			String info = I18n.format("realistic.tooltip.tuner");
+			String info = I18n.format("relaistictrafficcontrol.tooltip.tuner");
 			tooltip.addAll(Minecraft.getMinecraft().fontRenderer.listFormattedStringToWidth(info, Config.tooltipCharWrapLength));
 		}
 		else

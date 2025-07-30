@@ -3,6 +3,11 @@
 
 package com.gamearoosdevelopment.realistictrafficcontrol.blocks;
 
+import java.util.List;
+
+import javax.annotation.Nullable;
+
+import com.gamearoosdevelopment.realistictrafficcontrol.Config;
 import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficControl;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TileEntityRedstoneSensor;
 
@@ -13,20 +18,46 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockRedstoneSensor extends Block implements ITileEntityProvider {
 
     public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
-
+    
+    
+    @Override
+	@SideOnly(Side.CLIENT)
+	public void addInformation(ItemStack stack, @Nullable World world, List<String> tooltip, ITooltipFlag flag)
+	{
+		if(GuiScreen.isShiftKeyDown())
+		{
+			String info = I18n.format("relaistictrafficcontrol.tooltip.redstonesensor");
+			tooltip.addAll(Minecraft.getMinecraft().fontRenderer.listFormattedStringToWidth(info, Config.tooltipCharWrapLength));
+		}
+		else
+		{
+			tooltip.add(TextFormatting.YELLOW + I18n.format("relaistictrafficcontrol.tooltip.help"));
+		}
+	}
+    
     public BlockRedstoneSensor() {
         super(Material.IRON);
         setUnlocalizedName(ModRealisticTrafficControl.MODID + ".redstone_sensor");
@@ -88,11 +119,7 @@ public class BlockRedstoneSensor extends Block implements ITileEntityProvider {
         return new TileEntityRedstoneSensor();
     }
 
-    @Override
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos,
-                                 Block blockIn, BlockPos fromPos) {
-        worldIn.notifyNeighborsOfStateChange(pos, this, true);
-    }
+   
 
     @Override
     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
