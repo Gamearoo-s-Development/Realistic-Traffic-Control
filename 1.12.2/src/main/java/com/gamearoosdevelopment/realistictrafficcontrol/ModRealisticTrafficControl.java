@@ -26,7 +26,7 @@ public class ModRealisticTrafficControl {
 	public static final String MODNAME = "Realistic Traffic Control";
 	public static boolean IR_INSTALLED = false;
 	public static boolean OC_INSTALLED = false;
-	public static boolean CC_INSTALLED = true;
+	public static boolean CC_INSTALLED = false;
 	public static boolean TC_INSTALLED = false;
 	public static CreativeTabs CREATIVE_TAB = new CreativeTabs("Realistc Traffic Control") {
 

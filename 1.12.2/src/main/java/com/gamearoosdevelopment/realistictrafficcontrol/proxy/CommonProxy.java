@@ -373,7 +373,7 @@ public class CommonProxy {
 		}
 		if(ModRealisticTrafficControl.CC_INSTALLED)
 		{
-			 ComputerCraftAPI.registerPeripheralProvider(new TrafficLightPeripheralProvider());
+			 TrafficLightPeripheralProvider.register();
 
 		}
 	}
