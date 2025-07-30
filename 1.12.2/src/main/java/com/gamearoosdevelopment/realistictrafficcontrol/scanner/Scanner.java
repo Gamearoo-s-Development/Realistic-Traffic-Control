@@ -7,8 +7,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 
-import 
-com.gamearoosdevelopment.realistictrafficcontrol.Config;
+import com.gamearoosdevelopment.realistictrafficcontrol.Config;
 import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficControl;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.util.Tuple;

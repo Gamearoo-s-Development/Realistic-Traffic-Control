@@ -9,8 +9,8 @@
 	"elements": [
 		{
 			"name": "Cube",
-			"from": [0.5, 1, 3],
-			"to": [15.5, 20, 13],
+			"from": [-2.5, 1, -1],
+			"to": [20.5, 32, 18],
 			"faces": {
 				"north": {"uv": [0, 0, 10, 16], "texture": "#traffic_light_control_box_back"},
 				"east": {"uv": [9, 0, 10, 15], "texture": "#generic"},
@@ -43,8 +43,9 @@
 		},
 		{
 			"name": "Cube",
-			"from": [0, 20, 3],
-			"to": [16, 22, 13.5],
+			"from": [-4, 30, -2],
+			"to": [22, 32, 19.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 10, 0]},
 			"faces": {
 				"north": {"uv": [0, 0, 9, 1], "texture": "#generic"},
 				"east": {"uv": [0, 0, 8.5, 1], "texture": "#generic"},
@@ -56,8 +57,8 @@
 		},
 		{
 			"name": "Cube",
-			"from": [0, 0, 2.5],
-			"to": [16, 2, 13.5],
+			"from": [-5, 0, -3.5],
+			"to": [22, 5, 20.5],
 			"faces": {
 				"north": {"uv": [0, 4.5, 16, 7.75], "texture": "#nether_brick"},
 				"east": {"uv": [0, 9.25, 15.5, 12.5], "texture": "#nether_brick"},

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficControl;
+import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockSign;
 import com.gamearoosdevelopment.realistictrafficcontrol.signs.Sign;
 
 import net.minecraft.block.state.IBlockState;
@@ -12,7 +13,9 @@ import net.minecraft.nbt.NBTUtil;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.CustomAngleCalculator;
 public class SignTileEntity extends TileEntity {
 	
 	private int typeLegacy = -1;
@@ -31,6 +34,12 @@ public class SignTileEntity extends TileEntity {
 	    this.suppressHorizontalBar = suppress;
 	    markDirty();
 	}
+	
+	
+	
+
+
+
 
 	
 	@Override

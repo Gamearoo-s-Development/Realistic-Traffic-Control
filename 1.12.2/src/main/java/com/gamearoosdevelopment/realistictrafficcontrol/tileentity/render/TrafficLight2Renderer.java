@@ -21,7 +21,7 @@ public class TrafficLight2Renderer extends BaseTrafficLightRenderer
 	@Override
 	protected double getBulbZLocation()
 	{
-		return 10.1;
+		return -5.6;
 	}
 	
 	@Override
