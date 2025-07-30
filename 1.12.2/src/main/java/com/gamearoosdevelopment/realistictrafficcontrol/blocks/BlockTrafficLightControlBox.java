@@ -1,6 +1,11 @@
 package com.gamearoosdevelopment.realistictrafficcontrol.blocks;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.Config;
+
+import dan200.computercraft.api.ComputerCraftAPI;
+import dan200.computercraft.api.peripheral.IPeripheral;
+
+
 import com.gamearoosdevelopment.realistictrafficcontrol.ModItems;
 import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficControl;
 import com.gamearoosdevelopment.realistictrafficcontrol.gui.GuiProxy;
@@ -55,6 +60,28 @@ public class BlockTrafficLightControlBox extends Block implements ITileEntityPro
 	}
 	
 	
+	
+	@Override
+	public boolean isFullCube(IBlockState state) {
+	    return false;
+	}
+
+	@Override
+	public boolean isOpaqueCube(IBlockState state) {
+	    return false;
+	}
+
+	@Override
+	public boolean causesSuffocation(IBlockState state) {
+	    return false;
+	}
+
+	@Override
+	public boolean isTopSolid(IBlockState state) {
+	    return false;
+	}
+
+
 
 	@Override
 	@SideOnly(Side.CLIENT)
@@ -88,23 +115,10 @@ public class BlockTrafficLightControlBox extends Block implements ITileEntityPro
 	
 	@Override
 	public boolean isNormalCube(IBlockState state, IBlockAccess world, BlockPos pos) {
-		return false;
+		return true;
 	}
 	
-	@Override
-	public boolean isOpaqueCube(IBlockState state) {
-		return false;
-	}
 	
-	@Override
-	public int getLightOpacity(IBlockState state, IBlockAccess world, BlockPos pos) {
-		return 0;
-	}
-	
-	@Override
-	public boolean causesSuffocation(IBlockState state) {
-		return false;
-	}
 
 	@Override
 	public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY,

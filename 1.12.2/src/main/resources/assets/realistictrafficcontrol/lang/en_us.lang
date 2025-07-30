@@ -5,8 +5,11 @@ tile.realistictrafficcontrol.generator.name=(RTC) Generator
 
 tile.realistictrafficcontrol.crossing_gate_gate.name=(RTC) Crossing Gate
 tile.realistictrafficcontrol.crossing_gate_lamps.name=(RTC) Crossing Lamps
-tile.realistictrafficcontrol.crossing_gate_pole.name=(RTC) Pole
-tile.realistictrafficcontrol.pole.name=(RTC) Pole (No Hoz Connection)
+tile.realistictrafficcontrol.pole.name=(RTC) Pole
+tile.realistictrafficcontrol.plus_pole.name=(RTC) Plus Pole
+tile.realistictrafficcontrol.t_pole.name=(RTC) T Pole
+tile.realistictrafficcontrol.u_t_pole.name=(RTC) Upside down T Pole
+tile.realistictrafficcontrol.c_pole.name=(RTC) Cantilever Pole
 tile.realistictrafficcontrol.crossing_gate_crossbuck.name=(RTC) Crossbuck (Pole)
 tile.realistictrafficcontrol.safetran_type_3.name=(RTC) SafeTran Type 3
 tile.realistictrafficcontrol.overhead_pole.name=(RTC) Overhead (Pole)
@@ -31,6 +34,7 @@ tile.realistictrafficcontrol.wch_bell.name=(RTC) WCH Electronic Bell
 tile.realistictrafficcontrol.horizontal_pole.name=(RTC) Horizontal Pole
 tile.realistictrafficcontrol.traffic_sensor_left.name=(RTC) Traffic Sensor (Left)
 tile.realistictrafficcontrol.traffic_sensor_straight.name=(RTC) Traffic Sensor (Straight)
+tile.realistictrafficcontrol.redstone_sensor.name=(RTC) Traffic Sensor (Redstone)
 tile.realistictrafficcontrol.pedestrian_button.name=(RTC) Pedestrian Button
 tile.realistictrafficcontrol.traffic_sensor_right.name=(RTC) Traffic Sensor (Right)
 
@@ -40,6 +44,7 @@ item.realistictrafficcontrol.cover_hook.name=(RTC) Cover Hook
 item.realistictrafficcontrol.crossing_relay_tuner.name=(RTC) Tuner
 item.realistictrafficcontrol.traffic_light_frame.name=(RTC) Traffic Light Frame
 item.realistictrafficcontrol.traffic_light_hoz_frame.name=(RTC) Traffic Light Frame Horizontal
+item.realistictrafficcontrol.screwdriver.name=(RTC) Screw Driver
 
 
 tile.realistictrafficcontrol.street_sign.name=(RTC) Street Sign
@@ -52,6 +57,7 @@ item.realistictrafficcontrol.traffic_light_2_hoz_frame.name=(RTC) Traffic Light 
 item.realistictrafficcontrol.traffic_light_4_frame.name=(RTC) Traffic Light Frame (Four Bulbs)
 item.realistictrafficcontrol.traffic_light_4_hoz_frame.name=(RTC) Traffic Light Frame Horizontal (Four Bulbs)
 item.realistictrafficcontrol.traffic_light_6_frame.name=(RTC) Traffic Light T Frame (Four Bulbs)
+item.realistictrafficcontrol.traffic_light_8_frame.name=(RTC) Traffic Light upside down T Frame (Four Bulbs)
 item.realistictrafficcontrol.traffic_light_7_frame.name=(RTC) Traffic Light Hawk Beacon Frame (Three Bulbs)
 
 realistictrafficcontrol.traffic_light_bulb.green.name=(RTC) Bulb (Green)
@@ -106,8 +112,11 @@ key.hotreload.toggle=Hot Reload Sign Packs (F3 + Key)
 key.realistictrafficcontrol.category=Realistic Traffic Control
 
 #Tooltips
-realistictrafficcontrol.tooltip.tuner=Use to link components to Crossing Gate Relays or Traffic Light Control Boxes.
+relaistictrafficcontrol.tooltip.tuner=Use to link components to Crossing Gate Relays or Traffic Light Control Boxes.
 realistictrafficcontrol.tooltip.crossingrelay=Uses Shunts or Redstone to control crossing components.
 realistictrafficcontrol.tooltip.trafficbox=Uses Redstone or Traffic Sensors to control traffic signal components.
 realistictrafficcontrol.tooltip.cone=Can be worn as a hat.
+realistictrafficcontrol.tooltip.screwdriver=Can be used to rotate Traffic Control blocks. Use while sneaking to rotate in the opposite direction.
+relaistictrafficcontrol.tooltip.redstonesensor=A Sensor that detects A player then emits a RedStone signal
 realistictrafficcontrol.tooltip.help=[Press SHIFT for more info]
+relaistictrafficcontrol.tooltip.help=[Press SHIFT for more info]

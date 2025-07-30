@@ -19,13 +19,14 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
-@Mod(modid = "realistictrafficcontrol", version = ModRealisticTrafficControl.VERSION, name = "Realistic Traffic Control", useMetadata = true)
+@Mod(modid = "realistictrafficcontrol", version = ModRealisticTrafficControl.VERSION, name = "Realistic Traffic Control", useMetadata = true,  guiFactory = "com.gamearoosdevelopment.realistictrafficcontrol.client.ModGuiFactory")
 public class ModRealisticTrafficControl {
 	public static final String MODID = "realistictrafficcontrol";
-	public static final String VERSION = "1.1.0";
+	public static final String VERSION = "1.2.0";
 	public static final String MODNAME = "Realistic Traffic Control";
 	public static boolean IR_INSTALLED = false;
 	public static boolean OC_INSTALLED = false;
+	public static boolean CC_INSTALLED = true;
 	public static boolean TC_INSTALLED = false;
 	public static CreativeTabs CREATIVE_TAB = new CreativeTabs("Realistc Traffic Control") {
 
@@ -50,8 +51,10 @@ public class ModRealisticTrafficControl {
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent e)
 	{
+		CC_INSTALLED = Loader.isModLoaded("computercraft");
 		OC_INSTALLED = Loader.isModLoaded("opencomputers");
 		TC_INSTALLED = Loader.isModLoaded("trafficcontrol");
+		
 		logger = e.getModLog();
 		proxy.preInit(e);
 	}
@@ -59,6 +62,7 @@ public class ModRealisticTrafficControl {
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent e)
 	{
+		
 		proxy.init(e);
 	}
 
@@ -67,7 +71,7 @@ public class ModRealisticTrafficControl {
 	{
 		proxy.postInit(e);
 
-		IR_INSTALLED = false;
+		IR_INSTALLED = Loader.isModLoaded("immersiverailroading");
 	}
 	
 	

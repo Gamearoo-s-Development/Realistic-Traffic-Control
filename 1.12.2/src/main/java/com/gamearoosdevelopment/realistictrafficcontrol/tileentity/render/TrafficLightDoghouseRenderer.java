@@ -8,7 +8,7 @@ public class TrafficLightDoghouseRenderer extends BaseTrafficLightRenderer {
 
 	@Override
 	protected double getBulbZLocation() {
-		return 10.3;
+		return -5.6;
 	}
 
 	@Override

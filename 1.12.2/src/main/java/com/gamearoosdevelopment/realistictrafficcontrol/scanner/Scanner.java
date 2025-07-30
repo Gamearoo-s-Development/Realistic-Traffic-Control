@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.UUID;
+
 
 import com.gamearoosdevelopment.realistictrafficcontrol.Config;
 import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficControl;
@@ -13,7 +13,7 @@ import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficContr
 import com.gamearoosdevelopment.realistictrafficcontrol.util.Tuple;
 
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -72,13 +72,17 @@ public class Scanner
 				}
 				
 				ScanRequest request = scanSession.getScanRequest();
-				while(scanSession.getBlocksScannedThisSession() < Config.borderTimeout && scanSession.getBlocksScannedThisTick() < Config.borderTick && request != null)
+				while(scanSession.getBlocksScannedThisSession() <  scanSession.getBlocksScannedThisTick()  && request != null)
 				{
 					Vec3d lastPosition = scanSession.getLastPosition();
 					Vec3d motion = scanSession.getMotion();
 					if (lastPosition == null)
 					{
 						lastPosition = new Vec3d(request.getStartingPos());
+						
+						// Put us in a certain position by IR's standards
+						
+						
 						motion = new Vec3d(request.getStartDirection().getDirectionVec());
 					}
 					
@@ -87,8 +91,7 @@ public class Scanner
 					
 					
 					
-					
-					
+				
 					
 					
 					boolean whileLoopContinue = false;
@@ -115,23 +118,7 @@ public class Scanner
 					tryFindNextSubscriber(scanSession, world);
 				}
 				
-				if (scanSession.getBlocksScannedThisSession() >= Config.borderTimeout)
-				{
-					ScanCompleteData timeout = new ScanCompleteData(request, true, false, false);
-					scanSession.getScanSubscriber().onScanComplete(timeout);
-					
-					if (timeout.getContinueScanningForTileEntity())
-					{
-						scanSession.popRequest();
-					}
-					
-					if (!timeout.getContinueScanningForTileEntity() || scanSession.getScanRequest() == null)
-					{
-						tryFindNextSubscriber(scanSession, world);
-					}
-					
-					request = scanSession.getScanRequest();
-				}
+				
 			}
 			
 			// Cleanup tick-based variables
@@ -205,7 +192,7 @@ public class Scanner
 	private Tuple<Boolean, Boolean> checkPosition(Vec3d position, Vec3d motion, World world)
 	{		
 		
-		
+	
 		
 		return new Tuple<Boolean, Boolean>(false, false);
 	}

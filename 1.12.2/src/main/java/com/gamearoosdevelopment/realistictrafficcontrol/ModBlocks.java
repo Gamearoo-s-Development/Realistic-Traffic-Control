@@ -19,11 +19,26 @@ public class ModBlocks {
 	public static BlockGenerator generator;
 	
 	
-	@ObjectHolder("crossing_gate_pole")
-	public static BlockCrossingGatePole crossing_gate_pole;
+	
+	
+	
+	
+	
 	
 	@ObjectHolder("pole")
 	public static BlockPole pole;
+	
+	@ObjectHolder("plus_pole")
+	public static BlockPlusPole plus_pole;
+	
+	
+	@ObjectHolder("t_pole")
+	public static BlockTPole t_pole;
+	@ObjectHolder("c_pole")
+	public static BlockCPole c_pole;
+	
+	@ObjectHolder("u_t_pole")
+	public static BlockUTPole u_t_pole;
 	
 	@ObjectHolder("sign")
 	public static BlockSign sign;
@@ -87,6 +102,8 @@ public class ModBlocks {
 	public static BlockTrafficLight4Hoz traffic_light_4_hoz;
 	@ObjectHolder("traffic_light_6")
 	public static BlockTrafficLight6 traffic_light_6;
+	@ObjectHolder("traffic_light_8")
+	public static BlockTrafficLight8 traffic_light_8;
 	@ObjectHolder("traffic_light_7")
 	public static BlockTrafficLight7 traffic_light_7;
 	
@@ -95,18 +112,26 @@ public class ModBlocks {
 	public static BlockPedestrianButton pedestrian_button;
 	@ObjectHolder("traffic_sensor_right")
 	public static BlockTrafficSensorRight traffic_sensor_right;
+	@ObjectHolder("redstone_sensor")
+	public static BlockRedstoneSensor redstone_sensor;
 	
 
 	@SideOnly(Side.CLIENT)
 	public static void initModels(ModelRegistryEvent e)
 	{
 		crossing_gate_base.initModel();
-		crossing_gate_pole.initModel();
+		
 		pole.initModel();
+		t_pole.initModel();
+		u_t_pole.initModel();
+		plus_pole.initModel();
+		c_pole.initModel();
 		stand.initModel();
 		generator.initModel();
 		
 		
+	
+	
 		
 		
 		sign.initModel();
@@ -146,7 +171,9 @@ public class ModBlocks {
 		traffic_light_4_hoz.initModel();
 		pedestrian_button.initModel();
 		traffic_sensor_right.initModel();
+		redstone_sensor.initModel();
 		traffic_light_6.initModel();
+		traffic_light_8.initModel();
 		traffic_light_7.initModel();
 		traffic_light_hoz.initModel();
 		

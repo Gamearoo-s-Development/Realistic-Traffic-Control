@@ -84,7 +84,7 @@ public class BlockSign extends Block implements ITileEntityProvider {
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
 		boolean validHorizontalBar = false;
-		boolean autoValidHorizontalBar = true;
+		boolean autoValidHorizontalBar = false;
 		boolean isHalfHeight = false;
 		
 		TileEntity tileEntity2 = worldIn.getTileEntity(pos);
@@ -129,10 +129,7 @@ public class BlockSign extends Block implements ITileEntityProvider {
 	
 	private boolean getValidStateForAttachableSubModels(IBlockState signState, IBlockState state, EnumFacing... validFacings)
 	{
-		if (state.getBlock() == ModBlocks.crossing_gate_pole)
-		{
-			return true;
-		}
+		
 		
 		if (state.getBlock() == ModBlocks.horizontal_pole)
 		{
@@ -179,26 +176,8 @@ public class BlockSign extends Block implements ITileEntityProvider {
 	        EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 	    ItemStack heldItem = playerIn.getHeldItem(hand);
 
-	    if (hand == EnumHand.MAIN_HAND && heldItem.getItem() == Items.BLAZE_ROD) {
-	        if (!worldIn.isRemote) {
-	            TileEntity tileEntity = worldIn.getTileEntity(pos);
-	            if (tileEntity instanceof SignTileEntity) {
-	                SignTileEntity baseTE = (SignTileEntity) tileEntity;
-	                boolean newState = !baseTE.isHorizontalBarSuppressed();
-	                baseTE.setHorizontalBarSuppressed(newState);
-	                baseTE.markDirty();
-
-	                // Force re-render
-	                IBlockState currentState = worldIn.getBlockState(pos);
-	                worldIn.notifyBlockUpdate(pos, currentState, currentState, 3);
-	                worldIn.markBlockRangeForRenderUpdate(pos, pos);
-	                worldIn.notifyNeighborsOfStateChange(pos, state.getBlock(), false);
-
-	            }
-	        }
-	        return true;
-	    }
-
+	   
+	    
 	    // Only open GUI if not holding blaze rod
 	    if (worldIn.isRemote) {
 	        playerIn.openGui(ModRealisticTrafficControl.instance, GuiProxy.GUI_IDs.SIGN,

@@ -2,6 +2,7 @@ package com.gamearoosdevelopment.realistictrafficcontrol.gui;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.ModItems;
 
+
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.SignTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.StreetSignTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLightControlBoxTileEntity;
@@ -87,6 +88,12 @@ public class GuiProxy implements IGuiHandler {
 					return new TrafficLight6FrameContainer(player.inventory, player.getHeldItemMainhand());
 				}
 				break;
+				case GUI_IDs.TRAFFIC_LIGHT_8_FRAME:
+					if (player.getHeldItemMainhand().getItem() == ModItems.traffic_light_8_frame)
+					{
+						return new TrafficLight8FrameContainer(player.inventory, player.getHeldItemMainhand());
+					}
+					break;
 				case GUI_IDs.TRAFFIC_LIGHT_7_FRAME:
 					if (player.getHeldItemMainhand().getItem() == ModItems.traffic_light_7_frame)
 					{
@@ -208,12 +215,21 @@ public class GuiProxy implements IGuiHandler {
 					return new TrafficLight6FrameGui(player.inventory, player.getHeldItemMainhand());
 				}
 				break;
+				case GUI_IDs.TRAFFIC_LIGHT_8_FRAME:
+					if (player.getHeldItemMainhand().getItem() == ModItems.traffic_light_8_frame)
+					{
+						return new TrafficLight8FrameGui(player.inventory, player.getHeldItemMainhand());
+					}
+					break;
 				case GUI_IDs.TRAFFIC_LIGHT_7_FRAME:
 					if (player.getHeldItemMainhand().getItem() == ModItems.traffic_light_7_frame)
 					{
 						return new TrafficLight7FrameGui(player.inventory, player.getHeldItemMainhand());
 					}
 					break;
+				
+				
+					
 				
 		}
 
@@ -238,5 +254,7 @@ public class GuiProxy implements IGuiHandler {
 		public static final int TRAFFIC_LIGHT_2_HOZ_FRAME = 14;
 		public static final int TRAFFIC_LIGHT_4_HOZ_FRAME = 15;
 		public static final int TRAFFIC_LIGHT_5_HOZ_FRAME = 16;
+		public static final int TRAFFIC_LIGHT_8_FRAME = 17;
+		
 	}
 }

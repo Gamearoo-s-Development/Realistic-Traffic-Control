@@ -21,19 +21,19 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 
-public class BlockCrossingGatePole extends Block {
+public class BlockCPole extends Block {
 	public static PropertyBool NORTH = PropertyBool.create("north");
 	public static PropertyBool WEST = PropertyBool.create("west");
 	public static PropertyBool SOUTH = PropertyBool.create("south");
 	public static PropertyBool EAST = PropertyBool.create("east");
 	public static PropertyInteger ROTATION = PropertyInteger.create("rotation", 0, 15);
 
-	public BlockCrossingGatePole()
+	public BlockCPole()
 	{
 		
 		super(Material.IRON);
-		setRegistryName("crossing_gate_pole");
-		setUnlocalizedName(ModRealisticTrafficControl.MODID + ".crossing_gate_pole");
+		setRegistryName("c_pole");
+		setUnlocalizedName(ModRealisticTrafficControl.MODID + ".c_pole");
 		setCreativeTab(ModRealisticTrafficControl.CREATIVE_TAB);
 		setLightOpacity(1);
 		setHardness(2f);
@@ -68,47 +68,7 @@ public class BlockCrossingGatePole extends Block {
 
 	public boolean getStateIsValidForSubModel(int rotation, BlockPos currentPos, IBlockAccess world, EnumFacing facing)
 	{
-		int i = rotation / 4;
-		while(i-- > 0)
-		{
-			facing = facing.rotateY();
-		}
-
-		IBlockState state = world.getBlockState(currentPos.offset(facing));
-		if (state.getBlock() == ModBlocks.horizontal_pole)
-		{
-			EnumFacing stateFacing = state.getValue(BlockHorizontalPole.FACING);
-
-			return (facing == EnumFacing.SOUTH || facing == EnumFacing.NORTH) ?
-					stateFacing == EnumFacing.NORTH || stateFacing == EnumFacing.SOUTH :
-					stateFacing == EnumFacing.WEST || stateFacing == EnumFacing.EAST;
-		}
-
-		if (state.getBlock() instanceof BlockBaseTrafficLight)
-		{
-			int stateRotation = state.getValue(BlockBaseTrafficLight.ROTATION);
-			if (!CustomAngleCalculator.isCardinal(stateRotation))
-			{
-				return false;
-			}
-
-			EnumFacing stateFacing = CustomAngleCalculator.getFacingFromRotation(stateRotation);
-			return stateFacing != facing;
-		}
 		
-
-		if (state.getBlock() == ModBlocks.sign)
-		{
-			int signRotation = state.getValue(BlockSign.ROTATION);
-			if (!CustomAngleCalculator.isCardinal(signRotation))
-			{
-				return false;
-			}
-
-			return (facing == EnumFacing.SOUTH || facing == EnumFacing.NORTH) ?
-					!CustomAngleCalculator.isNorthSouth(signRotation) :
-					CustomAngleCalculator.isNorthSouth(signRotation);
-		}
 
 		return false;
 	}

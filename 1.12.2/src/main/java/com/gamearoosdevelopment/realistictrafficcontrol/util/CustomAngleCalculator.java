@@ -68,6 +68,17 @@ public class CustomAngleCalculator {
 		return workingFacing;
 	}
 	
+	public static EnumFacing rotationToFacing(int rotation) {
+		switch (rotation % 16) {
+			case 0:  return EnumFacing.SOUTH;
+			case 4:  return EnumFacing.WEST;
+			case 8:  return EnumFacing.NORTH;
+			case 12: return EnumFacing.EAST;
+			default: return EnumFacing.NORTH; // fallback for diagonal or undefined
+		}
+	}
+
+	
 	public static boolean isRotationFacing(int rotation, EnumFacing facing)
 	{
 		switch(facing)

@@ -7,22 +7,10 @@
 	},
 	"elements": [
 		{
-			"name": "Pole",
-			"from": [7, 0, 7],
-			"to": [9, 16, 9],
-			"faces": {
-				"north": {"uv": [2, 0, 4, 16], "texture": "#0"},
-				"east": {"uv": [3, 0, 5, 16], "texture": "#0"},
-				"south": {"uv": [4, 0, 6, 16], "texture": "#0"},
-				"west": {"uv": [3, 0, 5, 16], "texture": "#0"},
-				"up": {"uv": [0, 0, 2, 2], "texture": "#0"},
-				"down": {"uv": [0, 0, 2, 2], "texture": "#0"}
-			}
-		},
-		{
 			"name": "Sign Front",
-			"from": [0, 0, 9.1],
-			"to": [16, 16, 9.1],
+			"from": [0, 0, -5.9],
+			"to": [16, 16, -5.9],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 0, -15]},
 			"faces": {
 				"north": {"uv": [0, 0, 16, 16], "texture": "#1"},
 				"east": {"uv": [0, 0, 0, 16], "texture": "#0"},

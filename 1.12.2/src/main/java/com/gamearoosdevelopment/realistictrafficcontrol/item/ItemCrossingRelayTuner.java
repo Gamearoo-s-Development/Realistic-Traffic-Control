@@ -1,7 +1,7 @@
 package com.gamearoosdevelopment.realistictrafficcontrol.item;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.Config;
-
+import com.gamearoosdevelopment.realistictrafficcontrol.ModBlocks;
 import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficControl;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockBaseTrafficLight;
 
@@ -11,9 +11,9 @@ import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficSenso
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficSensorRight;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficSensorStraight;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.BaseTrafficLightTileEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.BellBaseTileEntity;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.PedestrianButtonTileEntity;
-
 
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLightControlBoxTileEntity;
 
@@ -35,7 +35,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
-
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
@@ -66,12 +66,12 @@ public class ItemCrossingRelayTuner extends Item {
 	{
 		if(GuiScreen.isShiftKeyDown())
 		{
-			String info = I18n.format("realistictrafficcontrol.tooltip.tuner");
+			String info = I18n.format("relaistictrafficcontrol.tooltip.tuner");
 			tooltip.addAll(Minecraft.getMinecraft().fontRenderer.listFormattedStringToWidth(info, Config.tooltipCharWrapLength));
 		}
 		else
 		{
-			tooltip.add(TextFormatting.YELLOW + I18n.format("realistictrafficcontrol.tooltip.help"));
+			tooltip.add(TextFormatting.YELLOW + I18n.format("relaistictrafficcontrol.tooltip.help"));
 		}
 	}
 
@@ -110,7 +110,6 @@ public class ItemCrossingRelayTuner extends Item {
 	{
 		IBlockState state = world.getBlockState(pos);
 		
-
 		if (te instanceof TrafficLightControlBoxTileEntity)
 		{
 			TrafficLightControlBoxTileEntity tlBox = (TrafficLightControlBoxTileEntity)te;
@@ -135,7 +134,7 @@ public class ItemCrossingRelayTuner extends Item {
 
 		if (nbt == null || !nbt.hasKey("pairingpos"))
 		{
-			if (te == null ||  !(te instanceof TrafficLightControlBoxTileEntity))
+			if (te == null || (!(te instanceof TrafficLightControlBoxTileEntity)))
 			{
 				return false;
 			}
@@ -148,6 +147,7 @@ public class ItemCrossingRelayTuner extends Item {
 
 			String typeOfPairing = "";
 			
+
 			if (te instanceof TrafficLightControlBoxTileEntity)
 			{
 				TrafficLightControlBoxTileEntity controlBox = (TrafficLightControlBoxTileEntity)te;
@@ -167,7 +167,7 @@ public class ItemCrossingRelayTuner extends Item {
 		else
 		{
 			int[] pairingpos = nbt.getIntArray("pairingpos");
-			if (te != null &&  te instanceof TrafficLightControlBoxTileEntity)
+			if (te != null && ( te instanceof TrafficLightControlBoxTileEntity))
 			{
 				BlockPos relayPos = null;
 				String typeOfPairing = "";
@@ -194,7 +194,6 @@ public class ItemCrossingRelayTuner extends Item {
 				}
 
 				
-					addTileEntityPosToNBT(nbt, "pairingpos", te);
 				
 
 				player.inventory.getCurrentItem().setTagCompound(nbt);
@@ -211,18 +210,7 @@ public class ItemCrossingRelayTuner extends Item {
 				BlockPos pos = new BlockPos(pairingpos[0], pairingpos[1], pairingpos[2]);
 				TileEntity teAtPairingPos = world.getTileEntity(pos);
 
-				if (teAtPairingPos == null || !(teAtPairingPos instanceof TrafficLightControlBoxTileEntity))
-				{
-					nbt.removeTag("pairingpos");
-					player.inventory.getCurrentItem().setTagCompound(nbt);
-
-					player.sendMessage(new TextComponentString("Could not find pair at "
-							+ pairingpos[0] + ", "
-							+ pairingpos[1] + ", "
-							+ pairingpos[2] + ".  Unpaired."));
-
-					return false;
-				}
+				
 			}
 		}
 

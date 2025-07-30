@@ -4,6 +4,11 @@
         "category": "block",
         "sounds": [ "realistictrafficcontrol:gate" ]
     },
+    "screwdriver": 
+    {
+        "category": "block",
+        "sounds": [ "realistictrafficcontrol:screwdriver" ]
+    },
     "safetran_type_3":
     {
         "category": "block",
@@ -19,9 +24,19 @@
     	"category": "block",
     	"sounds": [ "realistictrafficcontrol:wch" ]
     },
+    "wch_mechanical_bell":
+    {
+    	"category": "block",
+    	"sounds": [ "realistictrafficcontrol:wch_mechanical_bell" ]
+    },
 	"ped_button":
     {
     	"category": "block",
     	"sounds": [ "realistictrafficcontrol:ped_button" ]
+    },
+    "wigwag":
+    { 
+    	"category": "block",
+    	"sounds": [ "realistictrafficcontrol:wig_wag" ]
     }
 }

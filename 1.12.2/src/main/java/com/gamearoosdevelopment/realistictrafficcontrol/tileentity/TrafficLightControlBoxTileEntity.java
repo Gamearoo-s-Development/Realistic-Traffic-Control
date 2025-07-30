@@ -1,13 +1,20 @@
 package com.gamearoosdevelopment.realistictrafficcontrol.tileentity;
 
 import java.util.ArrayList;
+
+
+import dan200.computercraft.api.peripheral.IPeripheral;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 import com.gamearoosdevelopment.realistictrafficcontrol.Config;
+import com.gamearoosdevelopment.realistictrafficcontrol.CC.TrafficLightCardPeripheral;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockBaseTrafficLight;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficSensorLeft;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficSensorRight;
@@ -31,9 +38,20 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
 import net.minecraftforge.common.util.Constants.NBT;
 
+
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
+
+
+
+
 public class TrafficLightControlBoxTileEntity extends SyncableTileEntity implements ITickable {
+
+
+
 	private ArrayList<BlockPos> westEastLights = new ArrayList<BlockPos>();
 	private ArrayList<BlockPos> northSouthLights = new ArrayList<BlockPos>();
 	private HashMap<EnumTrafficLightBulbTypes, Boolean> manualNorthSouthActive = new HashMap<EnumTrafficLightBulbTypes, Boolean>();
@@ -46,6 +64,44 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 	private boolean isAutoMode = false; // Client only property
 	private boolean powered;
 	private Automator automator = null;
+	private static final AxisAlignedBB FULL_BLOCK_AABB = new AxisAlignedBB(0, 0, 0, 1, 1, 1);
+
+	
+	public List<BlockPos> getNorthSouthLights() {
+	    return northSouthLights;
+	}
+
+	public List<BlockPos> getWestEastLights() {
+	    return westEastLights;
+	}
+	
+	
+	@CapabilityInject(IPeripheral.class)
+	public static Capability<IPeripheral> CAPABILITY_PERIPHERAL = null;
+
+	private TrafficLightCardPeripheral peripheral;
+
+	@Override
+	public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
+	    if (capability == CAPABILITY_PERIPHERAL) {
+	        return true;
+	    }
+	    return super.hasCapability(capability, facing);
+	}
+
+	@Override
+	public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+	    if (capability == CAPABILITY_PERIPHERAL) {
+	        if (peripheral == null) {
+	            peripheral = new TrafficLightCardPeripheral(world, pos, this);
+	        }
+	        return CAPABILITY_PERIPHERAL.cast(peripheral);
+	    }
+	    return super.getCapability(capability, facing);
+	}
+
+
+
 	
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
@@ -1648,4 +1704,6 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 			return null;
 		}
 	}
+
+	
 }
