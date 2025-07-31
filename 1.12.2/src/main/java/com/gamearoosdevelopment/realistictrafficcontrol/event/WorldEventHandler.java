@@ -13,7 +13,7 @@ public class WorldEventHandler {
 	@SubscribeEvent
 	public static void onLoad(WorldEvent.Load e)
 	{
-		if (e.getWorld().isRemote || !ModRealisticTrafficControl.IR_INSTALLED)
+		if (e.getWorld().isRemote)
 		{
 			return;
 		}
@@ -32,7 +32,7 @@ public class WorldEventHandler {
 	@SubscribeEvent
 	public static void onUnload(WorldEvent.Unload e)
 	{
-		if (e.getWorld().isRemote || !ModRealisticTrafficControl.IR_INSTALLED)
+		if (e.getWorld().isRemote)
 		{
 			return;
 		}
@@ -43,7 +43,7 @@ public class WorldEventHandler {
 	@SubscribeEvent
 	public static void onTick(TickEvent.WorldTickEvent e)
 	{
-		if (e.world.isRemote || !ModRealisticTrafficControl.IR_INSTALLED || e.type != TickEvent.Type.WORLD || e.phase != TickEvent.Phase.END)
+		if (e.world.isRemote ||  e.type != TickEvent.Type.WORLD || e.phase != TickEvent.Phase.END)
 		{
 			return;
 		}

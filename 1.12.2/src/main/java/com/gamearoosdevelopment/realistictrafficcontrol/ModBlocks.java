@@ -34,6 +34,13 @@ public class ModBlocks {
 	
 	@ObjectHolder("t_pole")
 	public static BlockTPole t_pole;
+	
+	@ObjectHolder("d_pole")
+	public static BlockDPole d_pole;
+	
+	@ObjectHolder("tag")
+	public static BlockTag tag;
+	
 	@ObjectHolder("c_pole")
 	public static BlockCPole c_pole;
 	
@@ -123,6 +130,8 @@ public class ModBlocks {
 		
 		pole.initModel();
 		t_pole.initModel();
+		d_pole.initModel();
+		tag.initModel();
 		u_t_pole.initModel();
 		plus_pole.initModel();
 		c_pole.initModel();

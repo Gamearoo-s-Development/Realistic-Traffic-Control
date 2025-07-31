@@ -21,19 +21,19 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 
-public class BlockTPole extends Block {
+public class BlockTag extends Block {
 	public static PropertyBool NORTH = PropertyBool.create("north");
 	public static PropertyBool WEST = PropertyBool.create("west");
 	public static PropertyBool SOUTH = PropertyBool.create("south");
 	public static PropertyBool EAST = PropertyBool.create("east");
 	public static PropertyInteger ROTATION = PropertyInteger.create("rotation", 0, 15);
 
-	public BlockTPole()
+	public BlockTag()
 	{
 		
 		super(Material.IRON);
-		setRegistryName("t_pole");
-		setUnlocalizedName(ModRealisticTrafficControl.MODID + ".t_pole");
+		setRegistryName("tag");
+		setUnlocalizedName(ModRealisticTrafficControl.MODID + ".tag");
 		setCreativeTab(ModRealisticTrafficControl.poles_tab);
 		setLightOpacity(1);
 		setHardness(2f);

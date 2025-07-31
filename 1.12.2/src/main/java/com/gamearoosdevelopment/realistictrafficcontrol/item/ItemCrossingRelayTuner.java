@@ -52,7 +52,7 @@ public class ItemCrossingRelayTuner extends Item {
 		setRegistryName("crossing_relay_tuner");
 		setUnlocalizedName(ModRealisticTrafficControl.MODID + ".crossing_relay_tuner");
 		setMaxStackSize(1);
-		setCreativeTab(ModRealisticTrafficControl.CREATIVE_TAB);
+		setCreativeTab(ModRealisticTrafficControl.tools_tab);
 	}
 
 	public void initModel()
@@ -237,17 +237,12 @@ public class ItemCrossingRelayTuner extends Item {
 
 				if (state.getBlock() instanceof BlockBaseTrafficLight)
 				{
-					int rotation = state.getValue(BlockBaseTrafficLight.ROTATION);
+					
 
 					boolean operationResult = false;
-					if (CustomAngleCalculator.isEast(rotation) || CustomAngleCalculator.isWest(rotation))
-					{
-						operationResult = controlBox.addOrRemoveWestEastTrafficLight(te.getPos());
-					}
-					else
-					{
+					
 						operationResult = controlBox.addOrRemoveNorthSouthTrafficLight(te.getPos());
-					}
+					
 
 					if (operationResult)
 					{

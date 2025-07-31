@@ -12,6 +12,7 @@ public class ModItems {
 	public static ItemCrossingRelayTuner crossing_relay_tuner;
 	@ObjectHolder("cover_hook")
 	public static ItemCoverHook cover_hook;
+	
 	@ObjectHolder("traffic_light_bulb")
 	public static ItemTrafficLightBulb traffic_light_bulb;
 	@ObjectHolder("traffic_light_frame")
@@ -54,6 +55,7 @@ public class ModItems {
 		
 		crossing_relay_tuner.initModel();
 		cover_hook.initModel();
+		  // ✅ Add this check
 		traffic_light_bulb.initModel();
 		traffic_light_frame.initModel();
 		traffic_light_hoz_frame.initModel();
