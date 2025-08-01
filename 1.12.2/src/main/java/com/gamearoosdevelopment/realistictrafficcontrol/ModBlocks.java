@@ -34,8 +34,21 @@ public class ModBlocks {
 	
 	@ObjectHolder("t_pole")
 	public static BlockTPole t_pole;
+	
+	@ObjectHolder("d_pole")
+	public static BlockDPole d_pole;
+	@ObjectHolder("dh_pole")
+	public static BlockDHPole dh_pole;
+	
+	@ObjectHolder("tag")
+	public static BlockTag tag;
+	
 	@ObjectHolder("c_pole")
 	public static BlockCPole c_pole;
+	@ObjectHolder("h_pole")
+	public static BlockHPole h_pole;
+	@ObjectHolder("ch_pole")
+	public static BlockCHPole ch_pole;
 	
 	@ObjectHolder("u_t_pole")
 	public static BlockUTPole u_t_pole;
@@ -123,9 +136,14 @@ public class ModBlocks {
 		
 		pole.initModel();
 		t_pole.initModel();
+		d_pole.initModel();
+		dh_pole.initModel();
+		tag.initModel();
 		u_t_pole.initModel();
 		plus_pole.initModel();
 		c_pole.initModel();
+		h_pole.initModel();
+		ch_pole.initModel();
 		stand.initModel();
 		generator.initModel();
 		

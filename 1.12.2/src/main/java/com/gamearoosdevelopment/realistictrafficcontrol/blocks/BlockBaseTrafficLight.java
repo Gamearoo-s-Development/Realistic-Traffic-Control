@@ -19,6 +19,7 @@ import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -50,7 +51,7 @@ public abstract class BlockBaseTrafficLight extends Block {
 		setUnlocalizedName(ModRealisticTrafficControl.MODID + "." + name);
 		setHardness(2F);
 		setHarvestLevel("pickaxe", 2);
-		setCreativeTab(ModRealisticTrafficControl.CREATIVE_TAB);
+		setCreativeTab(ModRealisticTrafficControl.frames_tab);
 	}
 	
 	public abstract void initModel();
@@ -288,6 +289,8 @@ public abstract class BlockBaseTrafficLight extends Block {
 	public boolean hasTileEntity(IBlockState state) {
 		return true;
 	}
+	
+	
 	
 	@Override
 	public abstract TileEntity createTileEntity(World world, IBlockState state);

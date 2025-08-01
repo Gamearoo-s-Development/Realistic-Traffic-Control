@@ -34,7 +34,7 @@ public abstract class BaseItemTrafficLightFrame extends Item {
 		setRegistryName(name);
 		setUnlocalizedName(ModRealisticTrafficControl.MODID + "." + name);
 		setMaxStackSize(1);
-		setCreativeTab(ModRealisticTrafficControl.CREATIVE_TAB);
+		setCreativeTab(ModRealisticTrafficControl.frames_tab);
 	}
 	
 	public void initModel()

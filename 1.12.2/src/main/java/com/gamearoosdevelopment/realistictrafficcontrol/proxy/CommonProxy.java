@@ -139,7 +139,12 @@ public class CommonProxy {
 		e.getRegistry().register(new BlockPole());
 		e.getRegistry().register(new BlockPlusPole());
 		e.getRegistry().register(new BlockTPole());
+		e.getRegistry().register(new BlockDPole());
+		e.getRegistry().register(new BlockDHPole());
+		e.getRegistry().register(new BlockTag());
 		e.getRegistry().register(new BlockCPole());
+		e.getRegistry().register(new BlockCHPole());
+		e.getRegistry().register(new BlockHPole());
 		e.getRegistry().register(new BlockUTPole());
 		e.getRegistry().register(new BlockStand());
 		e.getRegistry().register(new BlockGenerator());
@@ -236,6 +241,7 @@ public class CommonProxy {
 		
 		e.getRegistry().register(new ItemCrossingRelayTuner());
 		e.getRegistry().register(new ItemCoverHook());
+		
 		e.getRegistry().register(new ItemTrafficLightBulb());
 		e.getRegistry().register(new ItemTrafficLightFrame());
 		e.getRegistry().register(new ItemTrafficLightHozFrame());
@@ -263,6 +269,8 @@ public class CommonProxy {
 		e.getRegistry().register(new ItemBlock(ModBlocks.plus_pole).setRegistryName(ModBlocks.plus_pole.getRegistryName()));
 		e.getRegistry().register(new ItemBlock(ModBlocks.t_pole).setRegistryName(ModBlocks.t_pole.getRegistryName()));
 		e.getRegistry().register(new ItemBlock(ModBlocks.c_pole).setRegistryName(ModBlocks.c_pole.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.ch_pole).setRegistryName(ModBlocks.ch_pole.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.h_pole).setRegistryName(ModBlocks.h_pole.getRegistryName()));
 		e.getRegistry().register(new ItemBlock(ModBlocks.u_t_pole).setRegistryName(ModBlocks.u_t_pole.getRegistryName()));
 		e.getRegistry().register(new ItemBlock(ModBlocks.stand).setRegistryName(ModBlocks.stand.getRegistryName()));
 		e.getRegistry().register(new ItemBlock(ModBlocks.generator).setRegistryName(ModBlocks.generator.getRegistryName()));
@@ -271,7 +279,9 @@ public class CommonProxy {
 		e.getRegistry().register(new ItemTrafficLightControlBox(ModBlocks.traffic_light_control_box).setRegistryName(ModBlocks.traffic_light_control_box.getRegistryName()));
 		e.getRegistry().register(new ItemCone(ModBlocks.channelizer).setRegistryName(ModBlocks.channelizer.getRegistryName()));
 		e.getRegistry().register(new ItemCone(ModBlocks.drum).setRegistryName(ModBlocks.drum.getRegistryName()));
-		
+		e.getRegistry().register(new ItemBlock(ModBlocks.d_pole).setRegistryName(ModBlocks.d_pole.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.dh_pole).setRegistryName(ModBlocks.dh_pole.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.tag).setRegistryName(ModBlocks.tag.getRegistryName()));
 		if(!ModRealisticTrafficControl.TC_INSTALLED)
 		{
 		e.getRegistry().register(new ItemBlock(ModBlocks.street_light_single).setRegistryName(ModBlocks.street_light_single.getRegistryName()));

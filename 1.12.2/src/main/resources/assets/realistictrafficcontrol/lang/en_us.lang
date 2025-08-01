@@ -10,6 +10,11 @@ tile.realistictrafficcontrol.plus_pole.name=(RTC) Plus Pole
 tile.realistictrafficcontrol.t_pole.name=(RTC) T Pole
 tile.realistictrafficcontrol.u_t_pole.name=(RTC) Upside down T Pole
 tile.realistictrafficcontrol.c_pole.name=(RTC) Cantilever Pole
+tile.realistictrafficcontrol.ch_pole.name=(RTC) Half Cantilever Pole
+tile.realistictrafficcontrol.h_pole.name=(RTC) Half Pole
+tile.realistictrafficcontrol.d_pole.name=(RTC) Dual Pole
+tile.realistictrafficcontrol.dh_pole.name=(RTC) Half Dual Pole
+tile.realistictrafficcontrol.tag.name=(RTC) Tag Reader (Toll/Other)
 tile.realistictrafficcontrol.crossing_gate_crossbuck.name=(RTC) Crossbuck (Pole)
 tile.realistictrafficcontrol.safetran_type_3.name=(RTC) SafeTran Type 3
 tile.realistictrafficcontrol.overhead_pole.name=(RTC) Overhead (Pole)
@@ -45,6 +50,32 @@ item.realistictrafficcontrol.crossing_relay_tuner.name=(RTC) Tuner
 item.realistictrafficcontrol.traffic_light_frame.name=(RTC) Traffic Light Frame
 item.realistictrafficcontrol.traffic_light_hoz_frame.name=(RTC) Traffic Light Frame Horizontal
 item.realistictrafficcontrol.screwdriver.name=(RTC) Screw Driver
+item.realistictrafficcontrol.tape.white.name=(RTC) White Tape  
+item.realistictrafficcontrol.tape.orange.name=(RTC) Orange Tape  
+item.realistictrafficcontrol.tape.magenta.name=(RTC) Magenta Tape  
+item.realistictrafficcontrol.tape.light_blue.name=(RTC) Light Blue Tape  
+item.realistictrafficcontrol.tape.yellow.name=(RTC) Yellow Tape  
+item.realistictrafficcontrol.tape.lime.name=(RTC) Lime Tape  
+item.realistictrafficcontrol.tape.pink.name=(RTC) Pink Tape  
+item.realistictrafficcontrol.tape.gray.name=(RTC) Gray Tape  
+item.realistictrafficcontrol.tape.light_gray.name=(RTC) Light Gray Tape  
+item.realistictrafficcontrol.tape.cyan.name=(RTC) Cyan Tape  
+item.realistictrafficcontrol.tape.purple.name=(RTC) Purple Tape  
+item.realistictrafficcontrol.tape.blue.name=(RTC) Blue Tape  
+item.realistictrafficcontrol.tape.brown.name=(RTC) Brown Tape  
+item.realistictrafficcontrol.tape.green.name=(RTC) Green Tape  
+item.realistictrafficcontrol.tape.red.name=(RTC) Red Tape  
+item.realistictrafficcontrol.tape.black.name=(RTC) Black Tape
+
+#tabs
+itemGroup.tools_tab=(RTC) Tools
+itemGroup.frames_tab=(RTC) Frames
+itemGroup.bulbs_tab=(RTC) Bulbs
+itemGroup.poles_tab=(RTC) Poles
+itemGroup.oc_tab=(RTC) Open Computer Cards
+itemGroup.cones_tab=(RTC) Cones
+itemGroup.b_tab=(RTC) Barriers
+itemGroup.sensor_tab=(RTC) Sensors
 
 
 tile.realistictrafficcontrol.street_sign.name=(RTC) Street Sign
@@ -61,18 +92,21 @@ item.realistictrafficcontrol.traffic_light_8_frame.name=(RTC) Traffic Light upsi
 item.realistictrafficcontrol.traffic_light_7_frame.name=(RTC) Traffic Light Hawk Beacon Frame (Three Bulbs)
 
 realistictrafficcontrol.traffic_light_bulb.green.name=(RTC) Bulb (Green)
+realistictrafficcontrol.traffic_light_bulb.green_down.name=(RTC) Down Arrow Bulb (Green)
 realistictrafficcontrol.traffic_light_bulb.straightGreen.name=(RTC) Straight Arrow Bulb (Green)
 realistictrafficcontrol.traffic_light_bulb.yellow.name=(RTC) Bulb (Yellow)
 realistictrafficcontrol.traffic_light_bulb.straightYellow.name=(RTC) Straight Arrow Bulb (Yellow)
 realistictrafficcontrol.traffic_light_bulb.red.name=(RTC) Bulb (Red)
+realistictrafficcontrol.traffic_light_bulb.red2.name=(RTC) Bulb (Red2 (OC ONLY))
 realistictrafficcontrol.traffic_light_bulb.straightRed.name=(RTC) Straight Arrow Bulb (Red)
+realistictrafficcontrol.traffic_light_bulb.x.name=(RTC) X Bulb (Red)
 realistictrafficcontrol.traffic_light_bulb.greenArrowLeft.name=(RTC) Left Arrow Bulb (Green)
 realistictrafficcontrol.traffic_light_bulb.yellowArrowLeft.name=(RTC) Left Arrow Bulb (Yellow)
-realistictrafficcontrol.traffic_light_bulb.yellowArrowLeft2.name=(RTC) Left Arrow Bulb2 (Yellow)
+realistictrafficcontrol.traffic_light_bulb.yellowArrowLeft2.name=(RTC) Left Arrow Bulb2 (Yellow (Flash Only or OC))
 realistictrafficcontrol.traffic_light_bulb.redArrowLeft.name=(RTC) Left Arrow Bulb (Red)
 realistictrafficcontrol.traffic_light_bulb.greenArrowRight.name=(RTC) Right Arrow Bulb (Green)
 realistictrafficcontrol.traffic_light_bulb.yellowArrowRight.name=(RTC) Right Arrow Bulb (Yellow)
-realistictrafficcontrol.traffic_light_bulb.yellowArrowRight2.name=(RTC) Right Arrow Bulb2 (Yellow)
+realistictrafficcontrol.traffic_light_bulb.yellowArrowRight2.name=(RTC) Right Arrow Bulb2 (Yellow (Flash Only or OC))
 realistictrafficcontrol.traffic_light_bulb.redArrowRight.name=(RTC) Right Arrow Bulb (Red)
 realistictrafficcontrol.traffic_light_bulb.noRightTurn.name=(RTC) No Right Turn Bulb
 realistictrafficcontrol.traffic_light_bulb.noLeftTurn.name=(RTC) No Left Turn Bulb
@@ -100,11 +134,11 @@ item.realistictrafficcontrol.traffic_light_card.tier3.name=(RTC) Traffic Light C
 item.realistictrafficcontrol.traffic_light_card.creative.name=(RTC) Traffic Light Card (Creative)
 realistictrafficcontrol.traffic_light_bulb.redArrowUTurn.name=(RTC) U-Turn Arrow Bulb (Red)
 realistictrafficcontrol.traffic_light_bulb.yellowArrowUTurn.name=(RTC) U-Turn Arrow Bulb (Yellow)
-realistictrafficcontrol.traffic_light_bulb.yellowArrowUTurn2.name=(RTC) U-Turn Arrow Bulb2 (Yellow)
+realistictrafficcontrol.traffic_light_bulb.yellowArrowUTurn2.name=(RTC) U-Turn Arrow Bulb2 (Yellow (Flash Only or OC))
 realistictrafficcontrol.traffic_light_bulb.greenArrowUTurn.name=(RTC) U-Turn Arrow Bulb (Green)
 
 #Tab
-itemGroup.Realistc Traffic Control=Realistic Traffic Control
+itemGroup.Realistc Traffic Control=(RTC) Other
 
 #Keys
 key.entityclassrenderer.toggle=Toggle Entity Class Display
