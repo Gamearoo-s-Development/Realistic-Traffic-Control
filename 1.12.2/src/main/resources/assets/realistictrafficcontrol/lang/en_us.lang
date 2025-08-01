@@ -93,6 +93,7 @@ realistictrafficcontrol.traffic_light_bulb.straightGreen.name=(RTC) Straight Arr
 realistictrafficcontrol.traffic_light_bulb.yellow.name=(RTC) Bulb (Yellow)
 realistictrafficcontrol.traffic_light_bulb.straightYellow.name=(RTC) Straight Arrow Bulb (Yellow)
 realistictrafficcontrol.traffic_light_bulb.red.name=(RTC) Bulb (Red)
+realistictrafficcontrol.traffic_light_bulb.red2.name=(RTC) Bulb (Red2 (OC ONLY))
 realistictrafficcontrol.traffic_light_bulb.straightRed.name=(RTC) Straight Arrow Bulb (Red)
 realistictrafficcontrol.traffic_light_bulb.greenArrowLeft.name=(RTC) Left Arrow Bulb (Green)
 realistictrafficcontrol.traffic_light_bulb.yellowArrowLeft.name=(RTC) Left Arrow Bulb (Yellow)
