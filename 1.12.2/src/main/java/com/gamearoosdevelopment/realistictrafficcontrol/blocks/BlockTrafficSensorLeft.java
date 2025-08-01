@@ -25,7 +25,7 @@ public class BlockTrafficSensorLeft extends Block {
 		setUnlocalizedName(ModRealisticTrafficControl.MODID + ".traffic_sensor_left");
 		setHardness(2f);
 		setHarvestLevel("pickaxe", 2);
-		setCreativeTab(ModRealisticTrafficControl.sensor_tab);
+		setCreativeTab(ModRealisticTrafficControl.CREATIVE_TAB);
 	}
 	
 	public void initModel()

@@ -34,7 +34,7 @@ public class BlockCHPole extends Block {
 		super(Material.IRON);
 		setRegistryName("ch_pole");
 		setUnlocalizedName(ModRealisticTrafficControl.MODID + ".ch_pole");
-		setCreativeTab(ModRealisticTrafficControl.poles_tab);
+		setCreativeTab(ModRealisticTrafficControl.CREATIVE_TAB);
 		setLightOpacity(1);
 		setHardness(2f);
 	}

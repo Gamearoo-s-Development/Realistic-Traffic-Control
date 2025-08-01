@@ -27,7 +27,7 @@ public class BlockCrossingGateBase extends Block {
 		super(Material.IRON);
 		setRegistryName("crossing_gate_base");
 		setUnlocalizedName(ModRealisticTrafficControl.MODID + ".crossing_gate_base");
-		setCreativeTab(ModRealisticTrafficControl.poles_tab);
+		setCreativeTab(ModRealisticTrafficControl.CREATIVE_TAB);
 		setLightOpacity(1);
 	}
 

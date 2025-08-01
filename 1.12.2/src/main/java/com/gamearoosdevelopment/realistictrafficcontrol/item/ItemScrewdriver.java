@@ -42,7 +42,7 @@ public class ItemScrewdriver extends Item
 		setUnlocalizedName(ModRealisticTrafficControl.MODID + ".screwdriver");
 		setMaxStackSize(1);
 		setMaxDamage(128);
-		setCreativeTab(ModRealisticTrafficControl.tools_tab);
+		setCreativeTab(ModRealisticTrafficControl.CREATIVE_TAB);
 	}
 	
 	public void initModel()
