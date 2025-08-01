@@ -36,7 +36,7 @@ public class BlockDrum extends Block {
 		setLightOpacity(1);
 		setHardness(1f);
         setHarvestLevel("pickaxe", 0);
-		setCreativeTab(ModRealisticTrafficControl.cones_tab);
+		setCreativeTab(ModRealisticTrafficControl.CREATIVE_TAB);
 	}
 	
 	public void initModel()

@@ -101,13 +101,17 @@ realistictrafficcontrol.traffic_light_bulb.red2.name=(RTC) Bulb (Red2 (OC ONLY))
 realistictrafficcontrol.traffic_light_bulb.straightRed.name=(RTC) Straight Arrow Bulb (Red)
 realistictrafficcontrol.traffic_light_bulb.x.name=(RTC) X Bulb (Red)
 realistictrafficcontrol.traffic_light_bulb.greenArrowLeft.name=(RTC) Left Arrow Bulb (Green)
+realistictrafficcontrol.traffic_light_bulb.greenArrowLeft2.name=(RTC) Left Arrow Bulb2 (Green)
 realistictrafficcontrol.traffic_light_bulb.yellowArrowLeft.name=(RTC) Left Arrow Bulb (Yellow)
-realistictrafficcontrol.traffic_light_bulb.yellowArrowLeft2.name=(RTC) Left Arrow Bulb2 (Yellow (Flash Only or OC))
+realistictrafficcontrol.traffic_light_bulb.yellowArrowLeft2.name=(RTC) Left Arrow Bulb2 (Yellow)
 realistictrafficcontrol.traffic_light_bulb.redArrowLeft.name=(RTC) Left Arrow Bulb (Red)
+realistictrafficcontrol.traffic_light_bulb.redArrowLeft2.name=(RTC) Left Arrow Bulb2 (Red (Always ON))
 realistictrafficcontrol.traffic_light_bulb.greenArrowRight.name=(RTC) Right Arrow Bulb (Green)
+realistictrafficcontrol.traffic_light_bulb.greenArrowRight2.name=(RTC) Right Arrow Bulb2 (Green)
 realistictrafficcontrol.traffic_light_bulb.yellowArrowRight.name=(RTC) Right Arrow Bulb (Yellow)
 realistictrafficcontrol.traffic_light_bulb.yellowArrowRight2.name=(RTC) Right Arrow Bulb2 (Yellow (Flash Only or OC))
 realistictrafficcontrol.traffic_light_bulb.redArrowRight.name=(RTC) Right Arrow Bulb (Red)
+realistictrafficcontrol.traffic_light_bulb.redArrowRight2.name=(RTC) Right Arrow Bulb2 (Red (Always ON))
 realistictrafficcontrol.traffic_light_bulb.noRightTurn.name=(RTC) No Right Turn Bulb
 realistictrafficcontrol.traffic_light_bulb.noLeftTurn.name=(RTC) No Left Turn Bulb
 realistictrafficcontrol.traffic_light_bulb.cross.name=(RTC) Cross Bulb
@@ -133,12 +137,18 @@ item.realistictrafficcontrol.traffic_light_card.tier2.name=(RTC) Traffic Light C
 item.realistictrafficcontrol.traffic_light_card.tier3.name=(RTC) Traffic Light Card (Tier 3)
 item.realistictrafficcontrol.traffic_light_card.creative.name=(RTC) Traffic Light Card (Creative)
 realistictrafficcontrol.traffic_light_bulb.redArrowUTurn.name=(RTC) U-Turn Arrow Bulb (Red)
+realistictrafficcontrol.traffic_light_bulb.redArrowUTurn2.name=(RTC) U-Turn Arrow Bulb2 (Red (Always ON))
 realistictrafficcontrol.traffic_light_bulb.yellowArrowUTurn.name=(RTC) U-Turn Arrow Bulb (Yellow)
 realistictrafficcontrol.traffic_light_bulb.yellowArrowUTurn2.name=(RTC) U-Turn Arrow Bulb2 (Yellow (Flash Only or OC))
 realistictrafficcontrol.traffic_light_bulb.greenArrowUTurn.name=(RTC) U-Turn Arrow Bulb (Green)
+realistictrafficcontrol.traffic_light_bulb.greenArrowUTurn2.name=(RTC) U-Turn Arrow Bulb2 (Green (Flash Only or OC))
+realistictrafficcontrol.traffic_light_bulb.yellowArrowUTurn3.name=(RTC) U-Turn Arrow Bulb3 (Yellow (Non Flasher))
+realistictrafficcontrol.traffic_light_bulb.yellowArrowRight3.name=(RTC) Right Arrow Bulb2 (Yellow(Non Flasher))
+realistictrafficcontrol.traffic_light_bulb.yellowArrowUTurn3.name=(RTC) U-Turn Arrow Bulb3 (Yellow (Non Flasher))
+
 
 #Tab
-itemGroup.Realistc Traffic Control=(RTC) Other
+itemGroup.Realistc Traffic Control=(RTC) Realistic Traffic Control
 
 #Keys
 key.entityclassrenderer.toggle=Toggle Entity Class Display

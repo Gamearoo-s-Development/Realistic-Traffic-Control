@@ -2,7 +2,6 @@ package com.gamearoosdevelopment.realistictrafficcontrol;
 
 import org.apache.logging.log4j.Logger;
 
-import com.gamearoosdevelopment.realistictrafficcontrol.Iinvatory.*;
 import com.gamearoosdevelopment.realistictrafficcontrol.proxy.CommonProxy;
 import com.gamearoosdevelopment.realistictrafficcontrol.signs.SignRepository;
 
@@ -23,25 +22,12 @@ import net.minecraftforge.fml.relauncher.Side;
 @Mod(modid = "realistictrafficcontrol", version = ModRealisticTrafficControl.VERSION, name = "Realistic Traffic Control", useMetadata = true,  guiFactory = "com.gamearoosdevelopment.realistictrafficcontrol.client.ModGuiFactory")
 public class ModRealisticTrafficControl {
 	public static final String MODID = "realistictrafficcontrol";
-	public static final String VERSION = "1.3.0";
+	public static final String VERSION = "1.4.0";
 	public static final String MODNAME = "Realistic Traffic Control";
-	
+	public static boolean IR_INSTALLED = false;
 	public static boolean OC_INSTALLED = false;
 	public static boolean CC_INSTALLED = false;
 	public static boolean TC_INSTALLED = false;
-	
-	public static final CreativeTabs tools_tab = new TabTools("tools_tab");
-	public static final CreativeTabs frames_tab = new TabFrames("frames_tab");
-	public static final CreativeTabs bulbs_tab = new TabBulbs("bulbs_tab");
-	public static final CreativeTabs poles_tab = new TabPoles("poles_tab");
-	public static final CreativeTabs cones_tab = new TabCones("cones_tab");
-	public static final CreativeTabs b_tab = new TabB("b_tab");
-	public static final CreativeTabs sensor_tab = new TabSensor("sensor_tab");
-	
-	public static CreativeTabs oc_tab = null;
-
-	
-	
 	public static CreativeTabs CREATIVE_TAB = new CreativeTabs("Realistc Traffic Control") {
 
 		@Override
@@ -67,17 +53,10 @@ public class ModRealisticTrafficControl {
 	{
 		CC_INSTALLED = Loader.isModLoaded("computercraft");
 		OC_INSTALLED = Loader.isModLoaded("opencomputers");
-		
-		if (OC_INSTALLED) {
-	        oc_tab = new TabOC("oc_tab");
-	    }
-		
-		TC_INSTALLED = false;
+		TC_INSTALLED = Loader.isModLoaded("trafficcontrol");
 		
 		logger = e.getModLog();
-		System.out.println(">> Before proxy.preInit");
 		proxy.preInit(e);
-		System.out.println(">> After proxy.preInit");
 	}
 
 	@Mod.EventHandler
@@ -92,7 +71,7 @@ public class ModRealisticTrafficControl {
 	{
 		proxy.postInit(e);
 
-		
+		IR_INSTALLED = Loader.isModLoaded("immersiverailroading");
 	}
 	
 	

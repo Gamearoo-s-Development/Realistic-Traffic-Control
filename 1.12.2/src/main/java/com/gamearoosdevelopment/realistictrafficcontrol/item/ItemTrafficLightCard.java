@@ -38,7 +38,7 @@ public class ItemTrafficLightCard extends Item {
 		setRegistryName(ModRealisticTrafficControl.MODID, "traffic_light_card");
 		setUnlocalizedName(ModRealisticTrafficControl.MODID + ".traffic_light_card");
 		setMaxStackSize(1);
-		setCreativeTab(ModRealisticTrafficControl.oc_tab);
+		setCreativeTab(ModRealisticTrafficControl.CREATIVE_TAB);
 		setHasSubtypes(true);
 	}
 	
@@ -65,7 +65,7 @@ public class ItemTrafficLightCard extends Item {
 	
 	@Override
 	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
-		if (tab == CreativeTabs.SEARCH || tab == ModRealisticTrafficControl.oc_tab)
+		if (tab == CreativeTabs.SEARCH || tab == ModRealisticTrafficControl.CREATIVE_TAB)
 		{
 			for(int i = 0; i < 4; i++)
 			{

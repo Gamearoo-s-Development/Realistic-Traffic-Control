@@ -34,7 +34,7 @@ public class BlockPole extends Block {
 		super(Material.IRON);
 		setRegistryName("pole");
 		setUnlocalizedName(ModRealisticTrafficControl.MODID + ".pole");
-		setCreativeTab(ModRealisticTrafficControl.poles_tab);
+		setCreativeTab(ModRealisticTrafficControl.CREATIVE_TAB);
 		setLightOpacity(1);
 		setHardness(2f);
 	}

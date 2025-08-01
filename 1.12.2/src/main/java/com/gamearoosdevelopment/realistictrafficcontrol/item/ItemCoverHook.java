@@ -39,7 +39,7 @@ public class ItemCoverHook extends Item
         setUnlocalizedName(ModRealisticTrafficControl.MODID + ".cover_hook");
         setMaxStackSize(1);
         setMaxDamage(40);
-        setCreativeTab(ModRealisticTrafficControl.tools_tab);
+        setCreativeTab(ModRealisticTrafficControl.CREATIVE_TAB);
     }
     
     public void initModel()
