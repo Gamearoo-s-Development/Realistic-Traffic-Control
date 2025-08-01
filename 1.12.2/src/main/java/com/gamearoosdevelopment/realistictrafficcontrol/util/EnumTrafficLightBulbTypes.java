@@ -23,7 +23,9 @@ public enum EnumTrafficLightBulbTypes {
 	YellowArrowLeft2(19),
 	YellowArrowRight2(20),
 	YellowArrowUTurn2(21),
-	Red2(22);
+	Red2(22),
+	X(23),
+	GreenDownArrow(24);
 	
 	
 	

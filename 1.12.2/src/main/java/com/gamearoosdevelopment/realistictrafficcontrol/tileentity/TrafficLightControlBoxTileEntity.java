@@ -788,6 +788,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 			{
 				te.powerOff();
 				te.setActive(EnumTrafficLightBulbTypes.Red, true, false);
+				te.setActive(EnumTrafficLightBulbTypes.X, true, false);
 				te.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
 				te.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
 				te.setActive(EnumTrafficLightBulbTypes.NoLeftTurn, true, false);
@@ -810,6 +811,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 			{
 				te.powerOff();
 				te.setActive(EnumTrafficLightBulbTypes.Red, true, false);
+				te.setActive(EnumTrafficLightBulbTypes.X, true, false);
 				te.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
 				te.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
 				te.setActive(EnumTrafficLightBulbTypes.NoLeftTurn, true, false);
@@ -885,6 +887,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					{
 						tl.powerOff();
 						tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
+						tl.setActive(EnumTrafficLightBulbTypes.X, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
@@ -899,6 +902,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					{
 						tl.powerOff();
 						tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
+						tl.setActive(EnumTrafficLightBulbTypes.X, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
@@ -917,6 +921,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 							{
 								tl.powerOff();
 								tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
+								tl.setActive(EnumTrafficLightBulbTypes.X, true, false);
 								tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
 								tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
 								tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
@@ -936,6 +941,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 							tl.setActive(EnumTrafficLightBulbTypes.GreenArrowLeft, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.GreenArrowUTurn, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.Green, true, false);
+							tl.setActive(EnumTrafficLightBulbTypes.GreenDownArrow, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.StraightGreen, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight, true, false);
 						});
@@ -948,6 +954,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						{
 							tl.powerOff();
 							tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
+							tl.setActive(EnumTrafficLightBulbTypes.X, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.NoRightTurn, true, false);
@@ -959,6 +966,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						
 						tl.powerOff();
 						tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
+						tl.setActive(EnumTrafficLightBulbTypes.X, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
@@ -976,6 +984,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						{
 							tl.powerOff();
 							tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
+							tl.setActive(EnumTrafficLightBulbTypes.X, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
@@ -995,6 +1004,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						tl.setActive(EnumTrafficLightBulbTypes.GreenArrowLeft, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.GreenArrowUTurn, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.Green, true, false);
+						tl.setActive(EnumTrafficLightBulbTypes.GreenDownArrow, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.StraightGreen, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight, true, false);
 					});
@@ -1007,6 +1017,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						{
 							tl.powerOff();
 							tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
+							tl.setActive(EnumTrafficLightBulbTypes.X, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.NoRightTurn, true, false);
@@ -1019,6 +1030,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						
 						tl.powerOff();
 						tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
+						tl.setActive(EnumTrafficLightBulbTypes.X, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
@@ -1033,6 +1045,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					{
 						tl.powerOff();
 						tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
+						tl.setActive(EnumTrafficLightBulbTypes.X, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.GreenArrowLeft, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.GreenArrowUTurn, true, false);
@@ -1045,6 +1058,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					.forEach(tl -> {
 						tl.powerOff();
 						tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
+						tl.setActive(EnumTrafficLightBulbTypes.X, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
@@ -1065,12 +1079,13 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 							tl.powerOff();
 							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft2, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn2, true, false);
+							
+							
 							tl.setActive(EnumTrafficLightBulbTypes.Green, true, false);
+							tl.setActive(EnumTrafficLightBulbTypes.GreenDownArrow, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.StraightGreen, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight2, true, false);
+							
 						});
 					
 					trafficLightsOpposingRightOfWay
@@ -1084,9 +1099,10 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						
 						tl.powerOff();
 						tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
+						tl.setActive(EnumTrafficLightBulbTypes.X, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight2, true, false);
+						
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.NoLeftTurn, true, false);
@@ -1105,12 +1121,13 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						tl.powerOff();
 						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft2, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn2, true, false);
+						
+						
 						tl.setActive(EnumTrafficLightBulbTypes.Green, true, false);
+						tl.setActive(EnumTrafficLightBulbTypes.GreenDownArrow, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.StraightGreen, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight2, true, false);
+						
 					});
 					
 					trafficLightsOpposingRightOfWay
@@ -1124,9 +1141,10 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						
 						tl.powerOff();
 						tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
+						tl.setActive(EnumTrafficLightBulbTypes.X, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight2, true, false);
+						
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.NoLeftTurn, true, false);
@@ -1139,11 +1157,12 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					{
 						tl.powerOff();
 						tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
+						tl.setActive(EnumTrafficLightBulbTypes.X, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft2, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn2, true, false);
+						
+						
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.NoRightTurn, true, false);
 						
@@ -1154,9 +1173,10 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					.forEach(tl -> {
 						tl.powerOff();
 						tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
+						tl.setActive(EnumTrafficLightBulbTypes.X, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight2, true, false);
+						
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.NoLeftTurn, true, false);
@@ -1175,12 +1195,12 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						tl.powerOff();
 						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft2, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn2, true, false);
+						
+						
 						tl.setActive(EnumTrafficLightBulbTypes.Yellow, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.StraightYellow, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight2, true, false);
+						
 					});
 				
 					trafficLightsOpposingRightOfWay
@@ -1194,9 +1214,10 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						
 						tl.powerOff();
 						tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
+						tl.setActive(EnumTrafficLightBulbTypes.X, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight2, true, false);
+						
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.NoLeftTurn, true, false);
@@ -1215,12 +1236,11 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						tl.powerOff();
 						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft2, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn2, true, false);
+						
 						tl.setActive(EnumTrafficLightBulbTypes.Yellow, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.StraightYellow, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight2, true, false);
+						
 					});
 				
 					trafficLightsOpposingRightOfWay
@@ -1234,9 +1254,10 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						
 						tl.powerOff();
 						tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
+						tl.setActive(EnumTrafficLightBulbTypes.X, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight2, true, false);
+						
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.NoLeftTurn, true, false);
@@ -1250,8 +1271,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						tl.powerOff();
 						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft2, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn2, true, false);
+						
 						tl.setActive(EnumTrafficLightBulbTypes.Yellow, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.StraightYellow, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
@@ -1263,6 +1283,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					.forEach(tl -> {
 						tl.powerOff();
 						tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
+						tl.setActive(EnumTrafficLightBulbTypes.X, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.NoRightTurn, true, false);
@@ -1280,12 +1301,15 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					{
 						tl.powerOff();
 						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, true);
-						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, true);
 						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft2, true, true);
+						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, true);
 						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn2, true, true);
+						
 						tl.setActive(EnumTrafficLightBulbTypes.Green, true, false);
+						tl.setActive(EnumTrafficLightBulbTypes.GreenDownArrow, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.StraightGreen, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
+						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight, true, true);
+						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight2, true, true);
 						tl.setActive(EnumTrafficLightBulbTypes.NoRightTurn, true, false);
 						
 						if (stage == Stages.GreenCross)
@@ -1304,6 +1328,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					.forEach(tl -> {
 						tl.powerOff();
 						tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
+						tl.setActive(EnumTrafficLightBulbTypes.X, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.NoRightTurn, true, false);
