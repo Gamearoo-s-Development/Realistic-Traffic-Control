@@ -8,13 +8,16 @@ import java.util.function.IntConsumer;
 import com.gamearoosdevelopment.realistictrafficcontrol.Config;
 import com.gamearoosdevelopment.realistictrafficcontrol.ModBlocks;
 import com.gamearoosdevelopment.realistictrafficcontrol.ModSounds;
-
+import com.gamearoosdevelopment.realistictrafficcontrol.Commands.CommandConfigReload;
+import com.gamearoosdevelopment.realistictrafficcontrol.Commands.CommandDispatcher;
+import com.gamearoosdevelopment.realistictrafficcontrol.Commands.RealisticCommandBase;
 import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficControl;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockChannelizer;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockConcreteBarrier;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.*;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockCrossingGateBase;
 
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.render.TESRWireAnchor;
 
 
 
@@ -114,13 +117,16 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.ProgressManager;
 import net.minecraftforge.fml.common.ProgressManager.ProgressBar;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -135,7 +141,7 @@ public class CommonProxy {
 	public static void registerBlocks(RegistryEvent.Register<Block> e)
 	{
 		e.getRegistry().register(new BlockCrossingGateBase());
-		
+		e.getRegistry().register(new BlockWireAnchor());
 		e.getRegistry().register(new BlockPole());
 		e.getRegistry().register(new BlockPlusPole());
 		e.getRegistry().register(new BlockTPole());
@@ -218,7 +224,9 @@ public class CommonProxy {
 	
 		GameRegistry.registerTileEntity(Type3BarrierTileEntity.class, ModRealisticTrafficControl.MODID + "_type3barrier");
 		GameRegistry.registerTileEntity(ConcreteBarrierTileEntity.class, ModRealisticTrafficControl.MODID + "_concretebarrier");
-		
+		GameRegistry.registerTileEntity(TileEntityWireAnchor.class, ModRealisticTrafficControl.MODID + "_wire_anchor");
+
+
 		GameRegistry.registerTileEntity(StreetSignTileEntity.class, ModRealisticTrafficControl.MODID + "_streetsign");
 		GameRegistry.registerTileEntity(TrafficLight5TileEntity.class, ModRealisticTrafficControl.MODID + "_trafficlight5");
 		GameRegistry.registerTileEntity(TrafficLight5HozTileEntity.class, ModRealisticTrafficControl.MODID + "_trafficlight5hoz");
@@ -241,6 +249,7 @@ public class CommonProxy {
 		
 		e.getRegistry().register(new ItemCrossingRelayTuner());
 		e.getRegistry().register(new ItemCoverHook());
+		e.getRegistry().register(new ItemWireCutter());
 		
 		e.getRegistry().register(new ItemTrafficLightBulb());
 		e.getRegistry().register(new ItemTrafficLightFrame());
@@ -249,6 +258,7 @@ public class CommonProxy {
 		e.getRegistry().register(new ItemTrafficLight5HozFrame());
 		e.getRegistry().register(new ItemTrafficLightDoghouseFrame());
 		e.getRegistry().register(new ItemTrafficLight1Frame());
+		
 		e.getRegistry().register(new ItemTrafficLight2Frame());
 		e.getRegistry().register(new ItemTrafficLight2HozFrame());
 		e.getRegistry().register(new ItemTrafficLight4Frame());
@@ -264,7 +274,8 @@ public class CommonProxy {
 		
 		
 		e.getRegistry().register(new ItemBlock(ModBlocks.crossing_gate_base).setRegistryName(ModBlocks.crossing_gate_base.getRegistryName()));
-		
+		e.getRegistry().register(new ItemBlock(ModBlocks.wire_anchor).setRegistryName(ModBlocks.wire_anchor.getRegistryName()));
+
 		e.getRegistry().register(new ItemBlock(ModBlocks.pole).setRegistryName(ModBlocks.pole.getRegistryName()));
 		e.getRegistry().register(new ItemBlock(ModBlocks.plus_pole).setRegistryName(ModBlocks.plus_pole.getRegistryName()));
 		e.getRegistry().register(new ItemBlock(ModBlocks.t_pole).setRegistryName(ModBlocks.t_pole.getRegistryName()));
@@ -345,6 +356,8 @@ public class CommonProxy {
 		config = new Configuration(new File(directory.getPath(), "realistictrafficcontrol.cfg"));
 		 Config.readConfig();
 		 
+		 
+		 
 		
 
 		ModSounds.initSounds();
@@ -413,6 +426,10 @@ public class CommonProxy {
 	@SideOnly(Side.SERVER)
 	private Consumer<String> getServerSplashUpdate()
 	{
+		
+		
+		
+		
 		return splash ->
 		{
 			ModRealisticTrafficControl.logger.info(splash);
@@ -437,6 +454,8 @@ public class CommonProxy {
 			signLoadProgress = ProgressManager.push("Loading Signs", steps);
 		};
 	}
+	
+	
 
 	@SideOnly(Side.SERVER)
 	private IntConsumer getServerStepsUpdate()

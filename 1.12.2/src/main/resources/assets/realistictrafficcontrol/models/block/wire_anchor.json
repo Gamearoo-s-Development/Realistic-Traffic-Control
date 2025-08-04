@@ -1,0 +1,50 @@
+{
+	"format_version": "1.21.6",
+	"credit": "Made with Blockbench",
+	"parent": "block/cube_all",
+	"textures": {
+		"0": "realistictrafficcontrol:blocks/generic",
+		"1": "realistictrafficcontrol:blocks/black",
+		"particle": "realistictrafficcontrol:blocks/generic"
+	},
+	"elements": [
+		{
+			"name": "Pole",
+			"from": [6, 0, 6],
+			"to": [10, 5, 10],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, -2, 8]},
+			"faces": {
+				"north": {"uv": [2, 0, 0, 16], "texture": "#0"},
+				"east": {"uv": [3, 0, 1, 14], "texture": "#0"},
+				"south": {"uv": [4, 0, 2, 16], "texture": "#0"},
+				"west": {"uv": [3, 0, 5, 16], "texture": "#0"},
+				"up": {"uv": [0, 0, 2, 2], "texture": "#0"},
+				"down": {"uv": [0, 0, 2, 2], "texture": "#0"}
+			}
+		},
+		{
+			"name": "Pole",
+			"from": [7, 5, 7],
+			"to": [9, 7, 9],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 8, 8]},
+			"faces": {
+				"north": {"uv": [2, 0, 0, 16], "texture": "#1"},
+				"east": {"uv": [3, 0, 1, 14], "texture": "#1"},
+				"south": {"uv": [4, 0, 2, 16], "texture": "#1"},
+				"west": {"uv": [3, 0, 5, 16], "texture": "#1"},
+				"up": {"uv": [0, 0, 2, 2], "texture": "#1"},
+				"down": {"uv": [0, 0, 2, 2], "texture": "#1"}
+			}
+		}
+	],
+	"display": {
+		"firstperson_righthand": {
+			"rotation": [-17, -8, 0],
+			"translation": [0, 4.75, 0]
+		},
+		"firstperson_lefthand": {
+			"rotation": [7, 17, 0],
+			"translation": [3.25, 4.25, 0]
+		}
+	}
+}

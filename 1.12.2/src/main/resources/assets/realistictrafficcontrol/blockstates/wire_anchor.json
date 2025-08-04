@@ -1,0 +1,8 @@
+{
+  "variants": {
+	"inventory": [{"model": "realistictrafficcontrol:wire_anchor"}],
+    "normal": {
+      "model": "realistictrafficcontrol:wire_anchor"
+    }
+  }
+}

@@ -6,6 +6,7 @@ tile.realistictrafficcontrol.generator.name=(RTC) Generator
 tile.realistictrafficcontrol.crossing_gate_gate.name=(RTC) Crossing Gate
 tile.realistictrafficcontrol.crossing_gate_lamps.name=(RTC) Crossing Lamps
 tile.realistictrafficcontrol.pole.name=(RTC) Pole
+tile.realistictrafficcontrol.wire_anchor.name=(RTC) Wire Anchor
 tile.realistictrafficcontrol.plus_pole.name=(RTC) Plus Pole
 tile.realistictrafficcontrol.t_pole.name=(RTC) T Pole
 tile.realistictrafficcontrol.u_t_pole.name=(RTC) Upside down T Pole
@@ -82,7 +83,8 @@ tile.realistictrafficcontrol.street_sign.name=(RTC) Street Sign
 item.realistictrafficcontrol.traffic_light_5_frame.name=(RTC) Traffic Light Frame (5 Bulb)
 item.realistictrafficcontrol.traffic_light_5_hoz_frame.name=(RTC) Traffic Light Frame Horizontal (5 Bulb)
 item.realistictrafficcontrol.traffic_light_doghouse_frame.name=(RTC) Traffic Light Frame (Doghouse)
-item.realistictrafficcontrol.traffic_light_1_frame.name=(RTC) Traffic Light Frame (One Bulb)
+
+tile.realistictrafficcontrol.traffic_light_1.name=(RTC) Traffic Light Frame (One Bulb)
 item.realistictrafficcontrol.traffic_light_2_frame.name=(RTC) Traffic Light Frame (Two Bulbs)
 item.realistictrafficcontrol.traffic_light_2_hoz_frame.name=(RTC) Traffic Light Frame Horizontal (Two Bulbs)
 item.realistictrafficcontrol.traffic_light_4_frame.name=(RTC) Traffic Light Frame (Four Bulbs)
@@ -149,6 +151,7 @@ realistictrafficcontrol.traffic_light_bulb.yellowArrowUTurn3.name=(RTC) U-Turn A
 
 #Tab
 itemGroup.Realistc Traffic Control=(RTC) Realistic Traffic Control
+item.realistictrafficcontrol.wire_cutter.name=(RTC) Wire Cutter
 
 #Keys
 key.entityclassrenderer.toggle=Toggle Entity Class Display
