@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import dan200.computercraft.api.peripheral.IPeripheral;
 
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -62,9 +63,17 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 	private ArrayList<BlockPos> northSouthPedButtons = new ArrayList<>();
 	private ArrayList<BlockPos> westEastPedButtons = new ArrayList<>();
 	private boolean isAutoMode = false; // Client only property
-	private boolean powered;
+	private boolean powered = false;
 	private Automator automator = null;
 	private static final AxisAlignedBB FULL_BLOCK_AABB = new AxisAlignedBB(0, 0, 0, 1, 1, 1);
+	public boolean hasNorth = true;
+	public boolean hasSouth = true;
+	public boolean hasEast  = true;
+	public boolean hasWest  = true;
+	private int ticksInCurrentStage = 0;
+
+	
+	
 
 	
 	public List<BlockPos> getNorthSouthLights() {
@@ -80,6 +89,14 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 	public static Capability<IPeripheral> CAPABILITY_PERIPHERAL = null;
 
 	private TrafficLightCardPeripheral peripheral;
+	
+	
+	
+
+	
+	
+	
+
 
 	@Override
 	public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
@@ -118,8 +135,12 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 			int[] blockPosArray = new int[] { pos.getX(), pos.getY(), pos.getZ() };
 			compound.setIntArray("northSouth" + i, blockPosArray);
 		}
+		compound.setBoolean("hasNorth", hasNorth);
+		compound.setBoolean("hasSouth", hasSouth);
+		compound.setBoolean("hasEast", hasEast);
+		compound.setBoolean("hasWest", hasWest);
 		
-		compound.setBoolean("powered", powered);
+		    compound.setInteger("TicksInCurrentStage", ticksInCurrentStage);
 		
 		writeManualSettingDictionary(compound, manualNorthSouthActive, "manualNorthSouthActive");
 		writeManualSettingDictionary(compound, manualWestEastActive, "manualWestEastActive");
@@ -148,6 +169,8 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		compound.setTag("westEastPedButtons", westEastPedButtonsList);
 		
 		getAutomator().writeNBT(compound);
+		
+		
 		
 		return super.writeToNBT(compound);
 	}
@@ -208,6 +231,13 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		
 		powered = compound.getBoolean("powered");
 		
+	 
+		 hasNorth = compound.getBoolean("hasNorth");
+		    hasSouth = compound.getBoolean("hasSouth");
+		    hasEast = compound.getBoolean("hasEast");
+		    hasWest = compound.getBoolean("hasWest");
+	  
+	  
 		readManualSettingDictionary(compound, manualNorthSouthActive, "manualNorthSouthActive");
 		readManualSettingDictionary(compound, manualWestEastActive, "manualWestEastActive");
 		readManualSettingDictionary(compound, manualNorthSouthInactive, "manualNorthSouthInactive");
@@ -254,7 +284,11 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		writeManualSettingDictionary(compound, manualWestEastInactive, "manualWestEastInactive");
 		
 		compound.setBoolean("isAutoMode", !sensors.isEmpty() || !northSouthPedButtons.isEmpty() || !westEastPedButtons.isEmpty());
-		
+		compound.setBoolean("hasNorth", hasNorth);
+		compound.setBoolean("hasSouth", hasSouth);
+		compound.setBoolean("hasEast", hasEast);
+		compound.setBoolean("hasWest", hasWest);
+
 		getAutomator().setSyncData(compound);
 		
 		return compound;
@@ -270,7 +304,11 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		readManualSettingDictionary(tag, manualWestEastInactive, "manualWestEastInactive");
 		
 		isAutoMode = tag.getBoolean("isAutoMode");
-		
+		hasNorth = tag.getBoolean("hasNorth");
+		hasSouth = tag.getBoolean("hasSouth");
+		hasEast = tag.getBoolean("hasEast");
+		hasWest = tag.getBoolean("hasWest");
+
 		getAutomator().readSyncData(tag);
 	}
 	
@@ -518,6 +556,19 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 			manualWestEastInactive.remove(type);
 		}
 	}
+	
+	public void setNorth(Boolean hi) {
+		hasNorth = hi;
+	}
+	public void setSouth(Boolean hi) {
+		hasSouth = hi;
+	}
+	public void setEast(Boolean hi) {
+		hasEast = hi;
+	}
+	public void setWest(Boolean hi) {
+		hasWest = hi;
+	}
 
 	@Override
 	public NBTTagCompound getClientToServerUpdateTag() {
@@ -526,7 +577,10 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		writeManualSettingDictionary(compound, manualWestEastActive, "manualWestEastActive");
 		writeManualSettingDictionary(compound, manualNorthSouthInactive, "manualNorthSouthInactive");
 		writeManualSettingDictionary(compound, manualWestEastInactive, "manualWestEastInactive");
-		
+		compound.setBoolean("hasNorth", hasNorth);
+		compound.setBoolean("hasSouth", hasSouth);
+		compound.setBoolean("hasEast", hasEast);
+		compound.setBoolean("hasWest", hasWest);
 		getAutomator().setSyncData(compound);
 		
 		return compound;
@@ -540,7 +594,10 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		readManualSettingDictionary(compound, manualWestEastInactive, "manualWestEastInactive");
 		
 		getAutomator().readSyncData(compound);
-
+		if (compound.hasKey("hasNorth")) this.hasNorth = compound.getBoolean("hasNorth");
+		if (compound.hasKey("hasSouth")) this.hasSouth = compound.getBoolean("hasSouth");
+		if (compound.hasKey("hasEast")) this.hasEast = compound.getBoolean("hasEast");
+		if (compound.hasKey("hasWest")) this.hasWest = compound.getBoolean("hasWest");
 		markDirty();
 		world.notifyBlockUpdate(getPos(), world.getBlockState(getPos()), world.getBlockState(getPos()), 3);
 	}
@@ -597,7 +654,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 	{
 		return isAutoMode;
 	}
-	private boolean isInDarkMode = false;
+	private boolean isInDarkMode = true;
 	@Override
 	public void update() {
 		if (world.isRemote)
@@ -749,55 +806,126 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		private final String nbtPrefix = "automated_";
 		
 		private Stages lastStage = Stages.Red;
+		private long stageStartTime = 0;
+
+
 		private RightOfWays lastRightOfWay = RightOfWays.EastWest;
 		
-		private double greenMinimum = 10;
-		private double yellowTime = 3;
-		private double redTime = 2;
-		private double arrowMinimum = 5;
+		private double greenMinimumNS = 0;
+		private double greenMinimumEW = 0;
+		private double greenMaxNS = 10;
+		private double greenMaxEW = 10;
+		private double yellowTimeNS = 3;
+		private double yellowTimeEW = 3;
+		private double redTimeNS = 2;
+		private double redTimeEW = 2;
+		private double arrowMinimumNS = 0;
+		private double arrowMinimumEW = 0;
+		public double arrowMaxNS = 5;
+		public double arrowMaxEW = 5;
 		private double crossTime = 5;
 		private double crossWarningTime = 7;
 		private double rightArrowTime = 5;
 		private boolean northSouthPedQueued;
 		private boolean westEastPedQueued;
 		
+		
+		
 		public void reset() {
 		    lastStage = Stages.Red;
 		    lastRightOfWay = RightOfWays.EastWest;
 		    hasInitialized = false;
 		    nextUpdate = 0;
+		    stageStartTime = 0;
 		}
 		
-		public double getGreenMinimum() {
-			return greenMinimum;
+		public double getGreenMinimumNS() {
+			return greenMinimumNS;
+		}
+		public double getGreenMinimumEW() {
+			return greenMinimumEW;
 		}
 
-		public void setGreenMinimum(double greenMinimum) {
-			this.greenMinimum = greenMinimum;
+		public void setGreenMinimumEW(double greenMinimum) {
+			this.greenMinimumEW = greenMinimum;
+		}
+		public void setGreenMinimumNS(double greenMinimum) {
+			this.greenMinimumNS = greenMinimum;
+		}
+		
+		public double getGreenMaxNS() {
+			return greenMaxNS;
 		}
 
-		public double getYellowTime() {
-			return yellowTime;
+		public void setGreenMaxEW(double greenMinimum) {
+			this.greenMaxEW = greenMinimum;
+		}
+		public double getGreenMaxEW() {
+			return greenMaxEW;
 		}
 
-		public void setYellowTime(double yellowTime) {
-			this.yellowTime = yellowTime;
+		public void setGreenMaxNS(double greenMinimum) {
+			this.greenMaxNS = greenMinimum;
 		}
 
-		public double getRedTime() {
-			return redTime;
+		public double getYellowTimeNS() {
+			return yellowTimeNS;
 		}
 
-		public void setRedTime(double redTime) {
-			this.redTime = redTime;
+		public double getYellowTimeEW() {
+			return yellowTimeEW;
+		}
+		
+		public void setYellowTimeNS(double yellowTime) {
+			this.yellowTimeNS = yellowTime;
+		}
+		
+		public void setYellowTimeEW(double yellowTime) {
+			this.yellowTimeEW = yellowTime;
+		}
+		
+
+		public double getRedTimeNS() {
+			return redTimeNS;
+		}
+		public double getRedTimeEW() {
+			return redTimeEW;
 		}
 
-		public double getArrowMinimum() {
-			return arrowMinimum;
+		public void setRedTimeNS(double redTime) {
+			this.redTimeNS = redTime;
+		}
+		public void setRedTimeEW(double redTime) {
+			this.redTimeEW = redTime;
 		}
 
-		public void setArrowMinimum(double arrowMinimum) {
-			this.arrowMinimum = arrowMinimum;
+		public double getArrowMinimumNS() {
+			return arrowMinimumNS;
+		}
+		public double getArrowMinimumES() {
+			return arrowMinimumEW;
+		}
+
+		public void setArrowMinimumNS(double arrowMinimum) {
+			this.arrowMinimumNS = arrowMinimum;
+		}
+		public void setArrowMinimumEW(double arrowMinimum) {
+			this.arrowMinimumEW = arrowMinimum;
+		}
+		
+		public double getArrowMaxNS() {
+			return arrowMaxNS;
+		}
+		
+		public double getArrowMaxEW() {
+			return arrowMaxEW;
+		}
+
+		public void setArrowMaxNS(double arrowMinimum) {
+			this.arrowMaxNS = arrowMinimum;
+		}
+		public void setArrowMaxEW(double arrowMinimum) {
+			this.arrowMaxEW = arrowMinimum;
 		}
 				
 		public double getCrossTime() {
@@ -851,6 +979,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 			
 			if (MinecraftServer.getCurrentTimeMillis() < nextUpdate)
 			{
+				
 				return;
 			}
 			
@@ -883,6 +1012,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		
 		private void initialize()
 		{
+			
 			for(BaseTrafficLightTileEntity te : northSouthLights
 					.stream()
 					.map(bp ->
@@ -899,14 +1029,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					.collect(Collectors.toList()))
 			{
 				te.powerOff();
-				te.setActive(EnumTrafficLightBulbTypes.Red, true, false);
-				te.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
-				te.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
-				te.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
-				te.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
-				te.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
-				te.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
-				te.setActive(EnumTrafficLightBulbTypes.NoLeftTurn, true, false);
+				
 			};
 			
 			for(BaseTrafficLightTileEntity te : westEastLights
@@ -925,14 +1048,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					.collect(Collectors.toList()))
 			{
 				te.powerOff();
-				te.setActive(EnumTrafficLightBulbTypes.Red, true, false);
-				te.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
-				te.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
-				te.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
-				te.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
-				te.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
-				te.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
-				te.setActive(EnumTrafficLightBulbTypes.NoLeftTurn, true, false);
+				
 			};
 			
 			hasInitialized = true;
@@ -940,6 +1056,11 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		
 		private Stages updateLightsByStage(Stages stage)
 		{
+			
+			
+
+			//System.out.print("AUTO:" + Automator.this.stageStartTime);
+			
 			List<BlockPos> trafficLightPosForRightOfWay;
 			List<BlockPos> trafficLightPosOpposingRightOfWay;
 			List<BaseTrafficLightTileEntity> trafficLightsForRightOfWay;
@@ -995,6 +1116,9 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 			
 			EnumFacing direction1cw = direction1.rotateY();
 			EnumFacing direction2cw = direction2.rotateY();
+			
+		
+			
 			switch(stage)
 			{
 				case Red:
@@ -1002,6 +1126,12 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					.stream()
 					.forEach(tl ->
 					{
+						
+						
+				
+						
+						
+						
 						tl.powerOff();
 						tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
@@ -1014,6 +1144,8 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.NoRightTurn, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.NoLeftTurn, true, false);
+						
+						
 					});
 					
 					trafficLightsOpposingRightOfWay
@@ -1033,6 +1165,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						tl.setActive(EnumTrafficLightBulbTypes.NoRightTurn, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.NoLeftTurn, true, false);
 					});
+					
 					break;
 				case Direction1RightTurnArrow:
 				case Direction1LeftTurnArrow:					
@@ -1573,7 +1706,12 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						tl.setActive(EnumTrafficLightBulbTypes.NoLeftTurn, true, false);
 					});
 					break;
+					
 			}
+			
+			
+			
+		
 			
 			return stage;
 		}
@@ -1594,26 +1732,74 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 			nbt.setInteger(getNbtKey("lastRightOfWay"), lastRightOfWay.index);
 			 nbt.setBoolean("DarkMode", isInDarkMode);
 			nbt.setBoolean("EmergencyFlash", isFlashingEmergency);
+			nbt.setBoolean("powered", powered);
+			
 			setSyncData(nbt); // This may need to be changed if we send/receive data not needed to be saved
 		}
 		
-		public void readSyncData(NBTTagCompound nbt)
-		{
-			greenMinimum = nbt.getDouble(getNbtKey("greenMinimum"));
-			yellowTime = nbt.getDouble(getNbtKey("yellowTime"));
-			redTime = nbt.getDouble(getNbtKey("redTime"));
-			arrowMinimum = nbt.getDouble(getNbtKey("arrowMinimum"));
-			crossTime = nbt.getDouble(getNbtKey("crossTime"));
+		public void readSyncData(NBTTagCompound nbt) {
+			boolean legacyFallback = !nbt.hasKey(getNbtKey("greenMinimumNS"));
+
+			if (legacyFallback) {
+				// Use legacy shared values for both NS and EW
+				double gMin = nbt.getDouble(getNbtKey("greenMinimum"));
+				double gMax = nbt.getDouble(getNbtKey("greenMax"));
+				double aMin = nbt.getDouble(getNbtKey("arrowMinimum"));
+				double aMax = nbt.getDouble(getNbtKey("arrowMax"));
+				double yTime = nbt.getDouble(getNbtKey("yellowTime"));
+				double rTime = nbt.getDouble(getNbtKey("redTime"));
+
+				greenMinimumNS = greenMinimumEW = gMin;
+				greenMaxNS     = greenMaxEW     = gMax;
+				arrowMinimumNS = arrowMinimumEW = aMin;
+				arrowMaxNS     = arrowMaxEW     = aMax;
+				yellowTimeNS   = yellowTimeEW   = yTime;
+				redTimeNS      = redTimeEW      = rTime;
+			} else {
+				// North/South timings with fallback to shared (partial legacy)
+				greenMinimumNS = nbt.hasKey(getNbtKey("greenMinimumNS")) ? nbt.getDouble(getNbtKey("greenMinimumNS")) : nbt.getDouble(getNbtKey("greenMinimum"));
+				greenMaxNS     = nbt.hasKey(getNbtKey("greenMaxNS"))     ? nbt.getDouble(getNbtKey("greenMaxNS"))     : nbt.getDouble(getNbtKey("greenMax"));
+				arrowMinimumNS = nbt.hasKey(getNbtKey("arrowMinimumNS")) ? nbt.getDouble(getNbtKey("arrowMinimumNS")) : nbt.getDouble(getNbtKey("arrowMinimum"));
+				arrowMaxNS     = nbt.hasKey(getNbtKey("arrowMaxNS"))     ? nbt.getDouble(getNbtKey("arrowMaxNS"))     : nbt.getDouble(getNbtKey("arrowMax"));
+				yellowTimeNS   = nbt.hasKey(getNbtKey("yellowTimeNS"))   ? nbt.getDouble(getNbtKey("yellowTimeNS"))   : nbt.getDouble(getNbtKey("yellowTime"));
+				redTimeNS      = nbt.hasKey(getNbtKey("redTimeNS"))      ? nbt.getDouble(getNbtKey("redTimeNS"))      : nbt.getDouble(getNbtKey("redTime"));
+
+				// East/West timings with fallback to shared (partial legacy)
+				greenMinimumEW = nbt.hasKey(getNbtKey("greenMinimumEW")) ? nbt.getDouble(getNbtKey("greenMinimumEW")) : nbt.getDouble(getNbtKey("greenMinimum"));
+				greenMaxEW     = nbt.hasKey(getNbtKey("greenMaxEW"))     ? nbt.getDouble(getNbtKey("greenMaxEW"))     : nbt.getDouble(getNbtKey("greenMax"));
+				arrowMinimumEW = nbt.hasKey(getNbtKey("arrowMinimumEW")) ? nbt.getDouble(getNbtKey("arrowMinimumEW")) : nbt.getDouble(getNbtKey("arrowMinimum"));
+				arrowMaxEW     = nbt.hasKey(getNbtKey("arrowMaxEW"))     ? nbt.getDouble(getNbtKey("arrowMaxEW"))     : nbt.getDouble(getNbtKey("arrowMax"));
+				yellowTimeEW   = nbt.hasKey(getNbtKey("yellowTimeEW"))   ? nbt.getDouble(getNbtKey("yellowTimeEW"))   : nbt.getDouble(getNbtKey("yellowTime"));
+				redTimeEW      = nbt.hasKey(getNbtKey("redTimeEW"))      ? nbt.getDouble(getNbtKey("redTimeEW"))      : nbt.getDouble(getNbtKey("redTime"));
+			}
+
+			// Shared timings (no fallback needed)
+			crossTime        = nbt.getDouble(getNbtKey("crossTime"));
 			crossWarningTime = nbt.getDouble(getNbtKey("crossWarningTime"));
-			rightArrowTime = nbt.getDouble(getNbtKey("rightArrowMinimum"));
+			rightArrowTime   = nbt.getDouble(getNbtKey("rightArrowTime"));
 		}
+
+
 		
 		public void setSyncData(NBTTagCompound nbt)
 		{
-			nbt.setDouble(getNbtKey("greenMinimum"), greenMinimum);
-			nbt.setDouble(getNbtKey("yellowTime"), yellowTime);
-			nbt.setDouble(getNbtKey("redTime"), redTime);
-			nbt.setDouble(getNbtKey("arrowMinimum"), arrowMinimum);
+			// North/South timings
+			nbt.setDouble(getNbtKey("greenMinimumNS"), greenMinimumNS);
+			nbt.setDouble(getNbtKey("greenMaxNS"), greenMaxNS);
+			nbt.setDouble(getNbtKey("yellowTimeNS"), yellowTimeNS);
+			nbt.setDouble(getNbtKey("redTimeNS"), redTimeNS);
+			nbt.setDouble(getNbtKey("arrowMinimumNS"), arrowMinimumNS);
+			nbt.setDouble(getNbtKey("arrowMaxNS"), arrowMaxNS);
+
+			// East/West timings
+			nbt.setDouble(getNbtKey("greenMinimumEW"), greenMinimumEW);
+			nbt.setDouble(getNbtKey("greenMaxEW"), greenMaxEW);
+			nbt.setDouble(getNbtKey("yellowTimeEW"), yellowTimeEW);
+			nbt.setDouble(getNbtKey("redTimeEW"), redTimeEW);
+			nbt.setDouble(getNbtKey("arrowMinimumEW"), arrowMinimumEW);
+			nbt.setDouble(getNbtKey("arrowMaxEW"), arrowMaxEW);
+
+			// Shared timings
 			nbt.setDouble(getNbtKey("crossTime"), crossTime);
 			nbt.setDouble(getNbtKey("crossWarningTime"), crossWarningTime);
 			nbt.setDouble(getNbtKey("rightArrowMinimum"), rightArrowTime);
@@ -1753,164 +1939,266 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		}
 
 		
-		private Stages getNextLogicalStage(Stages currentStage, RightOfWays currentRightOfWay, Automator.SensorCheckResult sensorResult)
-		{
-			
-			
-			switch(currentStage)
-			{
-				case Red:
-					if (sensorResult.Direction1SensorRight)
-					{
-						setNextUpdate(rightArrowTime);
-						return Stages.Direction1RightTurnArrow;
-					}
-					else if (sensorResult.Direction2SensorRight)
-					{
-						setNextUpdate(rightArrowTime);
-						return Stages.Direction2RightTurnArrow;
-					}
-					else if (sensorResult.Direction1SensorLeft &&
-							sensorResult.Direction2SensorLeft)
-					{
-						setNextUpdate(arrowMinimum);
-						return Stages.BothTurnArrow;
-					}
-					else if (sensorResult.Direction1SensorLeft)
-					{
-						setNextUpdate(arrowMinimum);
-						return Stages.Direction1LeftTurnArrow;
-					}
-					else if (sensorResult.Direction2SensorLeft)
-					{
-						setNextUpdate(arrowMinimum);
-						return Stages.Direction2LeftTurnArrow;
-					}					
-					
-					return pedCheckedGreen(currentRightOfWay);
-				case Direction1RightTurnArrow:
-					setNextUpdate(yellowTime);
-					if (sensorResult.Direction2SensorRight || sensorResult.Direction2SensorLeft)
-					{
-						return Stages.Direction1RightTurnArrowYellow;
-					}
-					else
-					{
-						return Stages.Direction1LeftTurnArrowYellow;
-					}
-				case Direction1RightTurnArrowYellow:
-					if (sensorResult.Direction2SensorRight)
-					{
-						setNextUpdate(rightArrowTime);
-					}
-					else
-					{
-						setNextUpdate(arrowMinimum);
-					}
-					return Stages.Direction2LeftTurnArrow;
-				case Direction2RightTurnArrow:
-					setNextUpdate(yellowTime);
-					if (sensorResult.Direction1SensorLeft || sensorResult.Direction1SensorRight)
-					{
-						return Stages.Direction2RightTurnArrowYellow;
-					}
-					else
-					{
-						return Stages.Direction2LeftTurnArrowYellow;
-					}
-				case Direction2RightTurnArrowYellow:
-					if (sensorResult.Direction2SensorRight)
-					{
-						setNextUpdate(rightArrowTime);
-					}
-					else
-					{
-						setNextUpdate(arrowMinimum);
-					}
-					setNextUpdate(rightArrowTime);
-					return Stages.Direction1LeftTurnArrow;
-				case BothTurnArrow:
-					setNextUpdate(yellowTime);
-					return Stages.BothTurnArrowYellow;
-				case BothTurnArrowYellow:
-					return pedCheckedGreen(currentRightOfWay);
-				case Direction1LeftTurnArrow:
-					setNextUpdate(yellowTime);
-					return Stages.Direction1LeftTurnArrowYellow;
-				case Direction1LeftTurnArrowYellow:
-					if (sensorResult.Direction2SensorRight)
-					return pedCheckedGreen(currentRightOfWay);
-				case Direction2LeftTurnArrow:
-					setNextUpdate(yellowTime);
-					return Stages.Direction2LeftTurnArrowYellow;
-				case Direction2LeftTurnArrowYellow:
-					return pedCheckedGreen(currentRightOfWay);
-				case GreenDontCrossWarning:
-				case Green:
-					
+		private Stages getNextLogicalStage(Stages currentStage, RightOfWays currentRightOfWay, Automator.SensorCheckResult sensorResult) {
+		    long ticksInStage = world.getTotalWorldTime() - this.stageStartTime;
 
-					// Check current direction sensors
-					Automator.SensorCheckResult ownSensorCheck = checkSensors(currentRightOfWay);
-					
+		    // Load direction-based timing values
+		    double arrowMinNS = getAutomator().getArrowMinimumNS();
+		    double arrowMaxNS = getAutomator().getArrowMaxNS();
+		    double yellowNS = getAutomator().getYellowTimeNS();
+		    double greenMinNS = getAutomator().getGreenMinimumNS();
+		    double greenMaxNS = getAutomator().getGreenMaxNS();
+		    double redNS = getAutomator().getRedTimeNS();
 
-					if (ownSensorCheck.Direction1SensorLeft || ownSensorCheck.Direction2SensorLeft) {
-					  
-					    setNextUpdate(yellowTime);
-					    return Stages.Yellow;
-					}
+		    double arrowMinEW = getAutomator().getArrowMinimumES();
+		    double arrowMaxEW = getAutomator().getArrowMaxEW();
+		    double yellowEW = getAutomator().getYellowTimeEW();
+		    double greenMinEW = getAutomator().getGreenMinimumEW();
+		    double greenMaxEW = getAutomator().getGreenMaxEW();
+		    double redEW = getAutomator().getRedTimeEW();
 
-					// Check cross-traffic direction sensors
-					Automator.SensorCheckResult crossSensorCheck = checkSensors(currentRightOfWay.getNext());
-					if (crossSensorCheck.Direction1Sensor || 
-					    crossSensorCheck.Direction2Sensor ||
-					    crossSensorCheck.Direction1SensorLeft ||
-					    crossSensorCheck.Direction2SensorLeft ||
-					    crossSensorCheck.Direction1SensorRight ||
-					    crossSensorCheck.Direction2SensorRight) {
-						
-						setNextUpdate(yellowTime);
-						return Stages.Yellow;
-					}
+		    double yellowTime = currentRightOfWay == RightOfWays.NorthSouth ? yellowNS : yellowEW;
+		    double redTime = currentRightOfWay == RightOfWays.NorthSouth ? redNS : redEW;
+		    double greenMinimum = currentRightOfWay == RightOfWays.NorthSouth ? greenMinNS : greenMinEW;
+		    double greenMax = currentRightOfWay == RightOfWays.NorthSouth ? greenMaxNS : greenMaxEW;
+		    double arrowMinimum = currentRightOfWay == RightOfWays.NorthSouth ? arrowMinNS : arrowMinEW;
+		    double arrowMax = currentRightOfWay == RightOfWays.NorthSouth ? arrowMaxNS : arrowMaxEW;
 
-					Stages nextStage = pedCheckedGreen(currentRightOfWay);
-					setNextUpdate(yellowTime);
-					return nextStage;
+		    boolean sensorLeftTripped = sensorResult.Direction1SensorLeft || sensorResult.Direction2SensorLeft;
+		    boolean sensorsStripped = sensorResult.Direction1Sensor || sensorResult.Direction2Sensor;
+		    boolean timeExceeded = (arrowMinimum > 0) && ticksInStage >= (arrowMinimum * 20);
 
-				case Yellow:
-					setNextUpdate(redTime);
-					return Stages.Red;
-				case GreenCross:
-					setNextUpdate(crossWarningTime);
-					return Stages.GreenDontCrossWarning;
-			}
-			
-			return null;
+		    switch (currentStage) {
+		        case Red:
+		            if (sensorResult.Direction1SensorRight) {
+		                this.stageStartTime = world.getTotalWorldTime();
+		                ticksInStage = 0;
+		                setNextUpdate(getAutomator().getRightArrowTime());
+		                return Stages.Direction1RightTurnArrow;
+		            } else if (sensorResult.Direction2SensorRight) {
+		                this.stageStartTime = world.getTotalWorldTime();
+		                ticksInStage = 0;
+		                setNextUpdate(getAutomator().getRightArrowTime());
+		                return Stages.Direction2RightTurnArrow;
+		            } else if ((sensorResult.Direction1SensorLeft && sensorResult.Direction2SensorLeft) || arrowMinimum != 0) {
+		                ticksInStage = 0;
+		                this.stageStartTime = world.getTotalWorldTime();
+		                setNextUpdate(arrowMinimum);
+		                return Stages.BothTurnArrow;
+		            } else if (sensorResult.Direction1SensorLeft) {
+		                ticksInStage = 0;
+		                this.stageStartTime = world.getTotalWorldTime();
+		                setNextUpdate(arrowMinNS);
+		                return Stages.Direction1LeftTurnArrow;
+		            } else if (sensorResult.Direction2SensorLeft) {
+		                ticksInStage = 0;
+		                this.stageStartTime = world.getTotalWorldTime();
+		                setNextUpdate(arrowMinEW);
+		                return Stages.Direction2LeftTurnArrow;
+		            }
+		            return pedCheckedGreen(currentRightOfWay);
+
+		        case Direction1RightTurnArrow:
+		            if (sensorLeftTripped || timeExceeded) {
+		                if (ticksInStage >= (arrowMinNS * 20)) {
+		                    ticksInStage = 0;
+		                    this.stageStartTime = world.getTotalWorldTime();
+		                    setNextUpdate(yellowNS);
+		                    return Stages.BothTurnArrowYellow;
+		                }
+		            }
+		            if (sensorResult.Direction2SensorRight || sensorResult.Direction2SensorLeft) {
+		                return Stages.Direction1RightTurnArrowYellow;
+		            } else {
+		                return Stages.Direction1LeftTurnArrowYellow;
+		            }
+
+		        case Direction1RightTurnArrowYellow:
+		            ticksInStage = 0;
+		            this.stageStartTime = world.getTotalWorldTime();
+		            setNextUpdate(sensorResult.Direction2SensorRight ? getAutomator().getRightArrowTime() : arrowMinEW);
+		            return Stages.Direction2LeftTurnArrow;
+
+		        case Direction2RightTurnArrow:
+		            if (sensorLeftTripped && ticksInStage >= (arrowMaxEW * 20)) {
+		                ticksInStage = 0;
+		                this.stageStartTime = world.getTotalWorldTime();
+		                setNextUpdate(yellowEW);
+		                return Stages.BothTurnArrowYellow;
+		            } else if (timeExceeded && arrowMinEW != 0 && ticksInStage >= (arrowMinEW * 20)) {
+		                ticksInStage = 0;
+		                this.stageStartTime = world.getTotalWorldTime();
+		                setNextUpdate(yellowEW);
+		                return Stages.BothTurnArrowYellow;
+		            }
+		            return sensorResult.Direction1SensorLeft || sensorResult.Direction1SensorRight
+		                ? Stages.Direction2RightTurnArrowYellow
+		                : Stages.Direction2LeftTurnArrowYellow;
+
+		        case Direction2RightTurnArrowYellow:
+		            ticksInStage = 0;
+		            this.stageStartTime = world.getTotalWorldTime();
+		            setNextUpdate(sensorResult.Direction2SensorRight ? getAutomator().getRightArrowTime() : arrowMinNS);
+		            return Stages.Direction1LeftTurnArrow;
+
+		        case BothTurnArrow:
+		            if (sensorLeftTripped && ticksInStage >= (arrowMax * 20)) {
+		                ticksInStage = 0;
+		                this.stageStartTime = world.getTotalWorldTime();
+		                setNextUpdate(yellowTime);
+		                return Stages.BothTurnArrowYellow;
+		            } else if (timeExceeded && arrowMinimum != 0 && ticksInStage >= (arrowMinimum * 20)) {
+		                ticksInStage = 0;
+		                this.stageStartTime = world.getTotalWorldTime();
+		                setNextUpdate(yellowTime);
+		                return Stages.BothTurnArrowYellow;
+		            }
+		            return Stages.BothTurnArrow;
+
+
+		        case BothTurnArrowYellow:
+		            ticksInStage = 0;
+		            this.stageStartTime = world.getTotalWorldTime();
+		            return pedCheckedGreen(currentRightOfWay);
+
+		        case Direction1LeftTurnArrow:
+		            if ((sensorResult.Direction1SensorLeft || sensorResult.Direction2SensorLeft) && ticksInStage >= (arrowMaxNS * 20)) {
+		                this.stageStartTime = world.getTotalWorldTime();
+		                ticksInStage = 0;
+		                setNextUpdate(yellowNS);
+		                return Stages.Direction1LeftTurnArrowYellow;
+		            } else if (arrowMinNS > 0 && ticksInStage >= (arrowMinNS * 20)) {
+		                this.stageStartTime = world.getTotalWorldTime();
+		                ticksInStage = 0;
+		                setNextUpdate(yellowNS);
+		                return Stages.Direction1LeftTurnArrowYellow;
+		            }
+		            return Stages.Direction1LeftTurnArrow;
+
+
+		        case Direction1LeftTurnArrowYellow:
+		            ticksInStage = 0;
+		            this.stageStartTime = world.getTotalWorldTime();
+		            return pedCheckedGreen(currentRightOfWay);
+
+		        case Direction2LeftTurnArrow:
+		            if ((sensorResult.Direction1SensorLeft || sensorResult.Direction2SensorLeft) && ticksInStage >= (arrowMaxEW * 20)) {
+		                this.stageStartTime = world.getTotalWorldTime();
+		                ticksInStage = 0;
+		                setNextUpdate(yellowEW);
+		                return Stages.Direction2LeftTurnArrowYellow;
+		            } else if (arrowMinEW > 0 && ticksInStage >= (arrowMinEW * 20)) {
+		                this.stageStartTime = world.getTotalWorldTime();
+		                ticksInStage = 0;
+		                setNextUpdate(yellowEW);
+		                return Stages.Direction2LeftTurnArrowYellow;
+		            }
+		            return Stages.Direction2LeftTurnArrow;
+
+
+		        case Direction2LeftTurnArrowYellow:
+		            ticksInStage = 0;
+		            this.stageStartTime = world.getTotalWorldTime();
+		            return pedCheckedGreen(currentRightOfWay);
+
+		        case Green:
+		            Automator.SensorCheckResult crossSensorCheck = checkSensors(currentRightOfWay.getNext());
+
+		            timeExceeded = (greenMinimum > 0) && ticksInStage >= (greenMinimum * 20);
+		            boolean maxTimeExceeded = ticksInStage >= (greenMax * 20);
+
+		         // (1) If on your own sensor, switch only after max time
+		            if ((sensorResult.Direction1Sensor || sensorResult.Direction2Sensor) && maxTimeExceeded) {
+		                
+		                this.stageStartTime = world.getTotalWorldTime();
+		                ticksInStage = 0;
+		                setNextUpdate(yellowTime);
+		                return Stages.Yellow;
+		            }
+
+		            // (2) If not on your own sensor and greenMinimum > 0 and time exceeded
+		            if (!sensorResult.Direction1Sensor && !sensorResult.Direction2Sensor && greenMinimum > 0 && timeExceeded) {
+		               
+		                this.stageStartTime = world.getTotalWorldTime();
+		                ticksInStage = 0;
+		                setNextUpdate(yellowTime);
+		                return Stages.Yellow;
+		            }
+		            
+		            if (greenMinimum == 0 && maxTimeExceeded &&
+		            	    (sensorResult.Direction1SensorLeft || sensorResult.Direction2SensorLeft)) {
+		            	   
+		            	    this.stageStartTime = world.getTotalWorldTime();
+		            	    ticksInStage = 0;
+		            	    setNextUpdate(yellowTime);
+		            	    return Stages.Yellow;
+		            	}
+
+		            // (3) If greenMinimum == 0, only switch on cross traffic after max time
+		            if (greenMinimum == 0 && maxTimeExceeded &&
+		                (crossSensorCheck.Direction1Sensor || crossSensorCheck.Direction2Sensor ||
+		                 crossSensorCheck.Direction1SensorLeft || crossSensorCheck.Direction2SensorLeft ||
+		                 crossSensorCheck.Direction1SensorRight || crossSensorCheck.Direction2SensorRight)) {
+		               
+		                this.stageStartTime = world.getTotalWorldTime();
+		                ticksInStage = 0;
+		                setNextUpdate(yellowTime);
+		                return Stages.Yellow;
+		            }
+
+		            return Stages.Green;
+
+		        case Yellow:
+		            ticksInStage = 0;
+		            this.stageStartTime = world.getTotalWorldTime();
+		            setNextUpdate(redTime);
+		            return Stages.Red;
+
+		        case GreenCross:
+		            ticksInStage = 0;
+		            this.stageStartTime = world.getTotalWorldTime();
+		            setNextUpdate(getAutomator().getCrossWarningTime());
+		            return Stages.GreenDontCrossWarning;
+
+		        case GreenDontCrossWarning:
+		            // Let this drop into Green case logic if needed
+		            return Stages.Green;
+		    }
+
+		    return null;
 		}
+
 		
-		private Stages pedCheckedGreen(RightOfWays rightOfWay)
-		{
-			if ((rightOfWay == RightOfWays.NorthSouth && isNorthSouthPedQueued()) ||
-					(rightOfWay == RightOfWays.EastWest && isWestEastPedQueued()))
-			{
-				if (rightOfWay == RightOfWays.NorthSouth)
-				{
-					setNorthSouthPedQueued(false);
-				}
-				else
-				{
-					setWestEastPedQueued(false);
-				}
-				
-				setNextUpdate(crossTime);
-				return Stages.GreenCross;
-			}
-			
-			setNextUpdate(greenMinimum);
-			return Stages.Green;
+		private Stages pedCheckedGreen(RightOfWays rightOfWay) {
+		    double crossTime = (rightOfWay == RightOfWays.NorthSouth)
+		        ? getAutomator().getCrossTime()
+		        : getAutomator().getCrossTime();
+
+		    double greenMinimum = (rightOfWay == RightOfWays.NorthSouth)
+		        ? getAutomator().getGreenMinimumNS()
+		        : getAutomator().getGreenMinimumEW();
+
+		    if ((rightOfWay == RightOfWays.NorthSouth && isNorthSouthPedQueued()) ||
+		        (rightOfWay == RightOfWays.EastWest && isWestEastPedQueued())) {
+
+		        if (rightOfWay == RightOfWays.NorthSouth) {
+		            setNorthSouthPedQueued(false);
+		        } else {
+		            setWestEastPedQueued(false);
+		        }
+
+		        setNextUpdate(crossTime);
+		        return Stages.GreenCross;
+		    }
+
+		    setNextUpdate(greenMinimum);
+		    return Stages.Green;
 		}
+
 	
 		private void setNextUpdate(double secondsIntoFuture)
 		{
+		
 			nextUpdate = MinecraftServer.getCurrentTimeMillis() + (long)(secondsIntoFuture * 1000);
 		}
 	}
