@@ -75,13 +75,11 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 	private GuiButtonExtSelectable manualModeNorth;
 	private GuiButtonExtSelectable manualModeSouth;
 	
-	private GuiTextField greenMinimum;
-	private GuiTextField greenMax;
-	private GuiTextField arrowMinimum;
-	private GuiTextField arrowMax;
+	private GuiButtonExtSelectable autoModeNorth;
+	private GuiButtonExtSelectable autoModeSouth;
+	
 	private GuiTextField rightArrowMinimum;
-	private GuiTextField yellowTime;
-	private GuiTextField redTime;
+
 	private GuiTextField crossTime;
 	private GuiTextField crossWarningTime;
 	
@@ -211,15 +209,17 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 		
 		setManualChecked();
 		
-		int xNS = horizontalCenter - 120;
-		int xEW = horizontalCenter + 16;
+		int xNS = horizontalCenter - 54;
+		int xEW = horizontalCenter - 54;
 		int yStart = verticalCenter - 90;
 		int spacing = 30;
 		
 		if(_currentMode == Modes.Automatic) {
-			toggleAutoDirectionButton = new GuiButtonExt(600, horizontalCenter - 50, verticalCenter - 130, 99, 20,
-				    editingNorthSouth ? "Editing: N/S" : "Editing: E/W");
-				buttonList.add(toggleAutoDirectionButton);
+			autoModeNorth = new GuiButtonExtSelectable(600, horizontalCenter - 107, verticalCenter - 100, 25, 20, "N/S");
+			autoModeSouth = new GuiButtonExtSelectable(700, horizontalCenter - 107, verticalCenter - 78, 25, 20, "W/E");
+			this.buttonList.add(autoModeNorth);
+		    this.buttonList.add(autoModeSouth);
+		
 		}
 
 		greenMinimumNS = new GuiTextField(ELEMENT_IDS.greenMinimum, fontRenderer, xNS, yStart, 105, 20);
@@ -673,6 +673,7 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 
 		drawString(fontRenderer, "Automatic Mode", leftMargin, y, 0xFFFF00);
 		y += spacing;
+		drawString(fontRenderer, "Direction", horizontalCenter - 115, verticalCenter - 110, 0xFFFFFF);
 		
 		drawString(fontRenderer, "Green Minimum (0 = always use Max; otherwise used if no sensors trip)", leftMargin, y, 0xFFFFFF);
 		
@@ -765,9 +766,16 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 	protected void actionPerformed(GuiButton button) throws IOException {
 		
 		if (button.id == 600) { // Your toggleAutoDirectionButton ID
-		    editingNorthSouth = !editingNorthSouth;
+		    editingNorthSouth = true;
 		  //  initGui(); // Reinitialize GUI to reload correct text fields
-		    button.displayString = editingNorthSouth ? "Editing: N/S" : "Editing: E/W";
+		  autoModeNorth.setIsSelected(true);
+		  autoModeSouth.setIsSelected(false);
+		}
+		if (button.id == 700) { // Your toggleAutoDirectionButton ID
+		    editingNorthSouth = false;
+		  //  initGui(); // Reinitialize GUI to reload correct text fields
+		  autoModeSouth.setIsSelected(true);
+		  autoModeNorth.setIsSelected(false);
 		}
 		switch(button.id)
 		{
