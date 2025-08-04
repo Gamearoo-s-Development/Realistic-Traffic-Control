@@ -2,6 +2,9 @@ package com.gamearoosdevelopment.realistictrafficcontrol;
 
 import org.apache.logging.log4j.Logger;
 
+import com.gamearoosdevelopment.realistictrafficcontrol.Commands.CommandConfigReload;
+import com.gamearoosdevelopment.realistictrafficcontrol.Commands.CommandDispatcher;
+import com.gamearoosdevelopment.realistictrafficcontrol.Commands.RealisticCommandBase;
 import com.gamearoosdevelopment.realistictrafficcontrol.proxy.CommonProxy;
 import com.gamearoosdevelopment.realistictrafficcontrol.signs.SignRepository;
 
@@ -16,6 +19,7 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -72,6 +76,12 @@ public class ModRealisticTrafficControl {
 		proxy.postInit(e);
 
 		IR_INSTALLED = Loader.isModLoaded("immersiverailroading");
+	}
+	
+	@Mod.EventHandler
+    public void onServerStart(FMLServerStartingEvent event) {
+	event.registerServerCommand(new CommandDispatcher());
+	RealisticCommandBase.registerSubCommand(new CommandConfigReload());
 	}
 	
 	
