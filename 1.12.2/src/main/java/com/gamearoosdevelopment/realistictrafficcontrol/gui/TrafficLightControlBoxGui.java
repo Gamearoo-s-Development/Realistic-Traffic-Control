@@ -794,10 +794,12 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 				break;
 			case ELEMENT_IDS.greenOn:
 				handleManualClick(button, EnumTrafficLightBulbTypes.Green, false, true);
+				handleManualClick(button, EnumTrafficLightBulbTypes.GreenDownArrow, false, true);
 				handleManualClick(button, EnumTrafficLightBulbTypes.StraightGreen, false, true);
 				break;
 			case ELEMENT_IDS.greenOnFlash:
 				handleManualClick(button, EnumTrafficLightBulbTypes.Green, true, true);
+				handleManualClick(button, EnumTrafficLightBulbTypes.GreenDownArrow, true, true);
 				handleManualClick(button, EnumTrafficLightBulbTypes.StraightGreen, true, true);
 				break;
 			case ELEMENT_IDS.yellowOn:
@@ -810,10 +812,12 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 				break;
 			case ELEMENT_IDS.redOn:
 				handleManualClick(button, EnumTrafficLightBulbTypes.Red, false, true);
+				handleManualClick(button, EnumTrafficLightBulbTypes.X, false, true);
 				handleManualClick(button, EnumTrafficLightBulbTypes.StraightRed, false, true);
 				break;
 			case ELEMENT_IDS.redOnFlash:
 				handleManualClick(button, EnumTrafficLightBulbTypes.Red, true, true);
+				handleManualClick(button, EnumTrafficLightBulbTypes.X, true, true);
 				handleManualClick(button, EnumTrafficLightBulbTypes.StraightRed, true, true);
 				break;
 			case ELEMENT_IDS.greenArrowLeftOn:
@@ -848,10 +852,12 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 				break;
 			case ELEMENT_IDS.greenOff:
 				handleManualClick(button, EnumTrafficLightBulbTypes.Green, false, false);
+				handleManualClick(button, EnumTrafficLightBulbTypes.GreenDownArrow, false, false);
 				handleManualClick(button, EnumTrafficLightBulbTypes.StraightGreen, false, false);
 				break;
 			case ELEMENT_IDS.greenOffFlash:
 				handleManualClick(button, EnumTrafficLightBulbTypes.Green, true, false);
+				handleManualClick(button, EnumTrafficLightBulbTypes.GreenDownArrow, true, false);
 				handleManualClick(button, EnumTrafficLightBulbTypes.StraightGreen, true, false);
 				break;
 			case ELEMENT_IDS.yellowOff:
@@ -864,10 +870,12 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 				break;
 			case ELEMENT_IDS.redOff:
 				handleManualClick(button, EnumTrafficLightBulbTypes.Red, false, false);
+				handleManualClick(button, EnumTrafficLightBulbTypes.X, false, false);
 				handleManualClick(button, EnumTrafficLightBulbTypes.StraightRed, false, false);
 				break;
 			case ELEMENT_IDS.redOffFlash:
 				handleManualClick(button, EnumTrafficLightBulbTypes.Red, true, false);
+				handleManualClick(button, EnumTrafficLightBulbTypes.X, true, false);
 				handleManualClick(button, EnumTrafficLightBulbTypes.StraightRed, true, false);
 				break;
 			case ELEMENT_IDS.greenArrowLeftOff:
