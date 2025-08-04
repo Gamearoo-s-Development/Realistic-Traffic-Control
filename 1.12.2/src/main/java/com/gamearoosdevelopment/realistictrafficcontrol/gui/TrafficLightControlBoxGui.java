@@ -15,16 +15,18 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.GuiCheckBox;
 
 public class TrafficLightControlBoxGui extends GuiScreen {
 	private ResourceLocation background = new ResourceLocation(ModRealisticTrafficControl.MODID + ":textures/gui/control_box_gui.png");
 	private Modes _currentMode = Modes.ManualNorthSouth;
-	
+	private final EntityPlayer player;
 	private GuiCheckBox greenOn;
 	private GuiCheckBox yellowOn;
 	private GuiCheckBox redOn;
@@ -91,10 +93,10 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 	private GuiButtonExt toggleAutoDirectionButton;
 	
 	private TrafficLightControlBoxTileEntity _te;
-	public TrafficLightControlBoxGui(TrafficLightControlBoxTileEntity te)
+	public TrafficLightControlBoxGui(TrafficLightControlBoxTileEntity te, EntityPlayer player)
 	{
 		_te = te;
-		
+		this.player = player;
 		_currentMode = _te.isAutoMode() ? Modes.Automatic : Modes.ManualNorthSouth; 
 	}
 	
@@ -988,6 +990,8 @@ public class TrafficLightControlBoxGui extends GuiScreen {
         
         
 		_te.performClientToServerSync();
+		
+		this.player.sendMessage(new TextComponentString("[Realistic Traffic Control] Control Box " + _te.getPos().getX() + "," + _te.getPos().getY() + "," + _te.getPos().getZ() + " Was Saved."));
 		
 		
 	}

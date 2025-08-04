@@ -138,7 +138,7 @@ public class GuiProxy implements IGuiHandler {
 				if (preControlBoxTE instanceof TrafficLightControlBoxTileEntity)
 				{
 					TrafficLightControlBoxTileEntity controlBoxTE = (TrafficLightControlBoxTileEntity)preControlBoxTE;
-					return new TrafficLightControlBoxGui(controlBoxTE);
+					return new TrafficLightControlBoxGui(controlBoxTE, player);
 				}
 				break;
 			case GUI_IDs.TYPE_3_BARRIER:

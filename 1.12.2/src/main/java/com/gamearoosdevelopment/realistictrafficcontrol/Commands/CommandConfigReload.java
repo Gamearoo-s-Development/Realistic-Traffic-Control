@@ -29,9 +29,9 @@ public class CommandConfigReload extends RealisticCommandBase {
 		if (CommonProxy.config != null) {
 			CommonProxy.config.load();       // reload from disk
 			Config.readConfig();             // re-parse and re-apply
-			sender.sendMessage(new TextComponentString("Configuration reloaded."));
+			sender.sendMessage(new TextComponentString("[Realistic Traffic Control] Configuration reloaded."));
 		} else {
-			sender.sendMessage(new TextComponentString("Config not loaded or available."));
+			sender.sendMessage(new TextComponentString("[Realistic Traffic Control] Config not loaded or available."));
 		}
 		
 	}
