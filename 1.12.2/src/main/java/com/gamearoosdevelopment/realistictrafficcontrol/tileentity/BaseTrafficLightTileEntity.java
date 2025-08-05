@@ -32,6 +32,15 @@ public class BaseTrafficLightTileEntity extends TileEntity implements ITickable 
 	private boolean hasPole;
 	
 	private boolean suppressHorizontalBar = false;
+	
+	public void setBulbType(int frame, EnumTrafficLightBulbTypes newType) {
+	    if (frame >= 0 && frame < BULB_COUNT) {
+	        bulbsBySlot.put(frame, newType);
+	        markDirty();
+	        world.notifyBlockUpdate(getPos(), world.getBlockState(getPos()), world.getBlockState(getPos()), 3);
+	    }
+	}
+
 
 	public boolean isHorizontalBarSuppressed() {
 	    return suppressHorizontalBar;
