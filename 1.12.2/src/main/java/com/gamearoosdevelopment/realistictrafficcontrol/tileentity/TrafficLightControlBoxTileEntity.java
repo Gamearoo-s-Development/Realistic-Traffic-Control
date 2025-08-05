@@ -71,9 +71,24 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 	public boolean hasEast  = true;
 	public boolean hasWest  = true;
 	private int ticksInCurrentStage = 0;
+	private boolean nightFlashEnabled = false;
+	private long nightFlashStart = 13000; // 7 PM
+	private long nightFlashEnd = 0;   // 5 AM
+	private boolean inNightFlash = false;
+	private boolean flashState = false; // toggles on/off
+	private boolean previousFlashState = false;
+	private boolean wasFlashOn = false; // toggle tracker
+	
 
 	
-	
+	public void setNightFlashEnabled(boolean enabled) {
+	    this.nightFlashEnabled = enabled;
+	    markDirty(); // Ensure the tile is saved
+	}
+	public boolean isNightFlashEnabled() {
+	    return nightFlashEnabled;
+	}
+
 
 	
 	public List<BlockPos> getNorthSouthLights() {
@@ -139,6 +154,8 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		compound.setBoolean("hasSouth", hasSouth);
 		compound.setBoolean("hasEast", hasEast);
 		compound.setBoolean("hasWest", hasWest);
+		compound.setBoolean("NightFlashEnabled", nightFlashEnabled);
+
 		
 		    compound.setInteger("TicksInCurrentStage", ticksInCurrentStage);
 		
@@ -230,6 +247,10 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		}
 		
 		powered = compound.getBoolean("powered");
+		if (compound.hasKey("NightFlashEnabled")) {
+		    nightFlashEnabled = compound.getBoolean("NightFlashEnabled");
+		}
+
 		
 	 
 		 hasNorth = compound.getBoolean("hasNorth");
@@ -282,7 +303,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		writeManualSettingDictionary(compound, manualWestEastActive, "manualWestEastActive");
 		writeManualSettingDictionary(compound, manualNorthSouthInactive, "manualNorthSouthInactive");
 		writeManualSettingDictionary(compound, manualWestEastInactive, "manualWestEastInactive");
-		
+		compound.setBoolean("NightFlashEnabled", nightFlashEnabled);
 		compound.setBoolean("isAutoMode", !sensors.isEmpty() || !northSouthPedButtons.isEmpty() || !westEastPedButtons.isEmpty());
 		compound.setBoolean("hasNorth", hasNorth);
 		compound.setBoolean("hasSouth", hasSouth);
@@ -308,7 +329,9 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		hasSouth = tag.getBoolean("hasSouth");
 		hasEast = tag.getBoolean("hasEast");
 		hasWest = tag.getBoolean("hasWest");
-
+		if (tag.hasKey("NightFlashEnabled")) {
+		    nightFlashEnabled = tag.getBoolean("NightFlashEnabled");
+		}
 		getAutomator().readSyncData(tag);
 	}
 	
@@ -697,6 +720,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 	}
 	
 	private boolean isFlashingEmergency = false;
+	public boolean isFlashOn;
 
 	
 	private void flashRedYellowForRecovery() {
@@ -968,35 +992,94 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 			this.westEastPedQueued = westEastPedQueued;
 		}
 
-		public void update()
-		{
-			if (isInDarkMode || isFlashingEmergency) return;
+		public void update() {
+		    long time = world.getWorldTime() % 24000;
+		    inNightFlash = (time >= nightFlashStart && time <= nightFlashEnd);
 
-			if (!hasInitialized)
-			{
-				initialize();
-			}
-			
-			if (MinecraftServer.getCurrentTimeMillis() < nextUpdate)
-			{
-				
-				return;
-			}
-			
-			if (lastStage == Stages.Red)
-			{
-				lastRightOfWay = lastRightOfWay.getNext();
-			}
-			
-			SensorCheckResult sensorResults = checkSensors(lastRightOfWay);
-			
-			
-			
-			    lastStage = updateLightsByStage(getNextLogicalStage(lastStage, lastRightOfWay, sensorResults));
-		
+		   
+		   
+		        
+		        if(!inNightFlash || !nightFlashEnabled) {
+		        	isFlashOn = false;
+		        }
 
-			
-			markDirty();
+		        if (nightFlashEnabled && inNightFlash) {
+		            // Turn all lights off before updating
+		          
+
+		            if (!isFlashOn) {
+		                // West/East = Red
+		            	  for (BlockPos pos : northSouthLights) {
+				                TileEntity te = world.getTileEntity(pos);
+				                if (te instanceof BaseTrafficLightTileEntity) {
+				                    ((BaseTrafficLightTileEntity) te).powerOff();
+				                }
+				            }
+
+				            for (BlockPos pos : westEastLights) {
+				                TileEntity te = world.getTileEntity(pos);
+				                if (te instanceof BaseTrafficLightTileEntity) {
+				                    ((BaseTrafficLightTileEntity) te).powerOff();
+				                }
+				            }
+		                for (BlockPos pos : westEastLights) {
+		                    TileEntity te = world.getTileEntity(pos);
+		                    if (te instanceof BaseTrafficLightTileEntity) {
+		                        BaseTrafficLightTileEntity light = (BaseTrafficLightTileEntity) te;
+		                        light.setActive(EnumTrafficLightBulbTypes.Red, true, true);
+		                        light.setActive(EnumTrafficLightBulbTypes.Red2, true, true);
+		                        light.setActive(EnumTrafficLightBulbTypes.StraightRed, true, true);
+		                        light.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, true);
+		                        light.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, true);
+		                        light.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, true);
+		                        light.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, true);
+		                        light.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, true);
+		                        light.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, true);
+		                    }
+		                }
+
+		                // North/South = Yellow
+		                for (BlockPos pos : northSouthLights) {
+		                    TileEntity te = world.getTileEntity(pos);
+		                    if (te instanceof BaseTrafficLightTileEntity) {
+		                        BaseTrafficLightTileEntity light = (BaseTrafficLightTileEntity) te;
+		                        light.setActive(EnumTrafficLightBulbTypes.Yellow, true, true);
+		                        light.setActive(EnumTrafficLightBulbTypes.StraightYellow, true, true);
+		                        light.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, true);
+		                        light.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, true);
+		                        light.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, true);
+		                        light.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, true);
+		                        light.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, true);
+		                        light.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, true);
+		                    }
+		                }
+		            
+
+		            isFlashOn = true;
+		        }
+
+		        return;
+		    }
+
+		    // Skip everything else if in alternate states
+		    if (isInDarkMode || isFlashingEmergency) return;
+
+		    if (!hasInitialized) {
+		        initialize();
+		    }
+
+		    if (MinecraftServer.getCurrentTimeMillis() < nextUpdate) {
+		        return;
+		    }
+
+		    if (lastStage == Stages.Red) {
+		        lastRightOfWay = lastRightOfWay.getNext();
+		    }
+
+		    SensorCheckResult sensorResults = checkSensors(lastRightOfWay);
+		    lastStage = updateLightsByStage(getNextLogicalStage(lastStage, lastRightOfWay, sensorResults));
+
+		    markDirty();
 		}
 		
 		

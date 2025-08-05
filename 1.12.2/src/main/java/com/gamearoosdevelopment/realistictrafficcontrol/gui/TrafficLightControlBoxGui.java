@@ -1,8 +1,8 @@
 package com.gamearoosdevelopment.realistictrafficcontrol.gui;
 
 import java.io.IOException;
-
 import java.util.function.Consumer;
+
 import org.lwjgl.input.Keyboard;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficControl;
@@ -11,17 +11,20 @@ import com.gamearoosdevelopment.realistictrafficcontrol.util.EnumTrafficLightBul
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import com.gamearoosdevelopment.realistictrafficcontrol.gui.GuiButtonToggle;
+import com.gamearoosdevelopment.realistictrafficcontrol.network.ModNetworkHandler;
+import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleNightFlash;
+
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.GuiCheckBox;
+
 
 public class TrafficLightControlBoxGui extends GuiScreen {
 	private ResourceLocation background = new ResourceLocation(ModRealisticTrafficControl.MODID + ":textures/gui/control_box_gui.png");
@@ -81,7 +84,7 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 	private GuiButtonExtSelectable autoModeSouth;
 	
 	private GuiTextField rightArrowMinimum;
-
+	private GuiButton nightFlashToggle;
 	private GuiTextField crossTime;
 	private GuiTextField crossWarningTime;
 	
@@ -221,6 +224,9 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 			autoModeSouth = new GuiButtonExtSelectable(700, horizontalCenter - 107, verticalCenter - 78, 25, 20, "W/E");
 			this.buttonList.add(autoModeNorth);
 		    this.buttonList.add(autoModeSouth);
+		    
+			this.nightFlashToggle = new GuiButtonToggle(9001, horizontalCenter + 107, verticalCenter - 78, 25, 20, _te.isNightFlashEnabled());
+		    this.buttonList.add(nightFlashToggle);
 		
 		}
 
@@ -783,6 +789,15 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 		  autoModeSouth.setIsSelected(true);
 		  autoModeNorth.setIsSelected(false);
 		}
+		if (button.id == 9001 && button instanceof GuiButtonToggle) {
+		    GuiButtonToggle toggle = (GuiButtonToggle) button;
+		    toggle.toggle();
+		    boolean enabled = toggle.isToggled();
+
+		    _te.setNightFlashEnabled(enabled); // client-side
+		    ModNetworkHandler.INSTANCE.sendToServer(new PacketToggleNightFlash(_te.getPos(), enabled));
+		}
+
 		switch(button.id)
 		{
 		

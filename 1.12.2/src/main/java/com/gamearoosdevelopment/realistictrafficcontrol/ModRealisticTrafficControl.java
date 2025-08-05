@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import com.gamearoosdevelopment.realistictrafficcontrol.Commands.CommandConfigReload;
 import com.gamearoosdevelopment.realistictrafficcontrol.Commands.CommandDispatcher;
 import com.gamearoosdevelopment.realistictrafficcontrol.Commands.RealisticCommandBase;
+import com.gamearoosdevelopment.realistictrafficcontrol.network.ModNetworkHandler;
 import com.gamearoosdevelopment.realistictrafficcontrol.proxy.CommonProxy;
 import com.gamearoosdevelopment.realistictrafficcontrol.signs.SignRepository;
 
@@ -58,7 +59,7 @@ public class ModRealisticTrafficControl {
 		CC_INSTALLED = Loader.isModLoaded("computercraft");
 		OC_INSTALLED = Loader.isModLoaded("opencomputers");
 		TC_INSTALLED = Loader.isModLoaded("trafficcontrol");
-		
+		 ModNetworkHandler.registerPackets();
 		logger = e.getModLog();
 		proxy.preInit(e);
 	}
