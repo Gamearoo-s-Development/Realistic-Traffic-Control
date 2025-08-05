@@ -32,12 +32,12 @@ public class TESRWireAnchor extends TileEntitySpecialRenderer<TileEntityWireAnch
 
 
 	    int segments = 16;
-	    double sag = 0.3;
+	    double sag = 0.5;
 	    double sway = 0.05;
 	    if (te.getWorld().isThundering()) {
-	        sway = 0.15; // very strong sway during thunderstorm
+	        sway = 0.09; // very strong sway during thunderstorm
 	    } else if (te.getWorld().isRaining()) {
-	        sway = 0.10; // moderate sway during rain
+	        sway = 0.06; // moderate sway during rain
 	    }
 
 	    double tTime = (te.getWorld().getTotalWorldTime() + partialTicks) / 10.0;
