@@ -994,7 +994,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 
 		public void update() {
 		    long time = world.getWorldTime() % 24000;
-		    inNightFlash = (time >= nightFlashStart && time <= nightFlashEnd);
+		    inNightFlash = (time >= nightFlashStart || time <= nightFlashEnd);
 
 		   
 		   
