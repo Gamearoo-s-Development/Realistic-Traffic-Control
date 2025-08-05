@@ -2107,14 +2107,19 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		            return pedCheckedGreen(currentRightOfWay);
 
 		        case Direction1RightTurnArrow:
-		            if (sensorLeftTripped || timeExceeded) {
-		                if (ticksInStage >= (arrowMinNS * 20)) {
-		                    ticksInStage = 0;
-		                    this.stageStartTime = world.getTotalWorldTime();
-		                    setNextUpdate(yellowNS);
-		                    return Stages.BothTurnArrowYellow;
-		                }
-		            }
+		        	if (arrowMinimum == 0 && ticksInStage >= (arrowMax * 20)) {
+		        	    ticksInStage = 0;
+		        	    this.stageStartTime = world.getTotalWorldTime();
+		        	    setNextUpdate(yellowTime);
+		        	    return Stages.BothTurnArrowYellow;
+		        	}
+		        	// Normal end: minimum time met and timeExceeded is true
+		        	else if (timeExceeded && arrowMinimum != 0 && ticksInStage >= (arrowMinimum * 20)) {
+		        	    ticksInStage = 0;
+		        	    this.stageStartTime = world.getTotalWorldTime();
+		        	    setNextUpdate(yellowTime);
+		        	    return Stages.BothTurnArrowYellow;
+		        	}
 		            if (sensorResult.Direction2SensorRight || sensorResult.Direction2SensorLeft) {
 		                return Stages.Direction1RightTurnArrowYellow;
 		            } else {
@@ -2128,17 +2133,19 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		            return Stages.Direction2LeftTurnArrow;
 
 		        case Direction2RightTurnArrow:
-		            if (sensorLeftTripped && ticksInStage >= (arrowMaxEW * 20)) {
-		                ticksInStage = 0;
-		                this.stageStartTime = world.getTotalWorldTime();
-		                setNextUpdate(yellowEW);
-		                return Stages.BothTurnArrowYellow;
-		            } else if (timeExceeded && arrowMinEW != 0 && ticksInStage >= (arrowMinEW * 20)) {
-		                ticksInStage = 0;
-		                this.stageStartTime = world.getTotalWorldTime();
-		                setNextUpdate(yellowEW);
-		                return Stages.BothTurnArrowYellow;
-		            }
+		        	if (arrowMinimum == 0 && ticksInStage >= (arrowMax * 20)) {
+		        	    ticksInStage = 0;
+		        	    this.stageStartTime = world.getTotalWorldTime();
+		        	    setNextUpdate(yellowTime);
+		        	    return Stages.BothTurnArrowYellow;
+		        	}
+		        	// Normal end: minimum time met and timeExceeded is true
+		        	else if (timeExceeded && arrowMinimum != 0 && ticksInStage >= (arrowMinimum * 20)) {
+		        	    ticksInStage = 0;
+		        	    this.stageStartTime = world.getTotalWorldTime();
+		        	    setNextUpdate(yellowTime);
+		        	    return Stages.BothTurnArrowYellow;
+		        	}
 		            return sensorResult.Direction1SensorLeft || sensorResult.Direction1SensorRight
 		                ? Stages.Direction2RightTurnArrowYellow
 		                : Stages.Direction2LeftTurnArrowYellow;
@@ -2150,17 +2157,19 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		            return Stages.Direction1LeftTurnArrow;
 
 		        case BothTurnArrow:
-		            if (sensorLeftTripped && ticksInStage >= (arrowMax * 20)) {
-		                ticksInStage = 0;
-		                this.stageStartTime = world.getTotalWorldTime();
-		                setNextUpdate(yellowTime);
-		                return Stages.BothTurnArrowYellow;
-		            } else if (timeExceeded && arrowMinimum != 0 && ticksInStage >= (arrowMinimum * 20)) {
-		                ticksInStage = 0;
-		                this.stageStartTime = world.getTotalWorldTime();
-		                setNextUpdate(yellowTime);
-		                return Stages.BothTurnArrowYellow;
-		            }
+		        	if (arrowMinimum == 0 && ticksInStage >= (arrowMax * 20)) {
+		        	    ticksInStage = 0;
+		        	    this.stageStartTime = world.getTotalWorldTime();
+		        	    setNextUpdate(yellowTime);
+		        	    return Stages.BothTurnArrowYellow;
+		        	}
+		        	// Normal end: minimum time met and timeExceeded is true
+		        	else if (timeExceeded && arrowMinimum != 0 && ticksInStage >= (arrowMinimum * 20)) {
+		        	    ticksInStage = 0;
+		        	    this.stageStartTime = world.getTotalWorldTime();
+		        	    setNextUpdate(yellowTime);
+		        	    return Stages.BothTurnArrowYellow;
+		        	}
 		            return Stages.BothTurnArrow;
 
 
@@ -2170,17 +2179,19 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		            return pedCheckedGreen(currentRightOfWay);
 
 		        case Direction1LeftTurnArrow:
-		            if ((sensorResult.Direction1SensorLeft || sensorResult.Direction2SensorLeft) && ticksInStage >= (arrowMaxNS * 20)) {
-		                this.stageStartTime = world.getTotalWorldTime();
-		                ticksInStage = 0;
-		                setNextUpdate(yellowNS);
-		                return Stages.Direction1LeftTurnArrowYellow;
-		            } else if (arrowMinNS > 0 && ticksInStage >= (arrowMinNS * 20)) {
-		                this.stageStartTime = world.getTotalWorldTime();
-		                ticksInStage = 0;
-		                setNextUpdate(yellowNS);
-		                return Stages.Direction1LeftTurnArrowYellow;
-		            }
+		        	if (arrowMinimum == 0 && ticksInStage >= (arrowMax * 20)) {
+		        	    ticksInStage = 0;
+		        	    this.stageStartTime = world.getTotalWorldTime();
+		        	    setNextUpdate(yellowTime);
+		        	    return Stages.BothTurnArrowYellow;
+		        	}
+		        	// Normal end: minimum time met and timeExceeded is true
+		        	else if (timeExceeded && arrowMinimum != 0 && ticksInStage >= (arrowMinimum * 20)) {
+		        	    ticksInStage = 0;
+		        	    this.stageStartTime = world.getTotalWorldTime();
+		        	    setNextUpdate(yellowTime);
+		        	    return Stages.BothTurnArrowYellow;
+		        	}
 		            return Stages.Direction1LeftTurnArrow;
 
 
@@ -2190,17 +2201,19 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		            return pedCheckedGreen(currentRightOfWay);
 
 		        case Direction2LeftTurnArrow:
-		            if ((sensorResult.Direction1SensorLeft || sensorResult.Direction2SensorLeft) && ticksInStage >= (arrowMaxEW * 20)) {
-		                this.stageStartTime = world.getTotalWorldTime();
-		                ticksInStage = 0;
-		                setNextUpdate(yellowEW);
-		                return Stages.Direction2LeftTurnArrowYellow;
-		            } else if (arrowMinEW > 0 && ticksInStage >= (arrowMinEW * 20)) {
-		                this.stageStartTime = world.getTotalWorldTime();
-		                ticksInStage = 0;
-		                setNextUpdate(yellowEW);
-		                return Stages.Direction2LeftTurnArrowYellow;
-		            }
+		        	if (arrowMinimum == 0 && ticksInStage >= (arrowMax * 20)) {
+		        	    ticksInStage = 0;
+		        	    this.stageStartTime = world.getTotalWorldTime();
+		        	    setNextUpdate(yellowTime);
+		        	    return Stages.BothTurnArrowYellow;
+		        	}
+		        	// Normal end: minimum time met and timeExceeded is true
+		        	else if (timeExceeded && arrowMinimum != 0 && ticksInStage >= (arrowMinimum * 20)) {
+		        	    ticksInStage = 0;
+		        	    this.stageStartTime = world.getTotalWorldTime();
+		        	    setNextUpdate(yellowTime);
+		        	    return Stages.BothTurnArrowYellow;
+		        	}
 		            return Stages.Direction2LeftTurnArrow;
 
 
