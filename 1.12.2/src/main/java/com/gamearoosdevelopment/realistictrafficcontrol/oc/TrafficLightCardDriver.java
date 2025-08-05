@@ -180,7 +180,65 @@ public class TrafficLightCardDriver extends DriverItem {
 		
 		
 
-	
+		@Callback(doc = "changeBulb(x:int, y:int, z:int, oldBulb:string, newBulb:string):boolean, string OR changeBulb(id:long, oldBulb:string, newBulb:string)")
+		public Object[] changeBulb(Context c, Arguments args) throws Exception {
+		    BlockPos pos = getBlockPosFromArgs(args);
+
+		    if (!cardContainsPos(pos)) {
+		        return new Object[] { false, "Card does not contain this block position" };
+		    }
+
+		    String oldBulbStr, newBulbStr;
+
+		    if (args.isInteger(1)) {
+		        oldBulbStr = args.checkString(3);
+		        newBulbStr = args.checkString(4);
+		    } else {
+		        oldBulbStr = args.checkString(1);
+		        newBulbStr = args.checkString(2);
+		    }
+
+		    if (!bulbTypesByString.containsKey(oldBulbStr) || !bulbTypesByString.containsKey(newBulbStr)) {
+		        return new Object[] { false, "Invalid bulb type(s)" };
+		    }
+
+		    EnumTrafficLightBulbTypes oldBulb = bulbTypesByString.get(oldBulbStr);
+		    EnumTrafficLightBulbTypes newBulb = bulbTypesByString.get(newBulbStr);
+
+		    TileEntity te = host.world().getTileEntity(pos);
+		    if (!(te instanceof BaseTrafficLightTileEntity)) {
+		        return new Object[] { false, "No traffic light at given position" };
+		    }
+
+		    BaseTrafficLightTileEntity tile = (BaseTrafficLightTileEntity) te;
+
+		    // Find frame with oldBulb
+		    int frameToReplace = -1;
+		    for (int i = 0; i < tile.getBulbCount(); i++) {
+		        if (tile.getBulbTypeBySlot(i) == oldBulb) {
+		            frameToReplace = i;
+		            break;
+		        }
+		    }
+
+		    if (frameToReplace == -1) {
+		        return new Object[] { false, "Old bulb not found in traffic light" };
+		    }
+
+		    // Optional: briefly activate the old bulb before swap
+		    tile.setActive(oldBulb, true, false);
+		    host.world().markBlockRangeForRenderUpdate(pos, pos); // force render update
+
+		    // Swap
+		    tile.setBulbType(frameToReplace, newBulb);
+		    tile.markDirty();
+		    host.world().notifyBlockUpdate(pos, tile.getWorld().getBlockState(pos), tile.getWorld().getBlockState(pos), 3);
+
+		    // Activate new bulb
+		    tile.setActive(newBulb, true, false);
+		    return new Object[] { true, "Bulb replaced at frame " + frameToReplace };
+		}
+
 		
 		
 		

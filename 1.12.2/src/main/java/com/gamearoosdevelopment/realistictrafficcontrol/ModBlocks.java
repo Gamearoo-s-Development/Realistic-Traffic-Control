@@ -28,6 +28,9 @@ public class ModBlocks {
 	@ObjectHolder("pole")
 	public static BlockPole pole;
 	
+	@ObjectHolder("wire_anchor")
+	public static BlockWireAnchor wire_anchor;
+	
 	@ObjectHolder("plus_pole")
 	public static BlockPlusPole plus_pole;
 	
@@ -149,7 +152,7 @@ public class ModBlocks {
 		
 		
 	
-	
+		
 		
 		
 		sign.initModel();
@@ -194,6 +197,6 @@ public class ModBlocks {
 		traffic_light_8.initModel();
 		traffic_light_7.initModel();
 		traffic_light_hoz.initModel();
-		
+		wire_anchor.initModel();
 	}
 }

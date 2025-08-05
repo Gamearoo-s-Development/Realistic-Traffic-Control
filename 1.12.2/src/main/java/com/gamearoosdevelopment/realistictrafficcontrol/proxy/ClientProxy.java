@@ -7,8 +7,12 @@ import org.lwjgl.input.Keyboard;
 import com.gamearoosdevelopment.realistictrafficcontrol.ModBlocks;
 import com.gamearoosdevelopment.realistictrafficcontrol.ModItems;
 import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficControl;
-import com.gamearoosdevelopment.realistictrafficcontrol.network.ServerSideSoundPacket;
 
+import com.gamearoosdevelopment.realistictrafficcontrol.network.ServerSideSoundPacket;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.BaseTrafficLightTileEntity;
+
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TileEntityWireAnchor;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.render.*;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -19,6 +23,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
@@ -73,6 +78,9 @@ public class ClientProxy extends CommonProxy {
 		hotReloadSignPacksKey = new KeyBinding("key.hotreload.toggle", Keyboard.KEY_RBRACKET, "key.realistictrafficcontrol.category");
 		ClientRegistry.registerKeyBinding(entityClassRendererKey);
 		ClientRegistry.registerKeyBinding(hotReloadSignPacksKey);
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityWireAnchor.class, new TESRWireAnchor());
+		
+
 	}
 
 	@SubscribeEvent
