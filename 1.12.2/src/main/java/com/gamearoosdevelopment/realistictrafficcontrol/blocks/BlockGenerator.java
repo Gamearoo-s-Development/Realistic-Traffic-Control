@@ -11,6 +11,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -49,6 +50,22 @@ public class BlockGenerator extends Block {
 	public boolean isTopSolid(IBlockState state) {
 	    return false;
 	}
+	
+	 @Override
+	    public boolean canProvidePower(IBlockState state) {
+	        return true;
+	    }
+
+	    @Override
+	    public int getWeakPower(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side) {
+	        return 15;
+	    }
+
+	    @Override
+	    public int getStrongPower(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side) {
+	        return 15;
+	    }
+
 
 	@Override
 	public boolean causesSuffocation(IBlockState state)
