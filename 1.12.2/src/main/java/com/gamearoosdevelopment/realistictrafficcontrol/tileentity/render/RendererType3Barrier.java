@@ -50,6 +50,10 @@ public class RendererType3Barrier extends TileEntitySpecialRenderer<Type3Barrier
 
 	private void renderAllSign(Type3BarrierTileEntity te, double x, double y, double z)
 	{
+		BlockPos below = te.getPos().down();
+		IBlockState belowState = te.getWorld().getBlockState(below);
+		double offsetY = 1.0 - belowState.getBoundingBox(te.getWorld(), below).maxY;
+
 		BlockPos farthestLeft = te.getPos().toImmutable();
 		BlockPos farthestRight = te.getPos().toImmutable();
 		
@@ -80,7 +84,9 @@ public class RendererType3Barrier extends TileEntitySpecialRenderer<Type3Barrier
 		}		
 		
 		GlStateManager.pushMatrix();
-		GlStateManager.translate(x + 0.5, y + 0.5, z + 0.5);
+		GlStateManager.translate(x + 0.5, y + 0.5 - offsetY, z + 0.5);
+
+
 		GlStateManager.rotate((4 - (facing.getHorizontalIndex() + 2)) * 90, 0, 1, 0);
 		GlStateManager.translate(-0.5, -0.5, -0.5);
 		GlStateManager.translate(renderX / 2, 0.75, renderZ / 2);
@@ -127,6 +133,10 @@ public class RendererType3Barrier extends TileEntitySpecialRenderer<Type3Barrier
 
 	private void renderSecondarySign(Type3BarrierTileEntity te, double x, double y, double z)
 	{
+		BlockPos below = te.getPos().down();
+		IBlockState belowState = te.getWorld().getBlockState(below);
+		double offsetY = 1.0 - belowState.getBoundingBox(te.getWorld(), below).maxY;
+
 		Sign sign = te.getThisSign();
 		if (sign == null)
 		{
@@ -136,7 +146,7 @@ public class RendererType3Barrier extends TileEntitySpecialRenderer<Type3Barrier
 		EnumFacing facing = getWorld().getBlockState(te.getPos()).getValue(BlockType3Barrier.FACING);
 		
 		GlStateManager.pushMatrix();
-		GlStateManager.translate(x + 0.5, y + 0.5, z + 0.5);
+		GlStateManager.translate(x + 0.5, y + 0.5 - offsetY, z + 0.5);
 		GlStateManager.rotate((4 - (facing.getHorizontalIndex() + 2)) * 90, 0, 1, 0);
 		GlStateManager.translate(-0.375, 0, 0.063);
 		

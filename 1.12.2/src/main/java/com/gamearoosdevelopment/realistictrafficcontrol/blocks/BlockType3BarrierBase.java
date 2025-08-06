@@ -6,6 +6,7 @@ import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.Type3BarrierT
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.render.RendererType3Barrier;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.Block.EnumOffsetType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
@@ -21,6 +22,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
@@ -52,6 +54,22 @@ public abstract class BlockType3BarrierBase extends Block {
 	}
 	
 	@Override
+	public EnumOffsetType getOffsetType() {
+	    return EnumOffsetType.XYZ; // allows X/Y/Z positional offsetting
+	}
+
+	
+	@Override
+	public Vec3d getOffset(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+	    BlockPos below = pos.down();
+	    IBlockState stateBelow = worldIn.getBlockState(below);
+	    AxisAlignedBB bb = stateBelow.getBoundingBox(worldIn, below);
+
+	    double offsetY = 1.0 - bb.maxY; // move cone down to sit on top
+	    return new Vec3d(0, -offsetY, 0);
+	}
+	
+	@Override
 	public boolean isTopSolid(IBlockState state) {
 	    return false;
 	}
@@ -73,25 +91,39 @@ public abstract class BlockType3BarrierBase extends Block {
 	
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
-		boolean isFurthestLeft = true;
-		boolean isFurthestRight = true;
-		EnumFacing currentFacing = state.getValue(FACING);
-		EnumFacing directionOfTravel = currentFacing.rotateY();
-		IBlockState borderState = worldIn.getBlockState(pos.offset(directionOfTravel));
-		if (borderState.getBlock() == getBlockInstance())
-		{
-			isFurthestRight = borderState.getValue(FACING) != currentFacing;
-		}
-		
-		directionOfTravel = currentFacing.rotateYCCW();
-		borderState = worldIn.getBlockState(pos.offset(directionOfTravel));
-		if (borderState.getBlock() == getBlockInstance())
-		{
-			isFurthestLeft = borderState.getValue(FACING) != currentFacing;
-		}
-		
-		return state.withProperty(ISFURTHESTLEFT, isFurthestLeft).withProperty(ISFURTHESTRIGHT, isFurthestRight);
+	    boolean isFurthestLeft = true;
+	    boolean isFurthestRight = true;
+	    EnumFacing currentFacing = state.getValue(FACING);
+
+	    // Check right
+	    EnumFacing right = currentFacing.rotateY();
+	    BlockPos rightPos = pos.offset(right);
+	    IBlockState rightState = worldIn.getBlockState(rightPos);
+
+	    if (rightState.getBlock() == getBlockInstance() && rightState.getValue(FACING) == currentFacing) {
+	        double thisTopY = worldIn.getBlockState(pos.down()).getBoundingBox(worldIn, pos.down()).maxY;
+	        double neighborTopY = worldIn.getBlockState(rightPos.down()).getBoundingBox(worldIn, rightPos.down()).maxY;
+	        if (Math.abs(thisTopY - neighborTopY) < 0.01) {
+	            isFurthestRight = false;
+	        }
+	    }
+
+	    // Check left
+	    EnumFacing left = currentFacing.rotateYCCW();
+	    BlockPos leftPos = pos.offset(left);
+	    IBlockState leftState = worldIn.getBlockState(leftPos);
+
+	    if (leftState.getBlock() == getBlockInstance() && leftState.getValue(FACING) == currentFacing) {
+	        double thisTopY = worldIn.getBlockState(pos.down()).getBoundingBox(worldIn, pos.down()).maxY;
+	        double neighborTopY = worldIn.getBlockState(leftPos.down()).getBoundingBox(worldIn, leftPos.down()).maxY;
+	        if (Math.abs(thisTopY - neighborTopY) < 0.01) {
+	            isFurthestLeft = false;
+	        }
+	    }
+
+	    return state.withProperty(ISFURTHESTLEFT, isFurthestLeft).withProperty(ISFURTHESTRIGHT, isFurthestRight);
 	}
+
 	
 	@Override
 	public int getLightOpacity(IBlockState state, IBlockAccess world, BlockPos pos) {

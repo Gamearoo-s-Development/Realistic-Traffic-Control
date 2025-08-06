@@ -6,6 +6,7 @@ import com.gamearoosdevelopment.realistictrafficcontrol.util.CustomAngleCalculat
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.BlockStairs;
+import net.minecraft.block.Block.EnumOffsetType;
 import net.minecraft.block.BlockStairs.EnumHalf;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyInteger;
@@ -19,6 +20,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
@@ -42,6 +44,22 @@ public class BlockDrum extends Block {
 	public void initModel()
 	{
 		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), 0, new ModelResourceLocation(getRegistryName(), "inventory"));
+	}
+	
+	@Override
+	public EnumOffsetType getOffsetType() {
+	    return EnumOffsetType.XYZ; // allows X/Y/Z positional offsetting
+	}
+
+	
+	@Override
+	public Vec3d getOffset(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+	    BlockPos below = pos.down();
+	    IBlockState stateBelow = worldIn.getBlockState(below);
+	    AxisAlignedBB bb = stateBelow.getBoundingBox(worldIn, below);
+
+	    double offsetY = 1.0 - bb.maxY; // move cone down to sit on top
+	    return new Vec3d(0, -offsetY, 0);
 	}
 	
 	@Override
