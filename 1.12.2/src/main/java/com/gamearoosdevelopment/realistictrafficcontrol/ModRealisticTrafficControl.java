@@ -27,7 +27,7 @@ import net.minecraftforge.fml.relauncher.Side;
 @Mod(modid = "realistictrafficcontrol", version = ModRealisticTrafficControl.VERSION, name = "Realistic Traffic Control", useMetadata = true,  guiFactory = "com.gamearoosdevelopment.realistictrafficcontrol.client.ModGuiFactory")
 public class ModRealisticTrafficControl {
 	public static final String MODID = "realistictrafficcontrol";
-	public static final String VERSION = "2.1.1";
+	public static final String VERSION = "2.1.2";
 	public static final String MODNAME = "Realistic Traffic Control";
 	public static boolean IR_INSTALLED = false;
 	public static boolean OC_INSTALLED = false;
