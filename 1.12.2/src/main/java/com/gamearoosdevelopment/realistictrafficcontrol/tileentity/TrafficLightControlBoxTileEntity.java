@@ -2229,13 +2229,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		            boolean maxTimeExceeded = ticksInStage >= (greenMax * 20);
 
 		         // (1) If on your own sensor, switch only after max time
-		            if ((sensorResult.Direction1Sensor || sensorResult.Direction2Sensor) && maxTimeExceeded) {
-		                
-		                this.stageStartTime = world.getTotalWorldTime();
-		                ticksInStage = 0;
-		                setNextUpdate(yellowTime);
-		                return Stages.Yellow;
-		            }
+		           
 
 		            // (2) If not on your own sensor and greenMinimum > 0 and time exceeded
 		            if (!sensorResult.Direction1Sensor && !sensorResult.Direction2Sensor && greenMinimum > 0 && timeExceeded) {
@@ -2255,12 +2249,15 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		            	    return Stages.Yellow;
 		            	}
 
-		            // (3) If greenMinimum == 0, only switch on cross traffic after max time
+		         // (3) If greenMinimum == 0, only switch after max time AND no active sensors in your direction
 		            if (greenMinimum == 0 && maxTimeExceeded &&
+		                !sensorResult.Direction1Sensor && !sensorResult.Direction2Sensor &&
+		                !sensorResult.Direction1SensorLeft && !sensorResult.Direction2SensorLeft &&
+		                !sensorResult.Direction1SensorRight && !sensorResult.Direction2SensorRight &&
 		                (crossSensorCheck.Direction1Sensor || crossSensorCheck.Direction2Sensor ||
 		                 crossSensorCheck.Direction1SensorLeft || crossSensorCheck.Direction2SensorLeft ||
 		                 crossSensorCheck.Direction1SensorRight || crossSensorCheck.Direction2SensorRight)) {
-		               
+
 		                this.stageStartTime = world.getTotalWorldTime();
 		                ticksInStage = 0;
 		                setNextUpdate(yellowTime);
