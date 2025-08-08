@@ -2111,14 +2111,14 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		        	    ticksInStage = 0;
 		        	    this.stageStartTime = world.getTotalWorldTime();
 		        	    setNextUpdate(yellowTime);
-		        	    return Stages.BothTurnArrowYellow;
+		        	    return Stages.Direction1LeftTurnArrowYellow;
 		        	}
 		        	// Normal end: minimum time met and timeExceeded is true
 		        	else if (timeExceeded && arrowMinimum != 0 && ticksInStage >= (arrowMinimum * 20)) {
 		        	    ticksInStage = 0;
 		        	    this.stageStartTime = world.getTotalWorldTime();
 		        	    setNextUpdate(yellowTime);
-		        	    return Stages.BothTurnArrowYellow;
+		        	    return Stages.Direction1LeftTurnArrowYellow;
 		        	}
 		            if (sensorResult.Direction2SensorRight || sensorResult.Direction2SensorLeft) {
 		                return Stages.Direction1RightTurnArrowYellow;
@@ -2183,14 +2183,14 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		        	    ticksInStage = 0;
 		        	    this.stageStartTime = world.getTotalWorldTime();
 		        	    setNextUpdate(yellowTime);
-		        	    return Stages.BothTurnArrowYellow;
+		        	    return Stages.Direction1LeftTurnArrowYellow;
 		        	}
 		        	// Normal end: minimum time met and timeExceeded is true
 		        	else if (timeExceeded && arrowMinimum != 0 && ticksInStage >= (arrowMinimum * 20)) {
 		        	    ticksInStage = 0;
 		        	    this.stageStartTime = world.getTotalWorldTime();
 		        	    setNextUpdate(yellowTime);
-		        	    return Stages.BothTurnArrowYellow;
+		        	    return Stages.Direction1LeftTurnArrowYellow;
 		        	}
 		            return Stages.Direction1LeftTurnArrow;
 
@@ -2205,7 +2205,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		        	    ticksInStage = 0;
 		        	    this.stageStartTime = world.getTotalWorldTime();
 		        	    setNextUpdate(yellowTime);
-		        	    return Stages.BothTurnArrowYellow;
+		        	    return Stages.Direction2LeftTurnArrowYellow;
 		        	}
 		        	// Normal end: minimum time met and timeExceeded is true
 		        	else if (timeExceeded && arrowMinimum != 0 && ticksInStage >= (arrowMinimum * 20)) {
