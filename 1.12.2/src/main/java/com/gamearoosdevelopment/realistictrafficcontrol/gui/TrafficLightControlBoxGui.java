@@ -13,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import com.gamearoosdevelopment.realistictrafficcontrol.gui.GuiButtonToggle;
 import com.gamearoosdevelopment.realistictrafficcontrol.network.ModNetworkHandler;
+import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleMain;
 import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleNightFlash;
 
 import net.minecraft.client.gui.GuiScreen;
@@ -85,6 +86,7 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 	
 	private GuiTextField rightArrowMinimum;
 	private GuiButton nightFlashToggle;
+	private GuiButton northMain;
 	private GuiTextField crossTime;
 	private GuiTextField crossWarningTime;
 	
@@ -227,6 +229,8 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 		    
 			this.nightFlashToggle = new GuiButtonToggle(9001, horizontalCenter + 107, verticalCenter - 78, 25, 20, _te.isNightFlashEnabled());
 		    this.buttonList.add(nightFlashToggle);
+		    this.northMain = new GuiButtonToggle2(9002, horizontalCenter + 107, verticalCenter - 56, 25, 20, _te.isNorthMainEnabled());
+		    this.buttonList.add(northMain);
 		
 		}
 
@@ -796,6 +800,14 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 
 		    _te.setNightFlashEnabled(enabled); // client-side
 		    ModNetworkHandler.INSTANCE.sendToServer(new PacketToggleNightFlash(_te.getPos(), enabled));
+		}
+		if (button.id == 9002 && button instanceof GuiButtonToggle2) {
+		    GuiButtonToggle2 toggle = (GuiButtonToggle2) button;
+		    toggle.toggle();
+		    boolean enabled = toggle.isToggled();
+
+		    _te.setNorthMainEnabled(enabled); // client-side
+		    ModNetworkHandler.INSTANCE.sendToServer(new PacketToggleMain(_te.getPos(), enabled));
 		}
 
 		switch(button.id)

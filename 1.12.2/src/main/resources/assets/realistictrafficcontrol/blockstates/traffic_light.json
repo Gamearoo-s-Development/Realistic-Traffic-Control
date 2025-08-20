@@ -50,9 +50,11 @@
 	},
 	 "pole": {
         "true": {
-        
+			"submodel": "realistictrafficcontrol:traffic_light_backing"
         },
-       "false": {}
+       "false": {
+		"submodel": "realistictrafficcontrol:traffic_light_backing"
+	   }
         
 	}
 	}

@@ -15,8 +15,16 @@ public class ModNetworkHandler {
         INSTANCE.registerMessage(
             PacketToggleNightFlash.Handler.class,
             PacketToggleNightFlash.class,
+            
             packetId++,
             Side.SERVER
         );
+        INSTANCE.registerMessage(
+                PacketToggleMain.Handler.class,
+                PacketToggleMain.class,
+                
+                packetId++,
+                Side.SERVER
+            );
     }
 }
