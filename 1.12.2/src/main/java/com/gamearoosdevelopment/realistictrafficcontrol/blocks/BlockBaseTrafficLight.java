@@ -471,6 +471,15 @@ public abstract class BlockBaseTrafficLight extends Block {
 	            toggleCover(worldIn, pos); // Toggle the COVER property
 	        }
 	        return true; // Return true to indicate that the block was activated
+	    } else if (hand == EnumHand.MAIN_HAND && heldItem.getItem() == ModItems.wire_cutter) {
+	        if (!worldIn.isRemote) {
+	        	if(!playerIn.isCreative())
+	        	{
+	        	  heldItem.damageItem(1, playerIn);
+	        	}
+	            togglePole(worldIn, pos); // Toggle the COVER property
+	        }
+	        return true; // Return true to indicate that the block was activated
 	    } 
 	    
 
