@@ -72,16 +72,33 @@ public class ItemWireCutter extends Item {
             TileEntity secondTE = worldIn.getTileEntity(pos);
 
             if (firstTE instanceof TileEntityWireAnchor && secondTE instanceof TileEntityWireAnchor) {
+                TileEntityWireAnchor a = (TileEntityWireAnchor) firstTE;
+                TileEntityWireAnchor b = (TileEntityWireAnchor) secondTE;
+
                 if (player.isSneaking()) {
-                    // Sneaking = remove connection
-                    ((TileEntityWireAnchor) firstTE).setConnectedTo(null);
-                    ((TileEntityWireAnchor) secondTE).setConnectedTo(null);
-                    player.sendStatusMessage(new TextComponentString("Connection removed."), true);
+                    // Sneaking = remove specific connection between these two anchors
+                    boolean removedA = a.removeConnection(pos);
+                    boolean removedB = b.removeConnection(firstPos);
+                    if (worldIn.isRemote) {
+                        if (removedA || removedB) player.sendStatusMessage(new TextComponentString("Connection removed."), true);
+                        else player.sendStatusMessage(new TextComponentString("No connection found to remove."), true);
+                    }
                 } else {
-                    // Connect both ends
-                    ((TileEntityWireAnchor) firstTE).setConnectedTo(pos);
-                    ((TileEntityWireAnchor) secondTE).setConnectedTo(firstPos);
-                    player.sendStatusMessage(new TextComponentString("Anchors connected."), true);
+                    // Connect both ends using the multi-connection API
+                    boolean addedA = a.addConnection(pos);
+                    boolean addedB = b.addConnection(firstPos);
+                    // Rollback if only one side succeeded
+                    if (addedA && !addedB) {
+                        a.removeConnection(pos);
+                        addedA = false;
+                    } else if (!addedA && addedB) {
+                        b.removeConnection(firstPos);
+                        addedB = false;
+                    }
+                    if (worldIn.isRemote) {
+                        if (addedA && addedB) player.sendStatusMessage(new TextComponentString("Anchors connected."), true);
+                        else player.sendStatusMessage(new TextComponentString("Failed to connect: anchor full or already connected."), true);
+                    }
                 }
             }
 
@@ -93,4 +110,3 @@ public class ItemWireCutter extends Item {
     }
 
 }
-

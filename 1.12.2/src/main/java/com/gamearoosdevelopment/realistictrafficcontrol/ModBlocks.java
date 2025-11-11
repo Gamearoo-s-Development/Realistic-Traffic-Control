@@ -27,6 +27,8 @@ public class ModBlocks {
 	
 	@ObjectHolder("pole")
 	public static BlockPole pole;
+	@ObjectHolder("wood_pole")
+	public static BlockWoodPole wood_pole;
 	
 	@ObjectHolder("wire_anchor")
 	public static BlockWireAnchor wire_anchor;
@@ -138,6 +140,7 @@ public class ModBlocks {
 		crossing_gate_base.initModel();
 		
 		pole.initModel();
+		wood_pole.initModel();
 		t_pole.initModel();
 		d_pole.initModel();
 		dh_pole.initModel();

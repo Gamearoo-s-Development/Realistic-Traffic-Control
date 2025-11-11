@@ -143,6 +143,7 @@ public class CommonProxy {
 		e.getRegistry().register(new BlockCrossingGateBase());
 		e.getRegistry().register(new BlockWireAnchor());
 		e.getRegistry().register(new BlockPole());
+		e.getRegistry().register(new BlockWoodPole());
 		e.getRegistry().register(new BlockPlusPole());
 		e.getRegistry().register(new BlockTPole());
 		e.getRegistry().register(new BlockDPole());
@@ -277,6 +278,7 @@ public class CommonProxy {
 		e.getRegistry().register(new ItemBlock(ModBlocks.wire_anchor).setRegistryName(ModBlocks.wire_anchor.getRegistryName()));
 
 		e.getRegistry().register(new ItemBlock(ModBlocks.pole).setRegistryName(ModBlocks.pole.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.wood_pole).setRegistryName(ModBlocks.wood_pole.getRegistryName()));
 		e.getRegistry().register(new ItemBlock(ModBlocks.plus_pole).setRegistryName(ModBlocks.plus_pole.getRegistryName()));
 		e.getRegistry().register(new ItemBlock(ModBlocks.t_pole).setRegistryName(ModBlocks.t_pole.getRegistryName()));
 		e.getRegistry().register(new ItemBlock(ModBlocks.c_pole).setRegistryName(ModBlocks.c_pole.getRegistryName()));
