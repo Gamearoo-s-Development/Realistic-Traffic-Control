@@ -6,6 +6,7 @@ tile.realistictrafficcontrol.generator.name=(RTC) Generator
 tile.realistictrafficcontrol.crossing_gate_gate.name=(RTC) Crossing Gate
 tile.realistictrafficcontrol.crossing_gate_lamps.name=(RTC) Crossing Lamps
 tile.realistictrafficcontrol.pole.name=(RTC) Pole
+tile.realistictrafficcontrol.wood_pole.name=(RTC) Wood Pole
 tile.realistictrafficcontrol.wire_anchor.name=(RTC) Wire Anchor
 tile.realistictrafficcontrol.plus_pole.name=(RTC) Plus Pole
 tile.realistictrafficcontrol.t_pole.name=(RTC) T Pole

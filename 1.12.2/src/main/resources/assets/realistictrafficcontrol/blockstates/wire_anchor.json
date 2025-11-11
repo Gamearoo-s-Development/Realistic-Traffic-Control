@@ -1,8 +1,7 @@
 {
   "variants": {
-	"inventory": [{"model": "realistictrafficcontrol:wire_anchor"}],
-    "normal": {
-      "model": "realistictrafficcontrol:wire_anchor"
-    }
+    "wood=false": { "model": "realistictrafficcontrol:wire_anchor" },
+    "wood=true": { "model": "realistictrafficcontrol:wire_anchor_wood" },
+    "inventory": [{"model": "realistictrafficcontrol:wire_anchor"}]
   }
 }
