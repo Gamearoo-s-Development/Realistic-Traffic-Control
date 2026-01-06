@@ -250,16 +250,28 @@ public abstract class BlockBaseTrafficLight extends Block {
 			frameStack.setTagCompound(stackCompound);
 		}
 		
-		for(int i = 0; i < getItemVersionOfBlock().getBulbCount(); i++)
+		int bulbCount = getItemVersionOfBlock().getBulbCount();
+		for(int i = 0; i < bulbCount; i++)
 		{
-			EnumTrafficLightBulbTypes bulbTypeInSlot = trafficLight.getBulbTypeBySlot(i);
-			if (bulbTypeInSlot == null)
+			EnumTrafficLightBulbTypes[] slotBulbs = trafficLight.getBulbTypesBySlot(i);
+			EnumTrafficLightBulbTypes primary = slotBulbs.length > 0 ? slotBulbs[0] : null;
+			EnumTrafficLightBulbTypes secondary = slotBulbs.length > 1 ? slotBulbs[1] : null;
+			if (primary == null)
 			{
 				handler.insertItem(i, ItemStack.EMPTY, false);
 			}
 			else
 			{
-				handler.insertItem(i, new ItemStack(ModItems.traffic_light_bulb, 1, bulbTypeInSlot.getIndex()), false);
+				handler.insertItem(i, new ItemStack(ModItems.traffic_light_bulb, 1, primary.getIndex()), false);
+			}
+			int secondaryIndex = i + bulbCount;
+			if (secondary == null)
+			{
+				handler.insertItem(secondaryIndex, ItemStack.EMPTY, false);
+			}
+			else
+			{
+				handler.insertItem(secondaryIndex, new ItemStack(ModItems.traffic_light_bulb, 1, secondary.getIndex()), false);
 			}
 			
 			stackCompound.setBoolean("always-flash-" + i, trafficLight.getAllowFlashBySlot(i));

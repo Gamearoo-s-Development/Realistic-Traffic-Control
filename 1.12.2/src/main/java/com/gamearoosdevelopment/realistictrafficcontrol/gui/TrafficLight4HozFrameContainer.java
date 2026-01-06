@@ -10,7 +10,6 @@ import com.google.common.collect.ImmutableList;
 
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
 
 public class TrafficLight4HozFrameContainer extends BaseTrafficLightFrameContainer
 {
@@ -20,14 +19,14 @@ public class TrafficLight4HozFrameContainer extends BaseTrafficLightFrameContain
 	}
 	
 	@Override
-	protected List<FrameSlotInfo> getItemSlots(IItemHandler frameStackHandler) 
+	protected List<FrameSlotInfo> buildSlotInfo() 
 	{
 		return ImmutableList
 			.<FrameSlotInfo>builder()
-			.add(new FrameSlotInfo(EnumCheckboxOrientation.LEFT, new SlotItemHandlerListenable(frameStackHandler, 0, 30, 90)))
-			.add(new FrameSlotInfo(EnumCheckboxOrientation.ABOVE, new SlotItemHandlerListenable(frameStackHandler, 1, 62, 90)))
-			.add(new FrameSlotInfo(EnumCheckboxOrientation.BELOW, new SlotItemHandlerListenable(frameStackHandler, 2, 95, 90)))
-			.add(new FrameSlotInfo(EnumCheckboxOrientation.RIGHT, new SlotItemHandlerListenable(frameStackHandler, 3, 125, 90)))
+			.add(new FrameSlotInfo(EnumCheckboxOrientation.LEFT, 0, 30, 90))
+			.add(new FrameSlotInfo(EnumCheckboxOrientation.ABOVE, 1, 62, 90))
+			.add(new FrameSlotInfo(EnumCheckboxOrientation.BELOW, 2, 95, 90))
+			.add(new FrameSlotInfo(EnumCheckboxOrientation.RIGHT, 3, 125, 90))
 			.build();
 	}
 	

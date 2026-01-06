@@ -11,6 +11,7 @@ import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketTrafficLig
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.config.GuiCheckBox;
@@ -31,18 +32,21 @@ public abstract class BaseTrafficLightFrameGui extends GuiContainer {
 		ItemStack frameStack = container.getFrameStack();
 		BaseItemTrafficLightFrame frameItem = (BaseItemTrafficLightFrame)frameStack.getItem();
 		
-		for(FrameSlotInfo slotInfo : container.getItemSlots(container.frameStackHandler))
+		int left = (width / 2) - (xSize / 2);
+		int top = (height / 2) - (ySize / 2);
+		for (int slotIndex = 0; slotIndex < container.getFrameSlotInfos().size(); slotIndex++)
 		{
-			int left = (width / 2) - (xSize / 2);
-			int top = (height / 2) - (ySize / 2);
-			int x = left + slotInfo.getSlot().xPos;
-			int y = top + slotInfo.getSlot().yPos;
-			
-			GuiCheckBox doNotFlash = new GuiCheckBox(slotInfo.getSlot().getSlotIndex() * 10, 0, 0, "Allow Flash", true);
-			doNotFlash.visible = slotInfo.getSlot().getHasStack();
-			doNotFlash.setIsChecked(frameItem.getAlwaysFlash(frameStack, slotInfo.getSlot().getSlotIndex()));
-			((SlotItemHandlerListenable)container.getSlot(slotInfo.getSlot().getSlotIndex() + 36)).setOnSlotChangedListener(ind -> onSlotClick(ind));
-			
+			FrameSlotInfo slotInfo = container.getFrameSlotInfos().get(slotIndex);
+			SlotItemHandlerListenable primarySlot = slotInfo.getPrimarySlot();
+			int x = left + primarySlot.xPos;
+			int y = top + primarySlot.yPos;
+			GuiCheckBox allowFlash = new GuiCheckBox(slotIndex * 10, 0, 0, "Allow Flash", true);
+			allowFlash.setIsChecked(frameItem.getAlwaysFlash(frameStack, slotInfo.getSlotIndex()));
+			attachSlotListener(slotInfo.getPrimaryContainerSlotIndex(), slotIndex);
+			if (slotInfo.hasSecondarySlot())
+			{
+				attachSlotListener(slotInfo.getSecondaryContainerSlotIndex(), slotIndex);
+			}
 			switch(slotInfo.getCheckboxOrientation())
 			{
 				case ABOVE:
@@ -52,39 +56,40 @@ public abstract class BaseTrafficLightFrameGui extends GuiContainer {
 					y += 28;
 					break;
 				case LEFT:
-					x -= doNotFlash.getButtonWidth() + 12;
+					x -= allowFlash.getButtonWidth() + 12;
 					break;
 				case RIGHT:
-					x += 30;
+					int offset = slotInfo.hasSecondarySlot() ? 52 : 30;
+					x += offset;
 					break;
 			}
-			
-			doNotFlash.x = x;
-			doNotFlash.y = y;
-			
-			buttonList.add(doNotFlash);
+			allowFlash.x = x;
+			allowFlash.y = y;
+			buttonList.add(allowFlash);
+			updateCheckboxVisibility(slotIndex);
 		}
 	}
 	
-	private void onSlotClick(int slotId)
+	private void updateCheckboxVisibility(int slotIndex)
 	{
-		int inventorySlot = slotId;
-		
-		if (inventorySlot < 0)
-		{
-			return;
-		}
-		
-		inventorySlot *= 10;
-		
-		GuiCheckBox box = findCheckboxById(inventorySlot);
-		
+		GuiCheckBox box = findCheckboxById(slotIndex * 10);
 		if (box == null)
 		{
 			return;
 		}
-		
-		box.visible = container.getSlot(slotId + 36).getHasStack();
+		FrameSlotInfo slotInfo = container.getFrameSlotInfos().get(slotIndex);
+		boolean primaryHasStack = container.getSlot(slotInfo.getPrimaryContainerSlotIndex()).getHasStack();
+		boolean secondaryHasStack = slotInfo.hasSecondarySlot() && container.getSlot(slotInfo.getSecondaryContainerSlotIndex()).getHasStack();
+		box.visible = primaryHasStack || secondaryHasStack;
+	}
+
+	private void attachSlotListener(int containerSlotIndex, int slotGroupIndex)
+	{
+		Slot slot = container.getSlot(containerSlotIndex);
+		if (slot instanceof SlotItemHandlerListenable)
+		{
+			((SlotItemHandlerListenable)slot).setOnSlotChangedListener(ind -> updateCheckboxVisibility(slotGroupIndex));
+		}
 	}
 	
 	private GuiCheckBox findCheckboxById(int id)

@@ -3,13 +3,13 @@ package com.gamearoosdevelopment.realistictrafficcontrol.gui;
 import java.util.List;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.ModItems;
+import com.gamearoosdevelopment.realistictrafficcontrol.gui.BaseTrafficLightFrameContainer.FrameSlotInfo;
 import com.gamearoosdevelopment.realistictrafficcontrol.gui.BaseTrafficLightFrameContainer.FrameSlotInfo.EnumCheckboxOrientation;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.BaseItemTrafficLightFrame;
 import com.google.common.collect.ImmutableList;
 
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
 
 public class TrafficLight1FrameContainer extends BaseTrafficLightFrameContainer
 {
@@ -19,11 +19,11 @@ public class TrafficLight1FrameContainer extends BaseTrafficLightFrameContainer
 	}
 	
 	@Override
-	protected List<FrameSlotInfo> getItemSlots(IItemHandler frameStackHandler)
+	protected List<FrameSlotInfo> buildSlotInfo()
 	{
 		return ImmutableList
 				.<FrameSlotInfo>builder()
-				.add(new FrameSlotInfo(EnumCheckboxOrientation.RIGHT, new SlotItemHandlerListenable(frameStackHandler, 0, 79, 44)))
+				.add(new FrameSlotInfo(EnumCheckboxOrientation.RIGHT, 0, 79, 44))
 				.build();
 	}
 	
