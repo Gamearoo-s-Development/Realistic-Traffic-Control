@@ -17,7 +17,7 @@ public class ItemTrafficLightFrameCapabilityProvider implements ICapabilityProvi
 	public ItemTrafficLightFrameCapabilityProvider(ItemStack stack, int bulbCount) {
 		BULB_COUNT = bulbCount;
 		
-		handler = new ItemStackHandler(BULB_COUNT)
+		handler = new ItemStackHandler(BULB_COUNT * 2)
 		{			
 			@Override
 			public boolean isItemValid(int slot, ItemStack stack) {

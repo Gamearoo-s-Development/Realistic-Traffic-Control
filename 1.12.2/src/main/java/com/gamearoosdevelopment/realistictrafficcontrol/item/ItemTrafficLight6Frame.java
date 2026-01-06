@@ -29,7 +29,7 @@ public class ItemTrafficLight6Frame extends BaseItemTrafficLightFrame
 	@Override
 	public int getBulbCount()
 	{
-		return 4;
+		return 6;
 	}
 	
 	@Override

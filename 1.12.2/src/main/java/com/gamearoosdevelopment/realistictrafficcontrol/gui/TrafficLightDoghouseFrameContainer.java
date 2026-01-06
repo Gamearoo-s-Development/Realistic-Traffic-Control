@@ -3,13 +3,13 @@ package com.gamearoosdevelopment.realistictrafficcontrol.gui;
 import java.util.List;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.ModItems;
+import com.gamearoosdevelopment.realistictrafficcontrol.gui.BaseTrafficLightFrameContainer.FrameSlotInfo;
 import com.gamearoosdevelopment.realistictrafficcontrol.gui.BaseTrafficLightFrameContainer.FrameSlotInfo.EnumCheckboxOrientation;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.BaseItemTrafficLightFrame;
 import com.google.common.collect.ImmutableList;
 
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
 
 public class TrafficLightDoghouseFrameContainer extends BaseTrafficLightFrameContainer {
 
@@ -18,15 +18,15 @@ public class TrafficLightDoghouseFrameContainer extends BaseTrafficLightFrameCon
 	}
 	
 	@Override
-	protected List<FrameSlotInfo> getItemSlots(IItemHandler frameStackHandler) {
+	protected List<FrameSlotInfo> buildSlotInfo() {
 		return ImmutableList
-				.<FrameSlotInfo>builder()
-				.add(new FrameSlotInfo(EnumCheckboxOrientation.RIGHT, new SlotItemHandlerListenable(frameStackHandler, 0, 79, 10)))
-				.add(new FrameSlotInfo(EnumCheckboxOrientation.LEFT, new SlotItemHandlerListenable(frameStackHandler, 1, 48, 54)))
-				.add(new FrameSlotInfo(EnumCheckboxOrientation.LEFT, new SlotItemHandlerListenable(frameStackHandler, 2, 48, 86)))
-				.add(new FrameSlotInfo(EnumCheckboxOrientation.RIGHT, new SlotItemHandlerListenable(frameStackHandler, 3, 110, 54)))
-				.add(new FrameSlotInfo(EnumCheckboxOrientation.RIGHT, new SlotItemHandlerListenable(frameStackHandler, 4, 110, 86)))
-				.build();
+			.<FrameSlotInfo>builder()
+			.add(new FrameSlotInfo(EnumCheckboxOrientation.RIGHT, 0, 79, 10))
+			.add(new FrameSlotInfo(EnumCheckboxOrientation.LEFT, 1, 48, 54))
+			.add(new FrameSlotInfo(EnumCheckboxOrientation.LEFT, 2, 48, 86))
+			.add(new FrameSlotInfo(EnumCheckboxOrientation.RIGHT, 3, 110, 54))
+			.add(new FrameSlotInfo(EnumCheckboxOrientation.RIGHT, 4, 110, 86))
+			.build();
 	}
 
 	@Override

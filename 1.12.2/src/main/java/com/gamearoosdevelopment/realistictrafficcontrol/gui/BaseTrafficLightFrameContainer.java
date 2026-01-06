@@ -2,27 +2,30 @@ package com.gamearoosdevelopment.realistictrafficcontrol.gui;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.item.BaseItemTrafficLightFrame;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 public abstract class BaseTrafficLightFrameContainer extends Container {
 	IItemHandler frameStackHandler;
 	ItemStack frameStack;
+	protected final List<FrameSlotInfo> frameSlotInfos;
+	protected final int frameSlotStartIndex;
 	
 	public BaseTrafficLightFrameContainer(InventoryPlayer inventory, ItemStack frameStack)
 	{
+		BaseItemTrafficLightFrame frameItem = getValidFrameItem();
+		frameStack = ensureHandlerCapacity(inventory, frameStack, frameItem);
+		this.frameStack = frameStack;
+
 		int ySize = getYSize();
 		
 		// Hot bar
@@ -47,21 +50,43 @@ public abstract class BaseTrafficLightFrameContainer extends Container {
 			addSlotToContainer(new Slot(inventory, i, 7 + column * 18, 119 + (ySize - 200) + 18 * row));
 		}
 		
-		// Item inventory
 		frameStackHandler = frameStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-		for(Slot slot : getItemSlots(frameStackHandler).stream().map(fsi -> fsi.getSlot()).collect(Collectors.toList()))
+		int handlerSlots = frameStackHandler != null ? frameStackHandler.getSlots() : 0;
+		int layerOffset = handlerSlots / 2;
+		List<FrameSlotInfo> allSlotInfos = buildSlotInfo();
+		List<FrameSlotInfo> usableSlotInfos = new ArrayList<>();
+		for (FrameSlotInfo slotInfo : allSlotInfos)
 		{
-			addSlotToContainer(slot);
+			if (slotInfo.getSlotIndex() < layerOffset)
+			{
+				usableSlotInfos.add(slotInfo);
+			}
 		}
-		
-		this.frameStack = frameStack;
+		this.frameSlotInfos = usableSlotInfos;
+		int containerIndex = inventorySlots.size();
+		frameSlotStartIndex = containerIndex;
+		for(FrameSlotInfo slotInfo : frameSlotInfos)
+		{
+			SlotItemHandlerListenable primary = new SlotItemHandlerListenable(frameStackHandler, slotInfo.getSlotIndex(), slotInfo.getPrimaryX(), slotInfo.getPrimaryY());
+			addSlotToContainer(primary);
+			slotInfo.attachPrimarySlot(primary, containerIndex++);
+			int secondaryIndex = slotInfo.getSlotIndex() + layerOffset;
+			if (secondaryIndex < handlerSlots)
+			{
+				SlotItemHandlerListenable secondary = new SlotItemHandlerListenable(frameStackHandler, secondaryIndex, slotInfo.getSecondaryX(), slotInfo.getSecondaryY());
+				addSlotToContainer(secondary);
+				slotInfo.attachSecondarySlot(secondary, containerIndex++);
+			}
+		}
 	}
 	
-	protected abstract List<FrameSlotInfo> getItemSlots(IItemHandler frameStackHandler);
+	protected abstract List<FrameSlotInfo> buildSlotInfo();
 	
 	protected abstract int getYSize();
 	
 	public ItemStack getFrameStack() { return frameStack; }
+
+	public List<FrameSlotInfo> getFrameSlotInfos() { return frameSlotInfos; }
 	
 	@Override
 	public boolean canInteractWith(EntityPlayer playerIn) {
@@ -79,31 +104,16 @@ public abstract class BaseTrafficLightFrameContainer extends Container {
 			originStack = slot.getStack();
 			destinationStack = originStack.copy();
 			
-			if (index > 35)
+			if (index >= frameSlotStartIndex)
 			{
-				if (!mergeItemStack(originStack, 0, 35, false))
+				if (!mergeItemStack(originStack, 0, frameSlotStartIndex, false))
 				{
 					return ItemStack.EMPTY;
 				}
 			}
 			else
 			{
-				BaseItemTrafficLightFrame heldFrame = (BaseItemTrafficLightFrame)playerIn.getHeldItemMainhand().getItem();
-				
-				boolean didMerge = false;
-				for(int i = 0; i < heldFrame.getBulbCount(); i++)
-				{
-					Slot frameSlot = inventorySlots.get(i + 36);
-					
-					if (!frameSlot.getHasStack() && frameSlot.isItemValid(originStack))
-					{
-						mergeItemStack(originStack, i + 36, i + 37, false);
-						didMerge = true;
-						break;
-					}
-				}
-				
-				if (!didMerge)
+				if (!mergeIntoFrameSlots(originStack))
 				{
 					return ItemStack.EMPTY;
 				}
@@ -125,30 +135,171 @@ public abstract class BaseTrafficLightFrameContainer extends Container {
 		
 		return destinationStack;
 	}
+
+	private boolean mergeIntoFrameSlots(ItemStack originStack)
+	{
+		for (int slotIndex = frameSlotStartIndex; slotIndex < inventorySlots.size(); slotIndex++)
+		{
+			Slot frameSlot = inventorySlots.get(slotIndex);
+			if (!frameSlot.getHasStack() && frameSlot.isItemValid(originStack))
+			{
+				mergeItemStack(originStack, slotIndex, slotIndex + 1, false);
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	protected abstract BaseItemTrafficLightFrame getValidFrameItem();
 
+	private ItemStack ensureHandlerCapacity(InventoryPlayer inventory, ItemStack stack, BaseItemTrafficLightFrame frameItem)
+	{
+		if (stack == null || stack.isEmpty())
+		{
+			return stack;
+		}
+
+		IItemHandler handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+		int expectedSlots = frameItem.getBulbCount() * 2;
+		if (handler == null || handler.getSlots() >= expectedSlots)
+		{
+			return stack;
+		}
+
+		List<ItemStack> existingStacks = new ArrayList<>(handler.getSlots());
+		for (int i = 0; i < handler.getSlots(); i++)
+		{
+			existingStacks.add(handler.getStackInSlot(i).copy());
+		}
+
+		ItemStack upgraded = new ItemStack(stack.getItem(), stack.getCount(), stack.getMetadata());
+		if (stack.hasTagCompound())
+		{
+			upgraded.setTagCompound(stack.getTagCompound().copy());
+		}
+
+		IItemHandler upgradedHandler = upgraded.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+		if (upgradedHandler instanceof IItemHandlerModifiable)
+		{
+			IItemHandlerModifiable modifiable = (IItemHandlerModifiable)upgradedHandler;
+			int limit = Math.min(modifiable.getSlots(), existingStacks.size());
+			for (int i = 0; i < limit; i++)
+			{
+				modifiable.setStackInSlot(i, existingStacks.get(i));
+			}
+		}
+
+		if (inventory != null)
+		{
+			int slotIndex = inventory.currentItem;
+			if (slotIndex >= 0 && slotIndex < inventory.getSizeInventory())
+			{
+				inventory.setInventorySlotContents(slotIndex, upgraded);
+			}
+		}
+
+		return upgraded;
+	}
+
 	public static class FrameSlotInfo
 	{
-		private EnumCheckboxOrientation checkboxOrientation;
-		private SlotItemHandlerListenable slot;
-		
-		public FrameSlotInfo(EnumCheckboxOrientation checkboxOrienation, SlotItemHandlerListenable slot)
+		private static final int DEFAULT_SECONDARY_OFFSET_X = 20;
+		private static final int DEFAULT_SECONDARY_OFFSET_Y = 0;
+
+		private final EnumCheckboxOrientation checkboxOrientation;
+		private final int slotIndex;
+		private final int primaryX;
+		private final int primaryY;
+		private final int secondaryOffsetX;
+		private final int secondaryOffsetY;
+
+		private SlotItemHandlerListenable primarySlot;
+		private SlotItemHandlerListenable secondarySlot;
+		private int primaryContainerSlotIndex = -1;
+		private int secondaryContainerSlotIndex = -1;
+
+		public FrameSlotInfo(EnumCheckboxOrientation orientation, int slotIndex, int x, int y)
 		{
-			this.checkboxOrientation = checkboxOrienation;
-			this.slot = slot;
+			this(orientation, slotIndex, x, y, DEFAULT_SECONDARY_OFFSET_X, DEFAULT_SECONDARY_OFFSET_Y);
 		}
-		
+
+		public FrameSlotInfo(EnumCheckboxOrientation orientation, int slotIndex, int x, int y, int secondaryOffsetX, int secondaryOffsetY)
+		{
+			this.checkboxOrientation = orientation;
+			this.slotIndex = slotIndex;
+			this.primaryX = x;
+			this.primaryY = y;
+			this.secondaryOffsetX = secondaryOffsetX;
+			this.secondaryOffsetY = secondaryOffsetY;
+		}
+
+		void attachPrimarySlot(SlotItemHandlerListenable slot, int containerIndex)
+		{
+			this.primarySlot = slot;
+			this.primaryContainerSlotIndex = containerIndex;
+		}
+
+		void attachSecondarySlot(SlotItemHandlerListenable slot, int containerIndex)
+		{
+			this.secondarySlot = slot;
+			this.secondaryContainerSlotIndex = containerIndex;
+		}
+
 		public EnumCheckboxOrientation getCheckboxOrientation()
 		{
 			return checkboxOrientation;
 		}
-		
-		public SlotItemHandlerListenable getSlot()
+
+		public int getSlotIndex()
 		{
-			return slot;
+			return slotIndex;
 		}
-		
+
+		public int getPrimaryX()
+		{
+			return primaryX;
+		}
+
+		public int getPrimaryY()
+		{
+			return primaryY;
+		}
+
+		public int getSecondaryX()
+		{
+			return primaryX + secondaryOffsetX;
+		}
+
+		public int getSecondaryY()
+		{
+			return primaryY + secondaryOffsetY;
+		}
+
+		public SlotItemHandlerListenable getPrimarySlot()
+		{
+			return primarySlot;
+		}
+
+		public SlotItemHandlerListenable getSecondarySlot()
+		{
+			return secondarySlot;
+		}
+
+		public boolean hasSecondarySlot()
+		{
+			return secondarySlot != null;
+		}
+
+		public int getPrimaryContainerSlotIndex()
+		{
+			return primaryContainerSlotIndex;
+		}
+
+		public int getSecondaryContainerSlotIndex()
+		{
+			return secondaryContainerSlotIndex;
+		}
+
 		public enum EnumCheckboxOrientation
 		{
 			LEFT,

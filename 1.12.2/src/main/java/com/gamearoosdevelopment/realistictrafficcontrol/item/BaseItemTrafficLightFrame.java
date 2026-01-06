@@ -81,27 +81,21 @@ public abstract class BaseItemTrafficLightFrame extends Item {
 		int bulbCount = getBulbCount();
 		
 		ItemStack heldItem = player.getHeldItem(hand);
-		HashMap<Integer, EnumTrafficLightBulbTypes> bulbsBySlot = new HashMap<Integer, EnumTrafficLightBulbTypes>(bulbCount);
+		HashMap<Integer, EnumTrafficLightBulbTypes> primaryBulbsBySlot = new HashMap<Integer, EnumTrafficLightBulbTypes>(bulbCount);
+		HashMap<Integer, EnumTrafficLightBulbTypes> secondaryBulbsBySlot = new HashMap<Integer, EnumTrafficLightBulbTypes>(bulbCount);
 		IItemHandler handler = heldItem.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
 		
 		HashMap<Integer, Boolean> allowFlashBySlot = new HashMap<>();
 		
 		for(int i = 0; i < bulbCount; i++)
 		{
-			ItemStack bulbTypeInSlot = handler.getStackInSlot(i);
-			if (bulbTypeInSlot == ItemStack.EMPTY)
-			{
-				bulbsBySlot.put(i, null);
-			}
-			else
-			{
-				bulbsBySlot.put(i, EnumTrafficLightBulbTypes.get(bulbTypeInSlot.getMetadata()));
-			}
+			primaryBulbsBySlot.put(i, stackToBulbType(handler.getStackInSlot(i)));
+			secondaryBulbsBySlot.put(i, stackToBulbType(handler.getStackInSlot(i + bulbCount)));
 			
 			allowFlashBySlot.put(i, getAlwaysFlash(heldItem, i));
 		}
 		
-		trafficLight.setBulbsBySlot(bulbsBySlot);
+		trafficLight.setBulbsBySlot(primaryBulbsBySlot, secondaryBulbsBySlot);
 		trafficLight.setAllowFlashBySlot(allowFlashBySlot);
 		
 		player.getHeldItemMainhand().shrink(1);
@@ -157,5 +151,14 @@ public abstract class BaseItemTrafficLightFrame extends Item {
 		}
 		
 		return tag.getBoolean("always-flash-" + slotId);
+	}
+
+	private EnumTrafficLightBulbTypes stackToBulbType(ItemStack stack)
+	{
+		if (stack == null || stack.isEmpty())
+		{
+			return null;
+		}
+		return EnumTrafficLightBulbTypes.get(stack.getMetadata());
 	}
 }

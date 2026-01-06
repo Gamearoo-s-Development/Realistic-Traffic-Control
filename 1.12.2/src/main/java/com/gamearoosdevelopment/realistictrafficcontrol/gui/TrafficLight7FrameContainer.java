@@ -10,7 +10,6 @@ import com.google.common.collect.ImmutableList;
 
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
 
 public class TrafficLight7FrameContainer extends BaseTrafficLightFrameContainer {
 
@@ -19,15 +18,16 @@ public class TrafficLight7FrameContainer extends BaseTrafficLightFrameContainer 
 	}
 	
 	@Override
-	protected List<FrameSlotInfo> getItemSlots(IItemHandler frameStackHandler) 
-		{
-            return ImmutableList
-                    .<FrameSlotInfo>builder()
-					.add(new FrameSlotInfo(EnumCheckboxOrientation.LEFT, new SlotItemHandlerListenable(frameStackHandler, 0, 59, 11)))
-                    .add(new FrameSlotInfo(EnumCheckboxOrientation.RIGHT, new SlotItemHandlerListenable(frameStackHandler, 1, 110, 11)))
-                    .add(new FrameSlotInfo(EnumCheckboxOrientation.RIGHT, new SlotItemHandlerListenable(frameStackHandler, 2, 83, 52)))
-                    .build();
-        }
+	protected List<FrameSlotInfo> buildSlotInfo() 
+	{
+		return ImmutableList
+				.<FrameSlotInfo>builder()
+				.add(new FrameSlotInfo(EnumCheckboxOrientation.LEFT, 0, 59, 11))
+				.add(new FrameSlotInfo(EnumCheckboxOrientation.RIGHT, 1, 110, 11))
+				.add(new FrameSlotInfo(EnumCheckboxOrientation.RIGHT, 2, 83, 52))
+				
+				.build();
+	}
 
 	@Override
 	protected int getYSize() {
