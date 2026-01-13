@@ -50,7 +50,7 @@ public abstract class BlockBaseTrafficLight extends Block {
 		setUnlocalizedName(ModRealisticTrafficControl.MODID + "." + name);
 		setHardness(2F);
 		setHarvestLevel("pickaxe", 2);
-		setCreativeTab(ModRealisticTrafficControl.CREATIVE_TAB);
+		setCreativeTab(ModRealisticTrafficControl.FRAMES_TAB);
 	}
 	
 	public abstract void initModel();

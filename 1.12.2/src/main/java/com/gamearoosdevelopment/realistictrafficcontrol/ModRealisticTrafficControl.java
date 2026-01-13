@@ -8,9 +8,16 @@ import com.gamearoosdevelopment.realistictrafficcontrol.Commands.RealisticComman
 import com.gamearoosdevelopment.realistictrafficcontrol.network.ModNetworkHandler;
 import com.gamearoosdevelopment.realistictrafficcontrol.proxy.CommonProxy;
 import com.gamearoosdevelopment.realistictrafficcontrol.signs.SignRepository;
+import com.gamearoosdevelopment.realistictrafficcontrol.Iinvatory.TabB;
+import com.gamearoosdevelopment.realistictrafficcontrol.Iinvatory.TabBulbs;
+import com.gamearoosdevelopment.realistictrafficcontrol.Iinvatory.TabCones;
+import com.gamearoosdevelopment.realistictrafficcontrol.Iinvatory.TabFrames;
+import com.gamearoosdevelopment.realistictrafficcontrol.Iinvatory.TabOC;
+import com.gamearoosdevelopment.realistictrafficcontrol.Iinvatory.TabPoles;
+import com.gamearoosdevelopment.realistictrafficcontrol.Iinvatory.TabSensor;
+import com.gamearoosdevelopment.realistictrafficcontrol.Iinvatory.TabTools;
 
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
@@ -27,20 +34,21 @@ import net.minecraftforge.fml.relauncher.Side;
 @Mod(modid = "realistictrafficcontrol", version = ModRealisticTrafficControl.VERSION, name = "Realistic Traffic Control", useMetadata = true,  guiFactory = "com.gamearoosdevelopment.realistictrafficcontrol.client.ModGuiFactory")
 public class ModRealisticTrafficControl {
 	public static final String MODID = "realistictrafficcontrol";
-	public static final String VERSION = "2.4.1";
+	public static final String VERSION = "3.0.0";
 	public static final String MODNAME = "Realistic Traffic Control";
 	public static boolean IR_INSTALLED = false;
 	public static boolean OC_INSTALLED = false;
 	public static boolean CC_INSTALLED = false;
 	public static boolean TC_INSTALLED = false;
-	public static CreativeTabs CREATIVE_TAB = new CreativeTabs("Realistc Traffic Control") {
 
-		@Override
-		public ItemStack getTabIconItem() {
-			// TODO Auto-generated method stub
-			return new ItemStack(ModBlocks.traffic_light_control_box);
-		}
-	};
+	public static final CreativeTabs TOOLS_TAB = new TabTools("tools_tab");
+	public static final CreativeTabs FRAMES_TAB = new TabFrames("frames_tab");
+	public static final CreativeTabs BULBS_TAB = new TabBulbs("bulbs_tab");
+	public static final CreativeTabs POLES_TAB = new TabPoles("poles_tab");
+	public static final CreativeTabs OC_TAB = new TabOC("oc_tab");
+	public static final CreativeTabs CONES_TAB = new TabCones("cones_tab");
+	public static final CreativeTabs BARRIERS_TAB = new TabB("b_tab");
+	public static final CreativeTabs SENSORS_TAB = new TabSensor("sensor_tab");
 	public static final double MAX_RENDER_DISTANCE = 262144; // Optifine's max render distance is 32 chunks.  (32 x 16) ^ 2 = 262144
 
 	@SidedProxy(clientSide = "com.gamearoosdevelopment.realistictrafficcontrol.proxy.ClientProxy", serverSide = "com.gamearoosdevelopment.realistictrafficcontrol.proxy.ServerProxy")

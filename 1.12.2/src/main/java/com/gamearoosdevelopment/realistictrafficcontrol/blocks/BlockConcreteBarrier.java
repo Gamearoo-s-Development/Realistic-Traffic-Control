@@ -38,7 +38,7 @@ public class BlockConcreteBarrier extends Block {
 		setHardness(2f);
 		setRegistryName("concrete_barrier");
 		setUnlocalizedName(ModRealisticTrafficControl.MODID + ".concrete_barrier");
-		setCreativeTab(ModRealisticTrafficControl.CREATIVE_TAB);
+		setCreativeTab(ModRealisticTrafficControl.BARRIERS_TAB);
 	}
 	
 	public void initModel()

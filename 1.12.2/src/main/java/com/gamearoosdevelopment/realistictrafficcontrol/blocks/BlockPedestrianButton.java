@@ -41,7 +41,7 @@ public class BlockPedestrianButton extends Block {
 		setUnlocalizedName(ModRealisticTrafficControl.MODID + ".pedestrian_button");
 		setHardness(2F);
 		setHarvestLevel("pickaxe", 2);
-		setCreativeTab(ModRealisticTrafficControl.CREATIVE_TAB);
+		setCreativeTab(ModRealisticTrafficControl.SENSORS_TAB);
 	}
 
 	@SideOnly(Side.CLIENT)

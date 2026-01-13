@@ -86,6 +86,7 @@ item.realistictrafficcontrol.traffic_light_5_hoz_frame.name=(RTC) Traffic Light 
 item.realistictrafficcontrol.traffic_light_doghouse_frame.name=(RTC) Traffic Light Frame (Doghouse)
 
 tile.realistictrafficcontrol.traffic_light_1.name=(RTC) Traffic Light Frame (One Bulb)
+item.realistictrafficcontrol.traffic_light_1_frame.name=(RTC) Traffic Light Frame (One Bulb)
 item.realistictrafficcontrol.traffic_light_2_frame.name=(RTC) Traffic Light Frame (Two Bulbs)
 item.realistictrafficcontrol.traffic_light_2_hoz_frame.name=(RTC) Traffic Light Frame Horizontal (Two Bulbs)
 item.realistictrafficcontrol.traffic_light_4_frame.name=(RTC) Traffic Light Frame (Four Bulbs)

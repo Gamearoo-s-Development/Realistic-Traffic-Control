@@ -301,12 +301,16 @@ public class BaseTrafficLightTileEntity extends TileEntity implements ITickable 
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
 		handleUpdateTag(pkt.getNbtCompound());
+		if (world != null) {
+			world.markBlockRangeForRenderUpdate(getPos(), getPos());
+		}
 	}
 
 	private void markDirtyAndSync() {
 		markDirty();
 		if (world != null) {
 			world.notifyBlockUpdate(getPos(), world.getBlockState(getPos()), world.getBlockState(getPos()), 3);
+			world.markBlockRangeForRenderUpdate(getPos(), getPos());
 		}
 	}
 

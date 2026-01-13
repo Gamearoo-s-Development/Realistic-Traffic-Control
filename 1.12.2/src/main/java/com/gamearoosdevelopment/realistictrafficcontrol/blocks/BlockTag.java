@@ -34,7 +34,7 @@ public class BlockTag extends Block {
 		super(Material.IRON);
 		setRegistryName("tag");
 		setUnlocalizedName(ModRealisticTrafficControl.MODID + ".tag");
-		setCreativeTab(ModRealisticTrafficControl.CREATIVE_TAB);
+		setCreativeTab(ModRealisticTrafficControl.SENSORS_TAB);
 		setLightOpacity(1);
 		setHardness(2f);
 	}

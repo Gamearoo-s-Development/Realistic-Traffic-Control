@@ -21,7 +21,7 @@ public class ItemTrafficLightBulb extends Item {
 	{
 		setRegistryName("traffic_light_bulb");
 		setMaxStackSize(1);
-		setCreativeTab(ModRealisticTrafficControl.CREATIVE_TAB);
+		setCreativeTab(ModRealisticTrafficControl.BULBS_TAB);
 	}
 	
 	public void initModel()
@@ -69,7 +69,7 @@ public class ItemTrafficLightBulb extends Item {
 	
 	@Override
 	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
-		if (tab != ModRealisticTrafficControl.CREATIVE_TAB) return;
+		if (tab != ModRealisticTrafficControl.BULBS_TAB && tab != CreativeTabs.SEARCH) return;
 		
 		items.add(new ItemStack(this, 1, EnumTrafficLightBulbTypes.Red.getIndex()));
 		items.add(new ItemStack(this, 1, EnumTrafficLightBulbTypes.Red2.getIndex()));

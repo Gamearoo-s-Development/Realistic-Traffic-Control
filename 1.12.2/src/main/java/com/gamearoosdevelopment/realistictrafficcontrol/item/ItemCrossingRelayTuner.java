@@ -52,7 +52,7 @@ public class ItemCrossingRelayTuner extends Item {
 		setRegistryName("crossing_relay_tuner");
 		setUnlocalizedName(ModRealisticTrafficControl.MODID + ".crossing_relay_tuner");
 		setMaxStackSize(1);
-		setCreativeTab(ModRealisticTrafficControl.CREATIVE_TAB);
+		setCreativeTab(ModRealisticTrafficControl.TOOLS_TAB);
 	}
 
 	public void initModel()
