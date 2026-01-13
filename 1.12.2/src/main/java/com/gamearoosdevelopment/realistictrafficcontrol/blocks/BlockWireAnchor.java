@@ -32,7 +32,7 @@ public class BlockWireAnchor extends Block implements ITileEntityProvider {
          setResistance(5.0F);
          setSoundType(SoundType.METAL);
          setLightOpacity(0);
-         setCreativeTab(ModRealisticTrafficControl.CREATIVE_TAB);
+		setCreativeTab(ModRealisticTrafficControl.POLES_TAB);
         // set default state for the WOOD property
         setDefaultState(this.blockState.getBaseState().withProperty(WOOD, Boolean.valueOf(false)));
      }

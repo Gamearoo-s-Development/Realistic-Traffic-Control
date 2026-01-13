@@ -20,6 +20,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
@@ -34,7 +35,7 @@ public abstract class BaseItemTrafficLightFrame extends Item {
 		setRegistryName(name);
 		setUnlocalizedName(ModRealisticTrafficControl.MODID + "." + name);
 		setMaxStackSize(1);
-		setCreativeTab(ModRealisticTrafficControl.CREATIVE_TAB);
+		setCreativeTab(ModRealisticTrafficControl.FRAMES_TAB);
 	}
 	
 	public void initModel()
@@ -59,6 +60,41 @@ public abstract class BaseItemTrafficLightFrame extends Item {
 	
 	@Override
 	public abstract void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag flagIn);
+
+	protected void addFrameIdentityTooltip(List<String> tooltip)
+	{
+		ResourceLocation registryName = getRegistryName();
+		String path = registryName == null ? "" : registryName.getResourcePath();
+
+		String typeLabel;
+		if (path.contains("doghouse"))
+		{
+			typeLabel = "Doghouse";
+		}
+		else if (path.contains("traffic_light_6"))
+		{
+			typeLabel = "T";
+		}
+		else if (path.contains("traffic_light_8"))
+		{
+			typeLabel = "Upside-down T";
+		}
+		else if (path.contains("traffic_light_7"))
+		{
+			typeLabel = "HAWK Beacon";
+		}
+		else if (path.contains("hoz"))
+		{
+			typeLabel = "Horizontal";
+		}
+		else
+		{
+			typeLabel = "Standard";
+		}
+
+		tooltip.add("Type: " + typeLabel);
+		tooltip.add("Bulb slots: " + getBulbCount());
+	}
 	
 	protected abstract BlockBaseTrafficLight getBaseBlockTrafficLight();
 

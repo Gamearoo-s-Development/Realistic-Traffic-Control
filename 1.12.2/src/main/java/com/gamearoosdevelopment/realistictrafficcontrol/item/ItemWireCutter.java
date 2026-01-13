@@ -26,7 +26,7 @@ public class ItemWireCutter extends Item {
         setRegistryName("wire_cutter");
         setMaxStackSize(1);
         setMaxDamage(40);
-        setCreativeTab(ModRealisticTrafficControl.CREATIVE_TAB);
+        setCreativeTab(ModRealisticTrafficControl.TOOLS_TAB);
     }
 
     // NBT key for storing the first position

@@ -27,7 +27,7 @@ public class BlockGenerator extends Block {
 		super(Material.IRON);
 		setRegistryName("generator");
 		setUnlocalizedName(ModRealisticTrafficControl.MODID + ".generator");
-		setCreativeTab(ModRealisticTrafficControl.CREATIVE_TAB);
+		setCreativeTab(ModRealisticTrafficControl.TOOLS_TAB);
 		setLightOpacity(1);
 	}
 

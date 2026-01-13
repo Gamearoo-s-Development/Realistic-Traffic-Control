@@ -50,7 +50,7 @@ public class BlockSign extends Block implements ITileEntityProvider {
 		setUnlocalizedName(ModRealisticTrafficControl.MODID + ".sign");
 		setHardness(2f);
 		setHarvestLevel("pickaxe", 1);
-		setCreativeTab(ModRealisticTrafficControl.CREATIVE_TAB);
+		setCreativeTab(ModRealisticTrafficControl.POLES_TAB);
 	}
 
 	@SideOnly(Side.CLIENT)

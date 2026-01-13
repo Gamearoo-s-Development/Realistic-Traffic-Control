@@ -24,7 +24,7 @@ public class ItemStreetSign extends ItemBlock {
 	public ItemStreetSign(BlockStreetSign streetSignBlock)
 	{
 		super(streetSignBlock);
-		setCreativeTab(ModRealisticTrafficControl.CREATIVE_TAB);
+		setCreativeTab(ModRealisticTrafficControl.POLES_TAB);
 	}
 	
 	public void initModel()

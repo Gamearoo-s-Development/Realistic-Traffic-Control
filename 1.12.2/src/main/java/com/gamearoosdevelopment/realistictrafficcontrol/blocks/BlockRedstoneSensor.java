@@ -65,7 +65,7 @@ public class BlockRedstoneSensor extends Block implements ITileEntityProvider {
         setHardness(2.0f);
         setHarvestLevel("pickaxe", 2);
         setLightOpacity(0);
-        setCreativeTab(ModRealisticTrafficControl.CREATIVE_TAB);
+        setCreativeTab(ModRealisticTrafficControl.SENSORS_TAB);
     }
 
     public void initModel() {

@@ -27,7 +27,7 @@ public class BlockHorizontalPole extends Block {
 		super(Material.IRON);
 		setRegistryName("horizontal_pole");
 		setUnlocalizedName(ModRealisticTrafficControl.MODID + ".horizontal_pole");
-		setCreativeTab(ModRealisticTrafficControl.CREATIVE_TAB);
+		setCreativeTab(ModRealisticTrafficControl.POLES_TAB);
 		setHardness(2f);
 	}
 	

@@ -51,7 +51,7 @@ public class BlockTrafficLightControlBox extends Block implements ITileEntityPro
 		setRegistryName("traffic_light_control_box");
 		setUnlocalizedName(ModRealisticTrafficControl.MODID + ".traffic_light_control_box");
 		setHardness(2f);
-		setCreativeTab(ModRealisticTrafficControl.CREATIVE_TAB);
+		setCreativeTab(ModRealisticTrafficControl.TOOLS_TAB);
 	}
 	
 	public void initModel()

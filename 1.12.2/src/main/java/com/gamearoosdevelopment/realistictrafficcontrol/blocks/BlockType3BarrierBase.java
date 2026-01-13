@@ -40,7 +40,7 @@ public abstract class BlockType3BarrierBase extends Block {
 		setUnlocalizedName(ModRealisticTrafficControl.MODID + "." + getName());
 		setHardness(1f);
 		setHarvestLevel("axe", 1);
-		setCreativeTab(ModRealisticTrafficControl.CREATIVE_TAB);
+		setCreativeTab(ModRealisticTrafficControl.BARRIERS_TAB);
 	}
 	
 	protected abstract String getName();

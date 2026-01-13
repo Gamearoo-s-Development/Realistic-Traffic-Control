@@ -26,7 +26,7 @@ public class BlockStand extends Block {
 		super(Material.IRON);
 		setRegistryName("stand");
 		setUnlocalizedName(ModRealisticTrafficControl.MODID + ".stand");
-		setCreativeTab(ModRealisticTrafficControl.CREATIVE_TAB);
+		setCreativeTab(ModRealisticTrafficControl.POLES_TAB);
 		setLightOpacity(1);
 	}
 
