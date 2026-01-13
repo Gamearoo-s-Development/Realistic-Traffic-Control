@@ -79,6 +79,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 	private boolean previousFlashState = false;
 	private boolean wasFlashOn = false; // toggle tracker
 	private boolean northMain = true;
+	private boolean hawkBeaconEnabled = false;
 	
 
 	
@@ -96,6 +97,15 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 	}
 	public boolean isNorthMainEnabled() {
 	    return northMain;
+	}
+
+	public void setHawkBeaconEnabled(boolean enabled) {
+		this.hawkBeaconEnabled = enabled;
+		markDirty();
+	}
+
+	public boolean isHawkBeaconEnabled() {
+		return hawkBeaconEnabled;
 	}
 
 
@@ -165,6 +175,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		compound.setBoolean("hasWest", hasWest);
 		compound.setBoolean("NightFlashEnabled", nightFlashEnabled);
 		compound.setBoolean("northMain", northMain);
+		compound.setBoolean("hawkBeaconEnabled", hawkBeaconEnabled);
 
 		
 		    compound.setInteger("TicksInCurrentStage", ticksInCurrentStage);
@@ -264,6 +275,9 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		if(compound.hasKey("northMain")) {
 			northMain = compound.getBoolean("northMain");
 		}
+		if (compound.hasKey("hawkBeaconEnabled")) {
+			hawkBeaconEnabled = compound.getBoolean("hawkBeaconEnabled");
+		}
 
 		
 	 
@@ -319,6 +333,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		writeManualSettingDictionary(compound, manualWestEastInactive, "manualWestEastInactive");
 		compound.setBoolean("NightFlashEnabled", nightFlashEnabled);
 		compound.setBoolean("northMain", northMain);
+		compound.setBoolean("hawkBeaconEnabled", hawkBeaconEnabled);
 		compound.setBoolean("isAutoMode", !sensors.isEmpty() || !northSouthPedButtons.isEmpty() || !westEastPedButtons.isEmpty());
 		compound.setBoolean("hasNorth", hasNorth);
 		compound.setBoolean("hasSouth", hasSouth);
@@ -349,6 +364,9 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		}
 		if(tag.hasKey("northMain")) {
 			northMain = tag.getBoolean("northMain");
+		}
+		if (tag.hasKey("hawkBeaconEnabled")) {
+			hawkBeaconEnabled = tag.getBoolean("hawkBeaconEnabled");
 		}
 		getAutomator().readSyncData(tag);
 	}
@@ -1165,12 +1183,18 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		        initialize();
 		    }
 
+		    if (TrafficLightControlBoxTileEntity.this.isHawkBeaconEnabled()) {
+		    	lastRightOfWay = northMain ? RightOfWays.NorthSouth : RightOfWays.EastWest;
+		    }
+
 		    if (MinecraftServer.getCurrentTimeMillis() < nextUpdate) {
 		        return;
 		    }
 
 		    if (lastStage == Stages.Red) {
-		        lastRightOfWay = lastRightOfWay.getNext();
+		    	if (!TrafficLightControlBoxTileEntity.this.isHawkBeaconEnabled()) {
+		        	lastRightOfWay = lastRightOfWay.getNext();
+		    	}
 		    }
 
 		    SensorCheckResult sensorResults = checkSensors(lastRightOfWay);
@@ -1236,6 +1260,11 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		
 		private Stages updateLightsByStage(Stages stage)
 		{
+			final boolean hawkStage = stage == Stages.HawkFlashYellow || stage == Stages.HawkSolidYellow || stage == Stages.HawkSolidRed || stage == Stages.HawkFlashRed;
+			if (hawkStage && TrafficLightControlBoxTileEntity.this.isHawkBeaconEnabled())
+			{
+				lastRightOfWay = northMain ? RightOfWays.NorthSouth : RightOfWays.EastWest;
+			}
 			
 			
 
@@ -1914,6 +1943,69 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						tl.setActive(EnumTrafficLightBulbTypes.NoLeftTurn, true, false);
 					});
 					break;
+				case HawkFlashYellow:
+				case HawkSolidYellow:
+				{
+					final boolean flash = stage == Stages.HawkFlashYellow;
+					trafficLightsForRightOfWay
+						.stream()
+						.forEach(tl -> {
+							tl.powerOff();
+							tl.setActive(EnumTrafficLightBulbTypes.Yellow, true, flash);
+							tl.setActive(EnumTrafficLightBulbTypes.StraightYellow, true, flash);
+						});
+
+					trafficLightsOpposingRightOfWay
+						.stream()
+						.forEach(tl -> {
+							tl.powerOff();
+							tl.setActive(EnumTrafficLightBulbTypes.DontCross, true, false);
+							
+						});
+					break;
+				}
+				case HawkSolidRed:
+				{
+					trafficLightsForRightOfWay
+						.stream()
+						.forEach(tl -> {
+							tl.powerOff();
+							tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
+							tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
+							tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
+						});
+
+					trafficLightsOpposingRightOfWay
+						.stream()
+						.forEach(tl -> {
+							tl.powerOff();
+							tl.setActive(EnumTrafficLightBulbTypes.DontCross, false, false);
+							tl.setActive(EnumTrafficLightBulbTypes.Cross, true, false);
+						});
+					break;
+				}
+				case HawkFlashRed:
+				{
+					final long wigwagTicks = 20; // 1 second
+					final boolean alt = ((world.getTotalWorldTime() / wigwagTicks) % 2) == 0;
+					trafficLightsForRightOfWay
+						.stream()
+						.forEach(tl -> {
+							tl.powerOff();
+							tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
+							tl.setActive(alt ? EnumTrafficLightBulbTypes.Red : EnumTrafficLightBulbTypes.Red2, true, false);
+						});
+
+					trafficLightsOpposingRightOfWay
+						.stream()
+						.forEach(tl -> {
+							tl.powerOff();
+						// Keep DON'T WALK on and flashing during the road's flashing-red interval.
+							tl.setActive(EnumTrafficLightBulbTypes.DontCross, true, true);
+							
+						});
+					break;
+				}
 					
 			}
 			
@@ -2177,6 +2269,35 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		    boolean timeExceeded = (arrowMinimum > 0) && ticksInStage >= (arrowMinimum * 20);
 
 		    switch (currentStage) {
+		    	case HawkFlashYellow:
+		    		ticksInStage = 0;
+		    		this.stageStartTime = world.getTotalWorldTime();
+		    		setNextUpdate(yellowTime);
+		    		return Stages.HawkSolidYellow;
+
+		    	case HawkSolidYellow:
+		    		ticksInStage = 0;
+		    		this.stageStartTime = world.getTotalWorldTime();
+		    		setNextUpdate(getAutomator().getCrossTime());
+		    		return Stages.HawkSolidRed;
+
+		    	case HawkSolidRed:
+		    		ticksInStage = 0;
+		    		this.stageStartTime = world.getTotalWorldTime();
+		    		setNextUpdate(1);
+		    		return Stages.HawkFlashRed;
+
+		    	case HawkFlashRed:
+		    		if (ticksInStage >= (getAutomator().getCrossWarningTime() * 20))
+		    		{
+		    			ticksInStage = 0;
+		    			this.stageStartTime = world.getTotalWorldTime();
+		    			setNextUpdate(greenMinimum);
+		    			return Stages.Green;
+		    		}
+		    		setNextUpdate(1);
+		    		return Stages.HawkFlashRed;
+
 		        case Red:
 		            if (sensorResult.Direction1SensorRight) {
 		                this.stageStartTime = world.getTotalWorldTime();
@@ -2323,6 +2444,26 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		            return pedCheckedGreen(currentRightOfWay);
 
 		        case Green:
+		        	if (TrafficLightControlBoxTileEntity.this.isHawkBeaconEnabled()) {
+		        		final RightOfWays roadRightOfWay = northMain ? RightOfWays.NorthSouth : RightOfWays.EastWest;
+		        		final boolean hawkPedQueued = (roadRightOfWay == RightOfWays.NorthSouth) ? isWestEastPedQueued() : isNorthSouthPedQueued();
+		        		final boolean hawkMinGreenMet = (greenMinimum > 0) ? (ticksInStage >= (greenMinimum * 20)) : (ticksInStage >= 20);
+			        		final double hawkFlashYellowTime = 15;
+		        		if (hawkPedQueued && hawkMinGreenMet) {
+		        			if (roadRightOfWay == RightOfWays.NorthSouth) {
+		        				setWestEastPedQueued(false);
+		        			} else {
+		        				setNorthSouthPedQueued(false);
+		        			}
+
+		        			ticksInStage = 0;
+		        			this.stageStartTime = world.getTotalWorldTime();
+			        			setNextUpdate(hawkFlashYellowTime);
+		        			return Stages.HawkFlashYellow;
+		        		}
+		        		return Stages.Green;
+		        	}
+
 		            Automator.SensorCheckResult crossSensorCheck = checkSensors(currentRightOfWay.getNext());
 
 		            timeExceeded = (greenMinimum > 0) && ticksInStage >= (greenMinimum * 20);
@@ -2395,6 +2536,11 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		    double greenMinimum = (rightOfWay == RightOfWays.NorthSouth)
 		        ? getAutomator().getGreenMinimumNS()
 		        : getAutomator().getGreenMinimumEW();
+
+		    if (TrafficLightControlBoxTileEntity.this.isHawkBeaconEnabled()) {
+		    	setNextUpdate(greenMinimum);
+		    	return Stages.Green;
+		    }
 
 		    if ((rightOfWay == RightOfWays.NorthSouth && isNorthSouthPedQueued()) ||
 		        (rightOfWay == RightOfWays.EastWest && isWestEastPedQueued())) {
@@ -2473,7 +2619,11 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		Direction1RightTurnArrow(11),
 		Direction2RightTurnArrow(12),
 		Direction1RightTurnArrowYellow(13),
-		Direction2RightTurnArrowYellow(14);
+		Direction2RightTurnArrowYellow(14),
+		HawkFlashYellow(15),
+		HawkSolidYellow(16),
+		HawkSolidRed(17),
+		HawkFlashRed(18);
 		
 		private int id;
 		private Stages(int id)

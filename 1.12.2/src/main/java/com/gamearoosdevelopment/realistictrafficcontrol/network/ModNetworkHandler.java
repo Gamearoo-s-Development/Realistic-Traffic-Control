@@ -26,5 +26,11 @@ public class ModNetworkHandler {
                 packetId++,
                 Side.SERVER
             );
+		INSTANCE.registerMessage(
+				PacketToggleHawkBeacon.Handler.class,
+				PacketToggleHawkBeacon.class,
+				packetId++,
+				Side.SERVER
+		);
     }
 }

@@ -15,6 +15,7 @@ import com.gamearoosdevelopment.realistictrafficcontrol.gui.GuiButtonToggle;
 import com.gamearoosdevelopment.realistictrafficcontrol.network.ModNetworkHandler;
 import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleMain;
 import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleNightFlash;
+import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleHawkBeacon;
 
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
@@ -87,6 +88,7 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 	private GuiTextField rightArrowMinimum;
 	private GuiButton nightFlashToggle;
 	private GuiButton northMain;
+	private GuiButton hawkBeaconToggle;
 	private GuiTextField crossTime;
 	private GuiTextField crossWarningTime;
 	
@@ -231,6 +233,8 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 		    this.buttonList.add(nightFlashToggle);
 		    this.northMain = new GuiButtonToggle2(9002, horizontalCenter + 107, verticalCenter - 56, 25, 20, _te.isNorthMainEnabled());
 		    this.buttonList.add(northMain);
+		    this.hawkBeaconToggle = new GuiButtonToggleHawk(9003, horizontalCenter + 107, verticalCenter - 34, 25, 20, _te.isHawkBeaconEnabled());
+		    this.buttonList.add(hawkBeaconToggle);
 		
 		}
 
@@ -808,6 +812,14 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 
 		    _te.setNorthMainEnabled(enabled); // client-side
 		    ModNetworkHandler.INSTANCE.sendToServer(new PacketToggleMain(_te.getPos(), enabled));
+		}
+		if (button.id == 9003 && button instanceof GuiButtonToggleHawk) {
+		    GuiButtonToggleHawk toggle = (GuiButtonToggleHawk) button;
+		    toggle.toggle();
+		    boolean enabled = toggle.isToggled();
+
+		    _te.setHawkBeaconEnabled(enabled); // client-side
+		    ModNetworkHandler.INSTANCE.sendToServer(new PacketToggleHawkBeacon(_te.getPos(), enabled));
 		}
 
 		switch(button.id)
