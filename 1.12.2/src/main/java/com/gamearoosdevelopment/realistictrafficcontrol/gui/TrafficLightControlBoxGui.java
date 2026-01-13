@@ -16,6 +16,8 @@ import com.gamearoosdevelopment.realistictrafficcontrol.network.ModNetworkHandle
 import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleMain;
 import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleNightFlash;
 import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleHawkBeacon;
+import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleSplitDirections;
+import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleSplitAxis;
 
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
@@ -89,6 +91,9 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 	private GuiButton nightFlashToggle;
 	private GuiButton northMain;
 	private GuiButton hawkBeaconToggle;
+	private GuiButton splitDirectionsToggle;
+	private GuiButton splitNSToggle;
+	private GuiButton splitEWToggle;
 	private GuiTextField crossTime;
 	private GuiTextField crossWarningTime;
 	
@@ -235,6 +240,12 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 		    this.buttonList.add(northMain);
 		    this.hawkBeaconToggle = new GuiButtonToggleHawk(9003, horizontalCenter + 107, verticalCenter - 34, 25, 20, _te.isHawkBeaconEnabled());
 		    this.buttonList.add(hawkBeaconToggle);
+		    this.splitDirectionsToggle = new GuiButtonToggleSplitDirections(9004, horizontalCenter + 107, verticalCenter - 12, 25, 20, _te.isSplitDirectionsEnabled());
+		    this.buttonList.add(splitDirectionsToggle);
+		    this.splitNSToggle = new GuiButtonToggleSplitNS(9005, horizontalCenter + 107, verticalCenter + 10, 25, 20, _te.isSplitNorthSouthEnabled());
+		    this.buttonList.add(splitNSToggle);
+		    this.splitEWToggle = new GuiButtonToggleSplitEW(9006, horizontalCenter + 107, verticalCenter + 32, 25, 20, _te.isSplitWestEastEnabled());
+		    this.buttonList.add(splitEWToggle);
 		
 		}
 
@@ -820,6 +831,30 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 
 		    _te.setHawkBeaconEnabled(enabled); // client-side
 		    ModNetworkHandler.INSTANCE.sendToServer(new PacketToggleHawkBeacon(_te.getPos(), enabled));
+		}
+		if (button.id == 9004 && button instanceof GuiButtonToggleSplitDirections) {
+			GuiButtonToggleSplitDirections toggle = (GuiButtonToggleSplitDirections) button;
+			toggle.toggle();
+			boolean enabled = toggle.isToggled();
+
+			_te.setSplitDirectionsEnabled(enabled); // client-side
+			ModNetworkHandler.INSTANCE.sendToServer(new PacketToggleSplitDirections(_te.getPos(), enabled));
+		}
+		if (button.id == 9005 && button instanceof GuiButtonToggleSplitNS) {
+			GuiButtonToggleSplitNS toggle = (GuiButtonToggleSplitNS) button;
+			toggle.toggle();
+			boolean enabled = toggle.isToggled();
+
+			_te.setSplitNorthSouthEnabled(enabled); // client-side
+			ModNetworkHandler.INSTANCE.sendToServer(new PacketToggleSplitAxis(_te.getPos(), PacketToggleSplitAxis.AXIS_NS, enabled));
+		}
+		if (button.id == 9006 && button instanceof GuiButtonToggleSplitEW) {
+			GuiButtonToggleSplitEW toggle = (GuiButtonToggleSplitEW) button;
+			toggle.toggle();
+			boolean enabled = toggle.isToggled();
+
+			_te.setSplitWestEastEnabled(enabled); // client-side
+			ModNetworkHandler.INSTANCE.sendToServer(new PacketToggleSplitAxis(_te.getPos(), PacketToggleSplitAxis.AXIS_EW, enabled));
 		}
 
 		switch(button.id)

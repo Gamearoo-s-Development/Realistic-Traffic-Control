@@ -32,5 +32,17 @@ public class ModNetworkHandler {
 				packetId++,
 				Side.SERVER
 		);
+        INSTANCE.registerMessage(
+                PacketToggleSplitDirections.Handler.class,
+                PacketToggleSplitDirections.class,
+                packetId++,
+                Side.SERVER
+        );
+		INSTANCE.registerMessage(
+				PacketToggleSplitAxis.Handler.class,
+				PacketToggleSplitAxis.class,
+				packetId++,
+				Side.SERVER
+		);
     }
 }
