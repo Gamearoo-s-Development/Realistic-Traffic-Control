@@ -1,7 +1,9 @@
 package com.gamearoosdevelopment.realistictrafficcontrol.CC;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.BaseTrafficLightTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLightControlBoxTileEntity;
@@ -11,9 +13,13 @@ import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagLong;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants.NBT;
 
 public class TrafficLightCardPeripheral implements IPeripheral {
     private final World world;
@@ -43,7 +49,12 @@ public class TrafficLightCardPeripheral implements IPeripheral {
     		        "listTrafficLights", 
     		        "setTrafficLightState",
     		        "clearTrafficLightState",
-    		        "listBulbTypes"
+		        "listBulbTypes",
+		        "queueNorthSouthPed",
+		        "queueWestEastPed",
+		        "isNorthSouthPedQueued",
+		        "isWestEastPedQueued",
+		        "listPedButtons"
     		    };
     }
 
@@ -165,6 +176,55 @@ public class TrafficLightCardPeripheral implements IPeripheral {
 	            }
 
 	            return new Object[] { bulbs.toArray(new String[0]) };
+	        }
+
+	        case 5: { // queueNorthSouthPed
+	        	// Matches in-world behavior: queue the NS ped cycle.
+	        	tile.getAutomator().setNorthSouthPedQueued(true);
+	        	tile.markDirty();
+	        	world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 3);
+	        	return new Object[] { true };
+	        }
+
+	        case 6: { // queueWestEastPed
+	        	// Matches in-world behavior: queue the WE ped cycle.
+	        	tile.getAutomator().setWestEastPedQueued(true);
+	        	tile.markDirty();
+	        	world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 3);
+	        	return new Object[] { true };
+	        }
+
+	        case 7: { // isNorthSouthPedQueued
+	        	return new Object[] { tile.getAutomator().isNorthSouthPedQueued() };
+	        }
+
+	        case 8: { // isWestEastPedQueued
+	        	return new Object[] { tile.getAutomator().isWestEastPedQueued() };
+	        }
+
+	        case 9: { // listPedButtons
+	        	NBTTagCompound compound = new NBTTagCompound();
+	        	tile.writeToNBT(compound);
+
+	        	NBTTagList northSouth = compound.getTagList("northSouthPedButtons", NBT.TAG_LONG);
+	        	NBTTagList westEast = compound.getTagList("westEastPedButtons", NBT.TAG_LONG);
+
+	        	String[] northSouthPos = new String[northSouth.tagCount()];
+	        	for (int i = 0; i < northSouth.tagCount(); i++) {
+	        		long asLong = ((NBTTagLong) northSouth.get(i)).getLong();
+	        		northSouthPos[i] = BlockPos.fromLong(asLong).toString();
+	        	}
+
+	        	String[] westEastPos = new String[westEast.tagCount()];
+	        	for (int i = 0; i < westEast.tagCount(); i++) {
+	        		long asLong = ((NBTTagLong) westEast.get(i)).getLong();
+	        		westEastPos[i] = BlockPos.fromLong(asLong).toString();
+	        	}
+
+	        	Map<String, Object> out = new HashMap<>();
+	        	out.put("northSouth", northSouthPos);
+	        	out.put("westEast", westEastPos);
+	        	return new Object[] { out };
 	        }
 
 

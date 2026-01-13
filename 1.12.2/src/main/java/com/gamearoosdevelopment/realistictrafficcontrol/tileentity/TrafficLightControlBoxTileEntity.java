@@ -2223,8 +2223,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 								tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
 								tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
 								if (allowRightTurnOnOtherApproach) {
-									tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight, true, false);
-									tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight2, true, false);
+									
 								} else {
 									tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
 									tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);

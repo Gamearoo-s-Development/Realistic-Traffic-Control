@@ -55,6 +55,7 @@ public class TileEntityWireAnchor extends TileEntity {
     private void notifyUpdate() {
         if (world != null && !world.isRemote) {
             world.notifyBlockUpdate(getPos(), world.getBlockState(getPos()), world.getBlockState(getPos()), 3);
+            world.markBlockRangeForRenderUpdate(getPos(), getPos());
         }
     }
 
@@ -92,6 +93,9 @@ public class TileEntityWireAnchor extends TileEntity {
     @Override
     public void handleUpdateTag(NBTTagCompound tag) {
         readFromNBT(tag);
+        if (world != null) {
+            world.markBlockRangeForRenderUpdate(getPos(), getPos());
+        }
     }
 
 
@@ -103,6 +107,9 @@ public class TileEntityWireAnchor extends TileEntity {
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
         readFromNBT(pkt.getNbtCompound());
+        if (world != null) {
+            world.markBlockRangeForRenderUpdate(getPos(), getPos());
+        }
     }
 
 }
