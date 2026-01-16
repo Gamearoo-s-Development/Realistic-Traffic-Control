@@ -23,6 +23,10 @@ public class GuiButtonToggleApproach extends GuiButton {
 		return this.toggled;
 	}
 
+	public void setToggled(boolean toggled) {
+		this.toggled = toggled;
+	}
+
 	public EnumFacing getFacing() {
 		return facing;
 	}

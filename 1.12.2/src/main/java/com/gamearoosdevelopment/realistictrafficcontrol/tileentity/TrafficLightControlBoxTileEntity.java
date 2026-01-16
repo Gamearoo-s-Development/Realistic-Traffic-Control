@@ -1437,6 +1437,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		    }
 
 		    SensorCheckResult sensorResults = checkSensors(lastRightOfWay);
+		    applyApproachEnableRules(lastRightOfWay, sensorResults);
 		    lastStage = updateLightsByStage(getNextLogicalStage(lastStage, lastRightOfWay, sensorResults));
 
 		    markDirty();
@@ -1450,6 +1451,36 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		    if (currentRightOfWay == RightOfWays.EastWest && sensorResults.Direction2SensorLeft)
 		        return LeftTripDirection.EAST_WEST_LEFT;
 		    return LeftTripDirection.NONE;
+		}
+
+		private void applyApproachEnableRules(RightOfWays row, SensorCheckResult result) {
+			final EnumFacing dir1 = getRowDir1(row);
+			final EnumFacing dir2 = getRowDir2(row);
+			final boolean dir1Enabled = isApproachEnabled(dir1);
+			final boolean dir2Enabled = isApproachEnabled(dir2);
+
+			// Ignore any sensor demand coming from disabled approaches.
+			if (!dir1Enabled) {
+				result.Direction1Sensor = false;
+				result.Direction1SensorLeft = false;
+				result.Direction1SensorRight = false;
+			}
+			if (!dir2Enabled) {
+				result.Direction2Sensor = false;
+				result.Direction2SensorLeft = false;
+				result.Direction2SensorRight = false;
+			}
+
+			// T-intersection behavior: if one side of an axis is missing, don't run a separate protected left phase
+			// for the remaining approach. Treat left-only trips as straight demand instead.
+			if (dir1Enabled && !dir2Enabled && result.Direction1SensorLeft) {
+				result.Direction1Sensor = true;
+				result.Direction1SensorLeft = false;
+			}
+			if (dir2Enabled && !dir1Enabled && result.Direction2SensorLeft) {
+				result.Direction2Sensor = true;
+				result.Direction2SensorLeft = false;
+			}
 		}
 
 		
@@ -2706,6 +2737,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		    final boolean splitForRow = TrafficLightControlBoxTileEntity.this.isSplitEnabledForRow(currentRightOfWay);
 		    final EnumFacing rowDir1 = currentRightOfWay == RightOfWays.NorthSouth ? EnumFacing.NORTH : EnumFacing.EAST;
 		    final EnumFacing rowDir2 = currentRightOfWay == RightOfWays.NorthSouth ? EnumFacing.SOUTH : EnumFacing.WEST;
+		    final boolean bothApproachesEnabled = isApproachEnabled(rowDir1) && isApproachEnabled(rowDir2);
 		    if (splitForRow && activeSplitDirection != rowDir1 && activeSplitDirection != rowDir2) {
 		    	activeSplitDirection = rowDir1;
 		    }
@@ -2782,7 +2814,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		                ticksInStage = 0;
 		                setNextUpdate(getAutomator().getRightArrowTime());
 		                return Stages.Direction2RightTurnArrow;
-		            } else if ((sensorResult.Direction1SensorLeft && sensorResult.Direction2SensorLeft) || arrowMinimum != 0) {
+		            } else if ((sensorResult.Direction1SensorLeft && sensorResult.Direction2SensorLeft) || (bothApproachesEnabled && arrowMinimum != 0)) {
 		                ticksInStage = 0;
 		                this.stageStartTime = world.getTotalWorldTime();
 		                setNextUpdate(arrowMinimum);
