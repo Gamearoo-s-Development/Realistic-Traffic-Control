@@ -20,6 +20,7 @@ import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockBaseTrafficL
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficSensorLeft;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficSensorRight;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficSensorStraight;
+import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficControl;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.CustomAngleCalculator;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.EnumTrafficLightBulbTypes;
 import com.google.common.collect.ImmutableList;
@@ -1397,7 +1398,16 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		    if (lastStage == Stages.Red) {
 		    	if (!TrafficLightControlBoxTileEntity.this.isHawkBeaconEnabled()) {
 		    		// Always alternate axis order: N/S then E/W then repeat.
-		    		lastRightOfWay = (forcedNextRightOfWay != null) ? forcedNextRightOfWay : lastRightOfWay.getNext();
+		    		// BUT: if we have a pending split swap (E<->W or N<->S), we must stay on the same axis
+		    		// so the other approach can be served next (after Yellow+Red), otherwise it gets delayed
+		    		// until after the other axis runs.
+		    		if (forcedNextRightOfWay != null) {
+		    			lastRightOfWay = forcedNextRightOfWay;
+		    		} else if (pendingSplitSwapRow != null && pendingSplitSwapDirection != null) {
+		    			lastRightOfWay = pendingSplitSwapRow;
+		    		} else {
+		    			lastRightOfWay = lastRightOfWay.getNext();
+		    		}
 		    		forcedNextRightOfWay = null;
 		    		swappedWithinCurrentRow = false;
 		    			boolean appliedPendingSwap = false;
@@ -1413,7 +1423,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		    				appliedPendingSwap = true;
 		    		}
 
-		    			if (!appliedPendingSwap && TrafficLightControlBoxTileEntity.this.isSplitEnabledForRow(lastRightOfWay)) {
+		            			if (!appliedPendingSwap && TrafficLightControlBoxTileEntity.this.isSplitEnabledForRow(lastRightOfWay)) {
 		    			// Deterministic approach order per axis: N,S then E,W.
 		    			activeSplitDirection = chooseSplitDirectionForRowFixedOrder(lastRightOfWay);
 		    		}
@@ -1558,12 +1568,6 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					.stream()
 					.forEach(tl ->
 					{
-						
-						
-				
-						
-						
-						
 						tl.powerOff();
 						tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
@@ -2346,12 +2350,46 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					
 			}
 			
-			
-			
-		
-			
+			// If an approach is disabled (ex: hasNorth=false), it must stay red regardless of stage.
+			forceDisabledApproachesRed(trafficLightsForRightOfWay);
+			forceDisabledApproachesRed(trafficLightsOpposingRightOfWay);
+
 			return stage;
 		}
+
+		private void forceDisabledApproachesRed(List<BaseTrafficLightTileEntity> lights) {
+			for (BaseTrafficLightTileEntity tl : lights) {
+				IBlockState tlBs = world.getBlockState(tl.getPos());
+				int rotation = tlBs.getValue(BlockBaseTrafficLight.ROTATION);
+				boolean disabled = false;
+				if (CustomAngleCalculator.isRotationFacing(rotation, EnumFacing.NORTH)) {
+					disabled = !TrafficLightControlBoxTileEntity.this.hasNorth;
+				} else if (CustomAngleCalculator.isRotationFacing(rotation, EnumFacing.SOUTH)) {
+					disabled = !TrafficLightControlBoxTileEntity.this.hasSouth;
+				} else if (CustomAngleCalculator.isRotationFacing(rotation, EnumFacing.EAST)) {
+					disabled = !TrafficLightControlBoxTileEntity.this.hasEast;
+				} else if (CustomAngleCalculator.isRotationFacing(rotation, EnumFacing.WEST)) {
+					disabled = !TrafficLightControlBoxTileEntity.this.hasWest;
+				}
+
+				if (!disabled) {
+					continue;
+				}
+
+				tl.powerOff();
+				tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
+				tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
+				tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
+				tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
+				tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
+				tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
+				tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
+				tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
+				tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
+				tl.setActive(EnumTrafficLightBulbTypes.NoRightTurn, true, false);
+				tl.setActive(EnumTrafficLightBulbTypes.NoLeftTurn, true, false);
+		}
+	}
 		
 		public void readNBT(NBTTagCompound nbt)
 		{
@@ -2862,7 +2900,10 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		        	if (TrafficLightControlBoxTileEntity.this.isHawkBeaconEnabled()) {
 		        		final RightOfWays roadRightOfWay = northMain ? RightOfWays.NorthSouth : RightOfWays.EastWest;
 		        		final boolean hawkPedQueued = (roadRightOfWay == RightOfWays.NorthSouth) ? isWestEastPedQueued() : isNorthSouthPedQueued();
-		        		final boolean hawkMinGreenMet = (greenMinimum > 0) ? (ticksInStage >= (greenMinimum * 20)) : (ticksInStage >= 20);
+		        		// If greenMinimum is 0, this behaves like a fixed-timer cycle: only change at greenMax.
+		        		final boolean hawkMinGreenMet = (greenMinimum > 0)
+		        			? (ticksInStage >= (greenMinimum * 20))
+		        			: (ticksInStage >= (greenMax * 20));
 			        		final double hawkFlashYellowTime = 15;
 		        		if (hawkPedQueued && hawkMinGreenMet) {
 		        			if (roadRightOfWay == RightOfWays.NorthSouth) {
@@ -2889,62 +2930,94 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		            	final boolean otherLeft = splitActiveIsDir1 ? sensorResult.Direction2SensorLeft : sensorResult.Direction1SensorLeft;
 		            	final boolean otherRight = splitActiveIsDir1 ? sensorResult.Direction2SensorRight : sensorResult.Direction1SensorRight;
 		            	final boolean otherDemand = otherStraight || otherLeft || otherRight;
+		            	// Vehicle-only demand (excludes pedestrian queue, which checkSensors maps into Direction1/2 straight).
+		            	final boolean activeVehicleDemand = hasAnyDemandForFacing(activeSplitDirection);
+		            	final boolean otherVehicleDemand = hasAnyDemandForFacing(otherDir);
 		            	final RightOfWays nextRow = currentRightOfWay.getNext();
-		            	final boolean anyDemandThisRow = activeDemand || otherDemand;
 
-		            	timeExceeded = (greenMinimum > 0) && ticksInStage >= (greenMinimum * 20);
-		            	final boolean maxTimeExceeded = ticksInStage >= (greenMax * 20);
-
-		            	// If the active approach has no demand but the other approach on the same axis does, switch
-		            	// without forcing a Yellow/Red cycle.
-		            	if (!activeDemand && otherDemand && isSplitDirectionEnabled(otherDir)) {
-		            		activeSplitDirection = otherDir;
-		            		this.stageStartTime = world.getTotalWorldTime();
-		            		setNextUpdate(greenMinimum > 0 ? greenMinimum : 1);
-		            		return Stages.Green;
-		            	}
-
-		            	// Respect min/max the normal way:
-		            	// - If BOTH approaches on this axis have demand, serve each once (E->W or N->S) before yielding.
-		            	// - Otherwise: hold until greenMax while demand persists; yield early when no demand.
-		            	timeExceeded = (greenMinimum > 0) && ticksInStage >= (greenMinimum * 20);
-		            	final boolean minMet = (greenMinimum > 0) ? timeExceeded : true;
+		            	final boolean timerMode = greenMinimum == 0;
+		            	final boolean minMet = (greenMinimum > 0) && ticksInStage >= (greenMinimum * 20);
 		            	final boolean maxMet = ticksInStage >= (greenMax * 20);
+		            	// In timer mode (min==0), only change at max.
+		            	final boolean canChange = timerMode ? maxMet : minMet;
 
-		            	if (minMet) {
-		            		// If both directions want service, swap once after min.
-		            		if (!swappedWithinCurrentRow && activeDemand && otherDemand && isSplitDirectionEnabled(otherDir)) {
-		            			// Show Yellow + Red for the CURRENT approach first, then swap to the other approach on this axis.
+		            	// Schedule an in-row swap (E<->W or N<->S) with proper Yellow->Red first.
+		            	// - When greenMinimum==0, we still only swap if the other approach has demand.
+		            	//   (max still limits how long we hold green, but we don't "force" an empty approach.)
+		            	// - When greenMinimum>0, min gates any changes and we swap only if the other approach has demand.
+		            	if (!swappedWithinCurrentRow && canChange && isSplitDirectionEnabled(otherDir)) {
+		            		final boolean shouldSwap = timerMode || otherVehicleDemand;
+		            		if (shouldSwap) {
 		            			swappedWithinCurrentRow = true;
 		            			pendingSplitSwapRow = currentRightOfWay;
 		            			pendingSplitSwapDirection = otherDir;
+		            			if (!timerMode) {
+		            				ModRealisticTrafficControl.logger.info(
+		            					"[RTC] Split swap scheduled row={} from {} to {} min={} max={} ticks={} activeVeh={} otherVeh={} D1={} D2={} D1L={} D2L={} D1R={} D2R={} pedNS={} pedEW={}",
+		            					currentRightOfWay,
+		            					activeSplitDirection,
+		            					otherDir,
+		            					greenMinimum,
+		            					greenMax,
+		            					ticksInStage,
+		            					activeVehicleDemand,
+		            					otherVehicleDemand,
+		            					sensorResult.Direction1Sensor,
+		            					sensorResult.Direction2Sensor,
+		            					sensorResult.Direction1SensorLeft,
+		            					sensorResult.Direction2SensorLeft,
+		            					sensorResult.Direction1SensorRight,
+		            					sensorResult.Direction2SensorRight,
+		            					isNorthSouthPedQueued(),
+		            					isWestEastPedQueued());
+		            			}
 		            			this.stageStartTime = world.getTotalWorldTime();
 		            			forcedNextRightOfWay = currentRightOfWay;
 		            			setNextUpdate(yellowTime);
 		            			return Stages.Yellow;
 		            		}
+		            	}
 
-		            		// If we already swapped (so we served both), yield to the other axis after min.
-		            		if (swappedWithinCurrentRow && greenMinimum > 0) {
+		            	// If we've already swapped within this row, we are currently serving the SECOND approach.
+		            	// Only yield back to the other axis when this approach is finished per min/max rules.
+		            	if (swappedWithinCurrentRow) {
+		            		if (timerMode) {
+		            			if (maxMet) {
+		            				this.stageStartTime = world.getTotalWorldTime();
+		            				forcedNextRightOfWay = nextRow;
+		            				setNextUpdate(yellowTime);
+		            				return Stages.Yellow;
+		            			}
+		            			return Stages.Green;
+		            		}
+		            		// Sensor mode
+			            		if ((!activeVehicleDemand && minMet) || maxMet) {
 		            			this.stageStartTime = world.getTotalWorldTime();
 		            			forcedNextRightOfWay = nextRow;
 		            			setNextUpdate(yellowTime);
 		            			return Stages.Yellow;
 		            		}
+		            		return Stages.Green;
+		            	}
 
-		            		if (!anyDemandThisRow) {
-		            			this.stageStartTime = world.getTotalWorldTime();
-		            			forcedNextRightOfWay = nextRow;
-		            			setNextUpdate(yellowTime);
-		            			return Stages.Yellow;
-		            		}
-
+		            	// First approach in this row
+		            	if (timerMode) {
+		            		// Swap is handled above at max; if the other approach is disabled, just yield at max.
 		            		if (maxMet) {
 		            			this.stageStartTime = world.getTotalWorldTime();
 		            			forcedNextRightOfWay = nextRow;
 		            			setNextUpdate(yellowTime);
 		            			return Stages.Yellow;
 		            		}
+		            		return Stages.Green;
+		            	}
+
+		            	// Sensor mode: yield when no demand after min, or at max.
+		            	if ((!activeVehicleDemand && minMet) || maxMet) {
+		            		this.stageStartTime = world.getTotalWorldTime();
+		            		forcedNextRightOfWay = nextRow;
+		            		setNextUpdate(yellowTime);
+		            		return Stages.Yellow;
 		            	}
 
 		            	return Stages.Green;

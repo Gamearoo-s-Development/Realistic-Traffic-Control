@@ -44,5 +44,11 @@ public class ModNetworkHandler {
 				packetId++,
 				Side.SERVER
 		);
+        INSTANCE.registerMessage(
+                PacketToggleApproachEnabled.Handler.class,
+                PacketToggleApproachEnabled.class,
+                packetId++,
+                Side.SERVER
+        );
     }
 }

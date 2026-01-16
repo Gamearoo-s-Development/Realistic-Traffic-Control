@@ -18,6 +18,7 @@ import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleNigh
 import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleHawkBeacon;
 import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleSplitDirections;
 import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleSplitAxis;
+import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleApproachEnabled;
 
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
@@ -94,6 +95,10 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 	private GuiButton splitDirectionsToggle;
 	private GuiButton splitNSToggle;
 	private GuiButton splitEWToggle;
+	private GuiButtonToggleApproach approachNorthToggle;
+	private GuiButtonToggleApproach approachSouthToggle;
+	private GuiButtonToggleApproach approachEastToggle;
+	private GuiButtonToggleApproach approachWestToggle;
 	private GuiTextField crossTime;
 	private GuiTextField crossWarningTime;
 	
@@ -246,6 +251,16 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 		    this.buttonList.add(splitNSToggle);
 		    this.splitEWToggle = new GuiButtonToggleSplitEW(9006, horizontalCenter + 107, verticalCenter + 32, 25, 20, _te.isSplitWestEastEnabled());
 		    this.buttonList.add(splitEWToggle);
+
+		    // Per-approach enables (N/S/E/W). OFF forces that direction to stay red.
+		    this.approachNorthToggle = new GuiButtonToggleApproach(9010, horizontalCenter + 107, verticalCenter + 54, 25, 20, net.minecraft.util.EnumFacing.NORTH, _te.hasNorth);
+		    this.approachSouthToggle = new GuiButtonToggleApproach(9011, horizontalCenter + 107, verticalCenter + 76, 25, 20, net.minecraft.util.EnumFacing.SOUTH, _te.hasSouth);
+		    this.approachEastToggle = new GuiButtonToggleApproach(9012, horizontalCenter + 107, verticalCenter + 98, 25, 20, net.minecraft.util.EnumFacing.EAST, _te.hasEast);
+		    this.approachWestToggle = new GuiButtonToggleApproach(9013, horizontalCenter + 107, verticalCenter + 120, 25, 20, net.minecraft.util.EnumFacing.WEST, _te.hasWest);
+		    this.buttonList.add(approachNorthToggle);
+		    this.buttonList.add(approachSouthToggle);
+		    this.buttonList.add(approachEastToggle);
+		    this.buttonList.add(approachWestToggle);
 		
 		}
 
@@ -855,6 +870,31 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 
 			_te.setSplitWestEastEnabled(enabled); // client-side
 			ModNetworkHandler.INSTANCE.sendToServer(new PacketToggleSplitAxis(_te.getPos(), PacketToggleSplitAxis.AXIS_EW, enabled));
+		}
+		if (button.id >= 9010 && button.id <= 9013 && button instanceof GuiButtonToggleApproach) {
+			GuiButtonToggleApproach toggle = (GuiButtonToggleApproach) button;
+			toggle.toggle();
+			boolean enabled = toggle.isToggled();
+			net.minecraft.util.EnumFacing facing = toggle.getFacing();
+
+			// client-side update
+			switch (facing) {
+				case NORTH:
+					_te.setNorth(enabled);
+					break;
+				case SOUTH:
+					_te.setSouth(enabled);
+					break;
+				case EAST:
+					_te.setEast(enabled);
+					break;
+				case WEST:
+					_te.setWest(enabled);
+					break;
+				default:
+					break;
+			}
+			ModNetworkHandler.INSTANCE.sendToServer(new PacketToggleApproachEnabled(_te.getPos(), facing, enabled));
 		}
 
 		switch(button.id)
