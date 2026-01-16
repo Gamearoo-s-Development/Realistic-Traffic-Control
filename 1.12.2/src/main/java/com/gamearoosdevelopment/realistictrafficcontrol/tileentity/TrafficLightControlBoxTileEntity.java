@@ -985,6 +985,12 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		public double arrowMaxEW = 5;
 		private double crossTime = 5;
 		private double crossWarningTime = 7;
+				public Automator() {
+					// Pull HAWK defaults from config for newly created controllers.
+					// Controllers that already exist in-world will overwrite these via NBT load.
+					this.crossTime = Config.hawkDefaultSolidRedSeconds;
+					this.crossWarningTime = Config.hawkDefaultFlashRedSeconds;
+				}
 		private double rightArrowTime = 5;
 		private boolean northSouthPedQueued;
 		private boolean westEastPedQueued;
@@ -2180,15 +2186,27 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 							final boolean facesDir1 = CustomAngleCalculator.isRotationFacing(rotation, direction1);
 							final boolean facesDir2 = CustomAngleCalculator.isRotationFacing(rotation, direction2);
 							final boolean allowGreen = !split || (facesDir1 && splitDir == direction1) || (facesDir2 && splitDir == direction2);
+							final boolean oppositeApproachDisabled = !split && ((facesDir1 && !isApproachEnabled(direction2)) || (facesDir2 && !isApproachEnabled(direction1)));
 
 							tl.powerOff();
 							if (allowGreen)
 							{
 								if (!split) {
-									tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, true);
-									tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, true);
-									tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft2, true, true);
-									tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn2, true, true);
+									// If the opposing approach is disabled (T-intersection style), don't use flashing permissive arrows.
+									// Give this approach solid green turn arrows instead.
+									if (oppositeApproachDisabled) {
+										tl.setActive(EnumTrafficLightBulbTypes.GreenArrowLeft, true, false);
+										tl.setActive(EnumTrafficLightBulbTypes.GreenArrowUTurn, true, false);
+										tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight, true, false);
+										tl.setActive(EnumTrafficLightBulbTypes.GreenArrowLeft2, true, false);
+										tl.setActive(EnumTrafficLightBulbTypes.GreenArrowUTurn2, true, false);
+										tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight2, true, false);
+									} else {
+										tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, true);
+										tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, true);
+										tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft2, true, true);
+										tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn2, true, true);
+									}
 								}
 								tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
 								tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
@@ -2204,7 +2222,9 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 								tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight2, true, false);
 								tl.setActive(EnumTrafficLightBulbTypes.StraightGreen, true, false);
 								tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
-								tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight2, true, true);
+								if (!oppositeApproachDisabled) {
+									tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight2, true, true);
+								}
 								tl.setActive(EnumTrafficLightBulbTypes.NoRightTurn, true, false);
 							
 							if (stage == Stages.GreenCross)
@@ -2327,7 +2347,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 				}
 				case HawkFlashRed:
 				{
-					final long wigwagTicks = 20; // 1 second
+					final long wigwagTicks = Math.max(1L, (long) Config.hawkWigwagPeriodTicks);
 					final boolean alt = ((world.getTotalWorldTime() / wigwagTicks) % 2) == 0;
 					trafficLightsForRightOfWay
 						.stream()
@@ -2721,7 +2741,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		    	case HawkFlashYellow:
 		    		ticksInStage = 0;
 		    		this.stageStartTime = world.getTotalWorldTime();
-		    		setNextUpdate(yellowTime);
+					setNextUpdate(Config.hawkSolidYellowSeconds);
 		    		return Stages.HawkSolidYellow;
 
 		    	case HawkSolidYellow:
@@ -2904,7 +2924,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		        		final boolean hawkMinGreenMet = (greenMinimum > 0)
 		        			? (ticksInStage >= (greenMinimum * 20))
 		        			: (ticksInStage >= (greenMax * 20));
-			        		final double hawkFlashYellowTime = 15;
+							final double hawkFlashYellowTime = Config.hawkFlashYellowSeconds;
 		        		if (hawkPedQueued && hawkMinGreenMet) {
 		        			if (roadRightOfWay == RightOfWays.NorthSouth) {
 		        				setWestEastPedQueued(false);
