@@ -42,6 +42,13 @@ public class Config {
 	public static int trafficLightCardT3Capacity = 384;
 	public static float trafficLightCardDrawPerBlock = 0.01F;
 	public static float ccPeripheralEnergyCost = 0.01F;
+
+	// HAWK beacon timing (seconds unless otherwise noted)
+	public static float hawkFlashYellowSeconds = 15.0F;
+	public static float hawkSolidYellowSeconds = 3.0F;
+	public static float hawkDefaultSolidRedSeconds = 5.0F;
+	public static float hawkDefaultFlashRedSeconds = 7.0F;
+	public static int hawkWigwagPeriodTicks = 20;
 	
 	
 	 public static void readConfig() {
@@ -86,6 +93,42 @@ public class Config {
 		tooltipCharWrapLength = cfg.getInt("tooltipCharWrapLength", CATEGORY_GENERAL, tooltipCharWrapLength, 64, 5412, "How many letters should be rendered in a tooltip before it wraps down to the next line?");
 		
 		trafficLightCardDrawPerBlock = cfg.getFloat("trafficLightCardDrawPerBlock", CATEGORY_OC, trafficLightCardDrawPerBlock, 0, Float.MAX_VALUE, "How much energy should the traffic control card consume times number of blocks away the traffic light is?");
+
+		hawkFlashYellowSeconds = cfg.getFloat(
+				"hawkFlashYellowSeconds",
+				CATEGORY_TRAFFIC_LIGHT,
+				hawkFlashYellowSeconds,
+				0.0F,
+				600.0F,
+				"HAWK beacon: flashing yellow duration (seconds) before solid yellow.");
+		hawkSolidYellowSeconds = cfg.getFloat(
+				"hawkSolidYellowSeconds",
+				CATEGORY_TRAFFIC_LIGHT,
+				hawkSolidYellowSeconds,
+				0.0F,
+				60.0F,
+				"HAWK beacon: solid yellow duration (seconds) before solid red.");
+		hawkDefaultSolidRedSeconds = cfg.getFloat(
+				"hawkDefaultSolidRedSeconds",
+				CATEGORY_TRAFFIC_LIGHT,
+				hawkDefaultSolidRedSeconds,
+				0.0F,
+				600.0F,
+				"Default for new controllers: HAWK solid-red WALK duration (seconds). Existing controllers keep their saved value.");
+		hawkDefaultFlashRedSeconds = cfg.getFloat(
+				"hawkDefaultFlashRedSeconds",
+				CATEGORY_TRAFFIC_LIGHT,
+				hawkDefaultFlashRedSeconds,
+				0.0F,
+				600.0F,
+				"Default for new controllers: HAWK flashing-red clearance duration (seconds). Existing controllers keep their saved value.");
+		hawkWigwagPeriodTicks = cfg.getInt(
+				"hawkWigwagPeriodTicks",
+				CATEGORY_TRAFFIC_LIGHT,
+				hawkWigwagPeriodTicks,
+				1,
+				200,
+				"HAWK beacon: wigwag alternation period (ticks). 20 ticks = 1 second.");
 	
 		
 	

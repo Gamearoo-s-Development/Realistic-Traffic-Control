@@ -20,6 +20,10 @@ public class GuiButtonToggleSplitEW extends GuiButton {
 		return this.toggled;
 	}
 
+	public void setToggled(boolean toggled) {
+		this.toggled = toggled;
+	}
+
 	@Override
 	public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
 		if (this.visible) {
