@@ -50,5 +50,11 @@ public class ModNetworkHandler {
                 packetId++,
                 Side.SERVER
         );
+		INSTANCE.registerMessage(
+				PacketToggleFyaNightOnly.Handler.class,
+				PacketToggleFyaNightOnly.class,
+				packetId++,
+				Side.SERVER
+		);
     }
 }

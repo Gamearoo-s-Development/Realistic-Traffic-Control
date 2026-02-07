@@ -107,9 +107,6 @@ import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLightT
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.Type3BarrierTileEntity;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.util.OpenComputersHelper;
-
-import dan200.computercraft.ComputerCraft;
-import dan200.computercraft.api.ComputerCraftAPI;
 import net.minecraft.block.Block;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;

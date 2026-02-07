@@ -2,9 +2,6 @@ package com.gamearoosdevelopment.realistictrafficcontrol.tileentity;
 
 import java.util.ArrayList;
 
-
-import dan200.computercraft.api.peripheral.IPeripheral;
-
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -15,7 +12,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.Config;
-import com.gamearoosdevelopment.realistictrafficcontrol.CC.TrafficLightCardPeripheral;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockBaseTrafficLight;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficSensorLeft;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficSensorRight;
@@ -42,21 +38,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.Constants.NBT;
-
-
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
 
 
 
 
 public class TrafficLightControlBoxTileEntity extends SyncableTileEntity implements ITickable {
-	@CapabilityInject(IPeripheral.class)
-	public static Capability<IPeripheral> CAPABILITY_PERIPHERAL = null;
-
-	private IPeripheral peripheral;
-
-
 
 	private ArrayList<BlockPos> westEastLights = new ArrayList<BlockPos>();
 	private ArrayList<BlockPos> northSouthLights = new ArrayList<BlockPos>();
@@ -80,6 +67,9 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 	private long nightFlashStart = 13000; // 7 PM
 	private long nightFlashEnd = 0;   // 5 AM
 	private boolean inNightFlash = false;
+	private boolean fyaNightOnlyEnabled = false;
+	private boolean lastInNightFlash = false;
+	private int fyaDayTransitionTicksRemaining = 0;
 	private boolean flashState = false; // toggles on/off
 	private boolean previousFlashState = false;
 	private boolean wasFlashOn = false; // toggle tracker
@@ -143,6 +133,15 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		return splitWestEastEnabled;
 	}
 
+	public void setFyaNightOnlyEnabled(boolean enabled) {
+		this.fyaNightOnlyEnabled = enabled;
+		markDirty();
+	}
+
+	public boolean isFyaNightOnlyEnabled() {
+		return fyaNightOnlyEnabled;
+	}
+
 	public boolean isSplitEnabledForRow(RightOfWays rightOfWay) {
 		if (!splitDirectionsEnabled) {
 			return false;
@@ -166,26 +165,8 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 	
 
 
-	@Override
-	public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
-	    if (capability == CAPABILITY_PERIPHERAL) {
-	        return true;
-	    }
-	    return super.hasCapability(capability, facing);
-	}
-
-	@Override
-	public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
-	    if (capability == CAPABILITY_PERIPHERAL) {
-	        if (peripheral == null) {
-	            peripheral = new TrafficLightCardPeripheral(world, pos, this);
-	        }
-	        return CAPABILITY_PERIPHERAL.cast(peripheral);
-	    }
-	    return super.getCapability(capability, facing);
-	}
-
-
+	// ComputerCraft integration is registered via TrafficLightPeripheralProvider when CC is installed.
+	// Keeping this tile entity free of CC API references ensures RTC loads when CC is not present.
 
 	
 	@Override
@@ -213,6 +194,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		compound.setBoolean("splitDirectionsEnabled", splitDirectionsEnabled);
 		compound.setBoolean("splitNorthSouthEnabled", splitNorthSouthEnabled);
 		compound.setBoolean("splitWestEastEnabled", splitWestEastEnabled);
+		compound.setBoolean("FyaNightOnlyEnabled", fyaNightOnlyEnabled);
 
 		
 		    compound.setInteger("TicksInCurrentStage", ticksInCurrentStage);
@@ -324,6 +306,9 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		if (compound.hasKey("splitWestEastEnabled")) {
 			splitWestEastEnabled = compound.getBoolean("splitWestEastEnabled");
 		}
+		if (compound.hasKey("FyaNightOnlyEnabled")) {
+			fyaNightOnlyEnabled = compound.getBoolean("FyaNightOnlyEnabled");
+		}
 
 		
 	 
@@ -383,6 +368,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		compound.setBoolean("splitDirectionsEnabled", splitDirectionsEnabled);
 		compound.setBoolean("splitNorthSouthEnabled", splitNorthSouthEnabled);
 		compound.setBoolean("splitWestEastEnabled", splitWestEastEnabled);
+		compound.setBoolean("FyaNightOnlyEnabled", fyaNightOnlyEnabled);
 		compound.setBoolean("isAutoMode", !sensors.isEmpty() || !northSouthPedButtons.isEmpty() || !westEastPedButtons.isEmpty());
 		compound.setBoolean("hasNorth", hasNorth);
 		compound.setBoolean("hasSouth", hasSouth);
@@ -425,6 +411,9 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		}
 		if (tag.hasKey("splitWestEastEnabled")) {
 			splitWestEastEnabled = tag.getBoolean("splitWestEastEnabled");
+		}
+		if (tag.hasKey("FyaNightOnlyEnabled")) {
+			fyaNightOnlyEnabled = tag.getBoolean("FyaNightOnlyEnabled");
 		}
 		getAutomator().readSyncData(tag);
 	}
@@ -1281,6 +1270,18 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		    long time = world.getWorldTime() % 24000;
 		    inNightFlash = (time >= nightFlashStart || time <= nightFlashEnd);
 
+		    // If FYA is configured to be night-only, don't hard cut to red when day starts.
+		    // Instead, run a short solid-yellow transition before holding red.
+		    if (fyaNightOnlyEnabled && lastInNightFlash && !inNightFlash) {
+		    	final double yellowSeconds = (lastRightOfWay == RightOfWays.NorthSouth) ? getYellowTimeNS() : getYellowTimeEW();
+		    	final int yellowTicks = (int) Math.max(10, Math.min(200, Math.round(yellowSeconds * 20.0)));
+		    	fyaDayTransitionTicksRemaining = yellowTicks;
+		    }
+		    lastInNightFlash = inNightFlash;
+		    if (fyaDayTransitionTicksRemaining > 0) {
+		    	fyaDayTransitionTicksRemaining--;
+		    }
+
 		   
 		   
 		        
@@ -1652,8 +1653,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 								tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
 								tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
 								tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
-								tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft2, true, true);
-								tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn2, true, true);
+								
 								tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
 								tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
 								tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
@@ -1728,9 +1728,34 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 							tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft2, true, true);
+							final boolean allowFyaNow = !TrafficLightControlBoxTileEntity.this.fyaNightOnlyEnabled || TrafficLightControlBoxTileEntity.this.inNightFlash;
+							final boolean isFyaDayTransition = TrafficLightControlBoxTileEntity.this.fyaNightOnlyEnabled
+									&& !TrafficLightControlBoxTileEntity.this.inNightFlash
+									&& TrafficLightControlBoxTileEntity.this.fyaDayTransitionTicksRemaining > 0;
+									if (allowFyaNow) {
+											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, true);
+											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, true);
+											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft2, true, true);
+											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn2, true, true);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
+										} else if (isFyaDayTransition) {
+											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, false);
+											
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
+										} else {
+											// Outside night (when FYA Night Only is enabled), keep turn arrows red.
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
+										}
 							tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn2, true, true);
+							
 							tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
 							
 							tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
@@ -1839,7 +1864,32 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 								tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
 								tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
 								tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
-								tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft2, true, true);
+								final boolean allowFyaNow = !TrafficLightControlBoxTileEntity.this.fyaNightOnlyEnabled || TrafficLightControlBoxTileEntity.this.inNightFlash;
+							final boolean isFyaDayTransition = TrafficLightControlBoxTileEntity.this.fyaNightOnlyEnabled
+									&& !TrafficLightControlBoxTileEntity.this.inNightFlash
+									&& TrafficLightControlBoxTileEntity.this.fyaDayTransitionTicksRemaining > 0;
+									if (allowFyaNow) {
+											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, true);
+											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, true);
+											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft2, true, true);
+											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn2, true, true);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
+										} else if (isFyaDayTransition) {
+											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, false);
+											
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
+										} else {
+											// Outside night (when FYA Night Only is enabled), keep turn arrows red.
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
+										}
 								tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
 								tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
 								tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
@@ -1924,7 +1974,32 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 							tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft2, true, true);
+							final boolean allowFyaNow = !TrafficLightControlBoxTileEntity.this.fyaNightOnlyEnabled || TrafficLightControlBoxTileEntity.this.inNightFlash;
+							final boolean isFyaDayTransition = TrafficLightControlBoxTileEntity.this.fyaNightOnlyEnabled
+									&& !TrafficLightControlBoxTileEntity.this.inNightFlash
+									&& TrafficLightControlBoxTileEntity.this.fyaDayTransitionTicksRemaining > 0;
+									if (allowFyaNow) {
+											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, true);
+											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, true);
+											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft2, true, true);
+											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn2, true, true);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
+										} else if (isFyaDayTransition) {
+											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, false);
+											
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
+										} else {
+											// Outside night (when FYA Night Only is enabled), keep turn arrows red.
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
+										}
 							tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
@@ -2125,16 +2200,20 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 				case Yellow:
 					final boolean splitYellow = TrafficLightControlBoxTileEntity.this.isSplitEnabledForRow(lastRightOfWay);
 					final EnumFacing splitYellowDir = activeSplitDirection;
+					final boolean allowFyaNowYellow = !TrafficLightControlBoxTileEntity.this.fyaNightOnlyEnabled || TrafficLightControlBoxTileEntity.this.inNightFlash;
+					final boolean isFyaDayTransitionYellow = TrafficLightControlBoxTileEntity.this.fyaNightOnlyEnabled
+							&& !TrafficLightControlBoxTileEntity.this.inNightFlash
+							&& TrafficLightControlBoxTileEntity.this.fyaDayTransitionTicksRemaining > 0;
 					trafficLightsForRightOfWay
 					.stream()
 					.forEach(tl ->
 					{
 						tl.powerOff();
+						final IBlockState tlBs = world.getBlockState(tl.getPos());
+						final int rotation = tlBs.getValue(BlockBaseTrafficLight.ROTATION);
+						final boolean facesDir1 = CustomAngleCalculator.isRotationFacing(rotation, direction1);
+						final boolean facesDir2 = CustomAngleCalculator.isRotationFacing(rotation, direction2);
 						if (splitYellow) {
-							final IBlockState tlBs = world.getBlockState(tl.getPos());
-							final int rotation = tlBs.getValue(BlockBaseTrafficLight.ROTATION);
-							final boolean facesDir1 = CustomAngleCalculator.isRotationFacing(rotation, direction1);
-							final boolean facesDir2 = CustomAngleCalculator.isRotationFacing(rotation, direction2);
 							final boolean allowYellow = (facesDir1 && splitYellowDir == direction1) || (facesDir2 && splitYellowDir == direction2);
 							if (!allowYellow) {
 								tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
@@ -2151,14 +2230,30 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 								return;
 							}
 						}
-						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
-						
+
+						final boolean oppositeApproachDisabled = !splitYellow
+								&& ((facesDir1 && !isApproachEnabled(direction2)) || (facesDir2 && !isApproachEnabled(direction1)));
+						final boolean showYellowTurnArrows = oppositeApproachDisabled || allowFyaNowYellow || isFyaDayTransitionYellow;
+						if (showYellowTurnArrows) {
+							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, false);
+							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, false);
+							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft2, false, false);
+							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft3, true, false);
+							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight3, true, false);
+							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn2, false, false);
+							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight, true, false);
+							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight2, false, false);
+						} else {
+							tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
+							tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
+							tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
+							tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
+							tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
+							tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
+						}
+
 						tl.setActive(EnumTrafficLightBulbTypes.Yellow, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.StraightYellow, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.NoRightTurn, true, false);
 					});
 					
@@ -2174,7 +2269,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 							opposingRightTurnFacing = null;
 						}
 						final boolean allowOpposingRightTurnYellow;
-						if (splitYellow && opposingRightTurnFacing != null) {
+						if ((allowFyaNowYellow || isFyaDayTransitionYellow) && splitYellow && opposingRightTurnFacing != null) {
 							final IBlockState tlBs = world.getBlockState(tl.getPos());
 							final int rotation = tlBs.getValue(BlockBaseTrafficLight.ROTATION);
 							allowOpposingRightTurnYellow = CustomAngleCalculator.isRotationFacing(rotation, opposingRightTurnFacing);
@@ -2218,6 +2313,11 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 							final boolean facesDir2 = CustomAngleCalculator.isRotationFacing(rotation, direction2);
 							final boolean allowGreen = !split || (facesDir1 && splitDir == direction1) || (facesDir2 && splitDir == direction2);
 							final boolean oppositeApproachDisabled = !split && ((facesDir1 && !isApproachEnabled(direction2)) || (facesDir2 && !isApproachEnabled(direction1)));
+							final boolean allowFyaNow = !TrafficLightControlBoxTileEntity.this.fyaNightOnlyEnabled || TrafficLightControlBoxTileEntity.this.inNightFlash;
+							final boolean isFyaDayTransition = TrafficLightControlBoxTileEntity.this.fyaNightOnlyEnabled
+									&& !TrafficLightControlBoxTileEntity.this.inNightFlash
+									&& TrafficLightControlBoxTileEntity.this.fyaDayTransitionTicksRemaining > 0;
+								
 
 							tl.powerOff();
 							if (allowGreen)
@@ -2230,17 +2330,41 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 										tl.setActive(EnumTrafficLightBulbTypes.GreenArrowUTurn, true, false);
 										tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight, true, false);
 										tl.setActive(EnumTrafficLightBulbTypes.GreenArrowLeft2, true, false);
+										tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, false, false);
 										tl.setActive(EnumTrafficLightBulbTypes.GreenArrowUTurn2, true, false);
 										tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight2, true, false);
 									} else {
-										tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, true);
-										tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, true);
-										tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft2, true, true);
-										tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn2, true, true);
+										if (allowFyaNow) {
+											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, true);
+											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, true);
+											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft2, true, true);
+											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn2, true, true);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
+										} else if (isFyaDayTransition) {
+											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, false);
+											
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
+										} else {
+											// Outside night (when FYA Night Only is enabled), keep turn arrows red.
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
+											tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
+										}
 									}
 								}
-								tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
-								tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
+								// Only show red turn arrows when permissive/protected indications are not being shown.
+								if (split || oppositeApproachDisabled || allowFyaNow || isFyaDayTransition) {
+									// leave off
+								} else {
+									tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
+									tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
+								}
 								tl.setActive(EnumTrafficLightBulbTypes.Green, true, false);
 								if (split) {
 									tl.setActive(EnumTrafficLightBulbTypes.GreenArrowLeft, true, false);
@@ -2252,9 +2376,17 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 								tl.setActive(EnumTrafficLightBulbTypes.GreenArrowUTurn2, true, false);
 								tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight2, true, false);
 								tl.setActive(EnumTrafficLightBulbTypes.StraightGreen, true, false);
-								tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
+							if (split || oppositeApproachDisabled || allowFyaNow || isFyaDayTransition) {
+									// leave off while permissive/protected indications may be shown
+								} else {
+									tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
+								}
 								if (!oppositeApproachDisabled) {
+								if (allowFyaNow) {
 									tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight2, true, true);
+								} else if (isFyaDayTransition) {
+									tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight2, true, false);
+								}
 								}
 								tl.setActive(EnumTrafficLightBulbTypes.NoRightTurn, true, false);
 							
