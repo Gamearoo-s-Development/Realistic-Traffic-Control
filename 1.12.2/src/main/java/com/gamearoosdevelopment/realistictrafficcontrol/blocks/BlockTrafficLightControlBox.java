@@ -2,10 +2,6 @@ package com.gamearoosdevelopment.realistictrafficcontrol.blocks;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.Config;
 
-import dan200.computercraft.api.ComputerCraftAPI;
-import dan200.computercraft.api.peripheral.IPeripheral;
-
-
 import com.gamearoosdevelopment.realistictrafficcontrol.ModItems;
 import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficControl;
 import com.gamearoosdevelopment.realistictrafficcontrol.gui.GuiProxy;

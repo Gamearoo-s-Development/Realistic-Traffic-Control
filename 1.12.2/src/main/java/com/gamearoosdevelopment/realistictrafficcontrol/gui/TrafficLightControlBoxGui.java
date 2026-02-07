@@ -19,6 +19,7 @@ import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleHawk
 import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleSplitDirections;
 import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleSplitAxis;
 import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleApproachEnabled;
+import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleFyaNightOnly;
 
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
@@ -99,10 +100,7 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 	private GuiButtonToggleApproach approachSouthToggle;
 	private GuiButtonToggleApproach approachEastToggle;
 	private GuiButtonToggleApproach approachWestToggle;
-	private GuiButtonExt tPresetNoNorth;
-	private GuiButtonExt tPresetNoSouth;
-	private GuiButtonExt tPresetNoEast;
-	private GuiButtonExt tPresetNoWest;
+	private GuiButtonToggleFyaNightOnly fyaNightOnlyToggle;
 	private GuiTextField crossTime;
 	private GuiTextField crossWarningTime;
 	
@@ -256,6 +254,9 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 		    this.splitEWToggle = new GuiButtonToggleSplitEW(9006, horizontalCenter + 107, verticalCenter + 32, 25, 20, _te.isSplitWestEastEnabled());
 		    this.buttonList.add(splitEWToggle);
 
+			this.fyaNightOnlyToggle = new GuiButtonToggleFyaNightOnly(9007, horizontalCenter + 107, verticalCenter + 144, 25, 20, _te.isFyaNightOnlyEnabled());
+			this.buttonList.add(fyaNightOnlyToggle);
+
 		    // Per-approach enables (N/S/E/W). OFF forces that direction to stay red.
 		    this.approachNorthToggle = new GuiButtonToggleApproach(9010, horizontalCenter + 107, verticalCenter + 54, 25, 20, net.minecraft.util.EnumFacing.NORTH, _te.hasNorth);
 		    this.approachSouthToggle = new GuiButtonToggleApproach(9011, horizontalCenter + 107, verticalCenter + 76, 25, 20, net.minecraft.util.EnumFacing.SOUTH, _te.hasSouth);
@@ -266,22 +267,6 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 		    this.buttonList.add(approachEastToggle);
 		    this.buttonList.add(approachWestToggle);
 
-		    // T-intersection presets: one click to disable the missing leg and enable the others.
-		    // Uses existing per-approach enable packet path.
-		    int presetX = horizontalCenter + 107;
-		    int presetY = verticalCenter + 144;
-		    int presetW = 60;
-		    int presetH = 20;
-		    int presetSpacing = 22;
-		    this.tPresetNoNorth = new GuiButtonExt(9020, presetX, presetY, presetW, presetH, "No N");
-		    this.tPresetNoSouth = new GuiButtonExt(9021, presetX, presetY + presetSpacing, presetW, presetH, "No S");
-		    this.tPresetNoEast = new GuiButtonExt(9022, presetX, presetY + presetSpacing * 2, presetW, presetH, "No E");
-		    this.tPresetNoWest = new GuiButtonExt(9023, presetX, presetY + presetSpacing * 3, presetW, presetH, "No W");
-		    this.buttonList.add(tPresetNoNorth);
-		    this.buttonList.add(tPresetNoSouth);
-		    this.buttonList.add(tPresetNoEast);
-		    this.buttonList.add(tPresetNoWest);
-		
 		}
 
 		greenMinimumNS = new GuiTextField(ELEMENT_IDS.greenMinimum, fontRenderer, xNS, yStart, 105, 20);
@@ -425,74 +410,7 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 		manualModeSouth.visible = manualMode;
 	}
 
-	private void applyApproachPreset(boolean northEnabled, boolean southEnabled, boolean eastEnabled, boolean westEnabled) {
-		applyApproachEnabled(net.minecraft.util.EnumFacing.NORTH, northEnabled);
-		applyApproachEnabled(net.minecraft.util.EnumFacing.SOUTH, southEnabled);
-		applyApproachEnabled(net.minecraft.util.EnumFacing.EAST, eastEnabled);
-		applyApproachEnabled(net.minecraft.util.EnumFacing.WEST, westEnabled);
-	}
-
-	private void applyApproachEnabled(net.minecraft.util.EnumFacing facing, boolean enabled) {
-		boolean current = getApproachEnabledClient(facing);
-		setApproachEnabledClient(facing, enabled);
-		setApproachToggleClient(facing, enabled);
-		if (current != enabled) {
-			ModNetworkHandler.INSTANCE.sendToServer(new PacketToggleApproachEnabled(_te.getPos(), facing, enabled));
-		}
-	}
-
-	private boolean getApproachEnabledClient(net.minecraft.util.EnumFacing facing) {
-		switch (facing) {
-			case NORTH:
-				return _te.hasNorth;
-			case SOUTH:
-				return _te.hasSouth;
-			case EAST:
-				return _te.hasEast;
-			case WEST:
-				return _te.hasWest;
-			default:
-				return true;
-		}
-	}
-
-	private void setApproachEnabledClient(net.minecraft.util.EnumFacing facing, boolean enabled) {
-		switch (facing) {
-			case NORTH:
-				_te.setNorth(enabled);
-				break;
-			case SOUTH:
-				_te.setSouth(enabled);
-				break;
-			case EAST:
-				_te.setEast(enabled);
-				break;
-			case WEST:
-				_te.setWest(enabled);
-				break;
-			default:
-				break;
-		}
-	}
-
-	private void setApproachToggleClient(net.minecraft.util.EnumFacing facing, boolean enabled) {
-		switch (facing) {
-			case NORTH:
-				if (approachNorthToggle != null) approachNorthToggle.setToggled(enabled);
-				break;
-			case SOUTH:
-				if (approachSouthToggle != null) approachSouthToggle.setToggled(enabled);
-				break;
-			case EAST:
-				if (approachEastToggle != null) approachEastToggle.setToggled(enabled);
-				break;
-			case WEST:
-				if (approachWestToggle != null) approachWestToggle.setToggled(enabled);
-				break;
-			default:
-				break;
-		}
-	}
+	
 	
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
@@ -899,26 +817,6 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 	
 	@Override
 	protected void actionPerformed(GuiButton button) throws IOException {
-		if (button.id >= 9020 && button.id <= 9023) {
-			switch (button.id) {
-				case 9020:
-					applyApproachPreset(false, true, true, true);
-					break;
-				case 9021:
-					applyApproachPreset(true, false, true, true);
-					break;
-				case 9022:
-					applyApproachPreset(true, true, false, true);
-					break;
-				case 9023:
-					applyApproachPreset(true, true, true, false);
-					break;
-				default:
-					break;
-			}
-			return;
-		}
-		
 		if (button.id == 600) { // Your toggleAutoDirectionButton ID
 		    editingNorthSouth = true;
 		  //  initGui(); // Reinitialize GUI to reload correct text fields
@@ -978,6 +876,14 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 
 			_te.setSplitWestEastEnabled(enabled); // client-side
 			ModNetworkHandler.INSTANCE.sendToServer(new PacketToggleSplitAxis(_te.getPos(), PacketToggleSplitAxis.AXIS_EW, enabled));
+		}
+		if (button.id == 9007 && button instanceof GuiButtonToggleFyaNightOnly) {
+			GuiButtonToggleFyaNightOnly toggle = (GuiButtonToggleFyaNightOnly) button;
+			toggle.toggle();
+			boolean enabled = toggle.isToggled();
+
+			_te.setFyaNightOnlyEnabled(enabled); // client-side
+			ModNetworkHandler.INSTANCE.sendToServer(new PacketToggleFyaNightOnly(_te.getPos(), enabled));
 		}
 		if (button.id >= 9010 && button.id <= 9013 && button instanceof GuiButtonToggleApproach) {
 			GuiButtonToggleApproach toggle = (GuiButtonToggleApproach) button;
