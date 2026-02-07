@@ -21,6 +21,10 @@ The original Traffic Control Mod updated with this get the update?
 
 Depends on rather or not it fits the realistic theme if it does yes it will take time though
 
-Link (curseforge) - Coming Soon
+🔗 CurseForge
+https://www.curseforge.com/minecraft/mc-mods/realistic-traffic-control
+
+🔗 Modrinth
+https://modrinth.com/mod/realistic-traffic-control
 
 Original Traffic Control (curseforge) - https://www.curseforge.com/minecraft/mc-mods/traffic-control
