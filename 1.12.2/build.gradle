@@ -42,6 +42,9 @@ repositories {
 				password = "$mavenPassword"
 			}
 		}
+		maven {
+			url = "https://maven.cleanroommc.com"
+		}
 }
 
 dependencies {
@@ -69,7 +72,10 @@ dependencies {
 	compile fileTree(dir:'deps',include:'*.jar')
 	compile 'li.cil.oc:opencomputers-1.12.2-forge:1.7.7:api'
 	runtime 'li.cil.oc:opencomputers-1.12.2-forge:1.7.7'
-	
+	// UMC (from deps/) needs MixinBooter at dev runtime
+	compile('zone.rong:mixinbooter:10.7') {
+		transitive = false
+	}
 }
 
 processResources {

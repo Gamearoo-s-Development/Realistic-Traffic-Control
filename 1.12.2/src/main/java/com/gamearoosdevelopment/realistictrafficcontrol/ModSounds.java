@@ -13,6 +13,9 @@ public class ModSounds {
 	public static SoundEvent wigWag;
 	public static SoundEvent wch_mechanical_bell;
 	public static SoundEvent screwdriver;
+	public static SoundEvent teardrop_bell;
+	public static SoundEvent safetranType1Event;
+	public static SoundEvent waysideHornEvent;
 	
 	public static void initSounds()
 	{
@@ -26,5 +29,8 @@ public class ModSounds {
 		wigWag = new SoundEvent(new ResourceLocation(ModRealisticTrafficControl.MODID + ":wigwag")).setRegistryName("realistictrafficcontrol:wigwag");
 		wch_mechanical_bell = new SoundEvent(new ResourceLocation(ModRealisticTrafficControl.MODID + ":wch_mechanical_bell")).setRegistryName("realistictrafficcontrol:wch_mechanical_bell");
 		screwdriver = new SoundEvent(new ResourceLocation(ModRealisticTrafficControl.MODID + ":screwdriver")).setRegistryName("realistictrafficcontrol:screwdriver");
+		teardrop_bell = new SoundEvent(new ResourceLocation(ModRealisticTrafficControl.MODID + ":teardrop_bell")).setRegistryName("realistictrafficcontrol:teardrop_bell");
+		safetranType1Event = new SoundEvent(new ResourceLocation(ModRealisticTrafficControl.MODID + ":safetran_type_1")).setRegistryName("realistictrafficcontrol:safetran_type_1");
+		waysideHornEvent = new SoundEvent(new ResourceLocation(ModRealisticTrafficControl.MODID + ":wayside_horn")).setRegistryName("realistictrafficcontrol:wayside_horn");
 	}
 }

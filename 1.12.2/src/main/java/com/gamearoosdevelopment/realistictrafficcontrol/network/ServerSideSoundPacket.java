@@ -52,7 +52,7 @@ public class ServerSideSoundPacket implements IMessage
 		{
 			try
 			{
-				ClientProxy.playSoundHandler(message, (javax.xml.ws.handler.MessageContext) ctx);
+				ClientProxy.playSoundHandler(message, ctx);
 			}
 			catch(NullPointerException ex)
 			{

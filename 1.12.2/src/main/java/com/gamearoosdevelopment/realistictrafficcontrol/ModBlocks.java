@@ -11,6 +11,70 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class ModBlocks {
 	@ObjectHolder("crossing_gate_base")
 	public static BlockCrossingGateBase crossing_gate_base;
+	@ObjectHolder("crossing_gate_gate")
+	public static BlockCrossingGateGate crossing_gate_gate;
+	@ObjectHolder("crossing_gate_lamps")
+	public static BlockCrossingGateLamps crossing_gate_lamps;
+	@ObjectHolder("crossing_gate_pole")
+	public static BlockCrossingGatePole crossing_gate_pole;
+	@ObjectHolder("crossing_gate_crossbuck")
+	public static BlockCrossingGateCrossbuck crossing_gate_crossbuck;
+	@ObjectHolder("safetran_type_3")
+	public static BlockSafetranType3 safetran_type_3;
+	@ObjectHolder("crossing_relay_se")
+	public static BlockCrossingRelaySE crossing_relay_se;
+	@ObjectHolder("crossing_relay_sw")
+	public static BlockCrossingRelaySW crossing_relay_sw;
+	@ObjectHolder("crossing_relay_nw")
+	public static BlockCrossingRelayNW crossing_relay_nw;
+	@ObjectHolder("crossing_relay_ne")
+	public static BlockCrossingRelayNE crossing_relay_ne;
+	@ObjectHolder("crossing_relay_top_sw")
+	public static BlockCrossingRelayTopSW crossing_relay_top_sw;
+	@ObjectHolder("crossing_relay_top_se")
+	public static BlockCrossingRelayTopSE crossing_relay_top_se;
+	@ObjectHolder("crossing_relay_top_nw")
+	public static BlockCrossingRelayTopNW crossing_relay_top_nw;
+	@ObjectHolder("crossing_relay_top_ne")
+	public static BlockCrossingRelayTopNE crossing_relay_top_ne;
+	@ObjectHolder("overhead_pole")
+	public static BlockOverheadPole overhead_pole;
+	@ObjectHolder("overhead")
+	public static BlockOverhead overhead;
+	@ObjectHolder("overhead_lamps")
+	public static BlockOverheadLamps overhead_lamps;
+	@ObjectHolder("overhead_crossbuck")
+	public static BlockOverheadCrossbuck overhead_crossbuck;
+	@ObjectHolder("safetran_mechanical")
+	public static BlockSafetranMechanical safetran_mechanical;
+	@ObjectHolder("wig_wag")
+	public static BlockWigWag wig_wag;
+	@ObjectHolder("vertical_wig_wag")
+	public static BlockVerticalWigWag vertical_wig_wag;
+	@ObjectHolder("shunt_border")
+	public static BlockShuntBorder shunt_border;
+	@ObjectHolder("shunt_island")
+	public static BlockShuntIsland shunt_island;
+	@ObjectHolder("traffic_rail")
+	public static BlockTrafficRail traffic_rail;
+	@ObjectHolder("wch_bell")
+	public static BlockWCHBell wch_bell;
+	@ObjectHolder("wch_mechanical_bell")
+	public static BlockWCHMechanicalBell wch_mechanical_bell;
+	@ObjectHolder("pole_base")
+	public static BlockPoleBase pole_base;
+	@ObjectHolder("quiet_zone_signal")
+	public static BlockQuietZoneSignal quiet_zone_signal;
+	@ObjectHolder("ped_crossing_lamps")
+	public static BlockPedCrossingLamps ped_crossing_lamps;
+	@ObjectHolder("gate_guard")
+	public static BlockGateGuard gate_guard;
+	@ObjectHolder("teardrop_bell")
+	public static BlockTeardropBell teardrop_bell;
+	@ObjectHolder("safetran_type_1")
+	public static BlockSafetranType1 safetran_type_1;
+	@ObjectHolder("wayside_horn")
+	public static BlockWaysideHorn wayside_horn;
 	
 	@ObjectHolder("stand")
 	public static BlockStand stand;
@@ -138,6 +202,30 @@ public class ModBlocks {
 	public static void initModels(ModelRegistryEvent e)
 	{
 		crossing_gate_base.initModel();
+		crossing_gate_gate.initModel();
+		crossing_gate_lamps.initModel();
+		crossing_gate_pole.initModel();
+		crossing_gate_crossbuck.initModel();
+		safetran_type_3.initModel();
+		overhead_pole.initModel();
+		overhead.initModel();
+		overhead_lamps.initModel();
+		overhead_crossbuck.initModel();
+		safetran_mechanical.initModel();
+		wig_wag.initModel();
+		shunt_border.initModel();
+		shunt_island.initModel();
+		traffic_rail.initModel();
+		wch_bell.initModel();
+		wch_mechanical_bell.initModel();
+		pole_base.initModel();
+		quiet_zone_signal.initModel();
+		ped_crossing_lamps.initModel();
+		gate_guard.initModel();
+		teardrop_bell.initModel();
+		safetran_type_1.initModel();
+		wayside_horn.initModel();
+		vertical_wig_wag.initModel();
 		
 		pole.initModel();
 		wood_pole.initModel();

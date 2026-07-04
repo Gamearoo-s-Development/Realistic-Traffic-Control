@@ -1,12 +1,13 @@
 package com.gamearoosdevelopment.realistictrafficcontrol.proxy;
 
-import javax.xml.ws.handler.MessageContext;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import org.lwjgl.input.Keyboard;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.ModBlocks;
 import com.gamearoosdevelopment.realistictrafficcontrol.ModItems;
 import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficControl;
+import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockLampBase.EnumState;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.network.ServerSideSoundPacket;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.BaseTrafficLightTileEntity;
@@ -88,6 +89,37 @@ public class ClientProxy extends CommonProxy {
 	{
 		bakeModel(e, new ModelResourceLocation(ModRealisticTrafficControl.MODID + ":crossing_gate_light", "normal"));
 		bakeModel(e, new ModelResourceLocation(ModRealisticTrafficControl.MODID + ":crossing_gate_light", "on=true"));
+
+		for (String direction : new String[] { "ne", "nw", "se", "sw" })
+		{
+			for (EnumState flashState : EnumState.values())
+			{
+				for (int i = 0; i <= 16; i++)
+				{
+					bakeModel(e, new ModelResourceLocation(ModRealisticTrafficControl.MODID + ":crossing_gate_lamps_" + direction + "_lamp", "rotation=" + i + ",state=" + flashState.getName()));
+					bakeModel(e, new ModelResourceLocation(ModRealisticTrafficControl.MODID + ":overhead_lamps_" + direction + "_lamp", "rotation=" + i + ",state=" + flashState.getName()));
+					bakeModel(e, new ModelResourceLocation(ModRealisticTrafficControl.MODID + ":ped_crossing_lamps_" + direction + "_lamp", "rotation=" + i + ",state=" + flashState.getName()));
+				}
+			}
+		}
+
+		for (EnumFacing facing : EnumFacing.HORIZONTALS)
+		{
+			bakeModel(e, new ModelResourceLocation(ModRealisticTrafficControl.MODID + ":crossing_gate_pole_ext", "rotation=" + facing.getName()));
+		}
+		bakeModel(e, new ModelResourceLocation(ModRealisticTrafficControl.MODID + ":crossing_gate_pole_ext", "rotation=down"));
+
+		bakeModel(e, new ModelResourceLocation(ModRealisticTrafficControl.MODID + ":vertical_wig_wag_arm_mount", "normal"));
+		bakeModel(e, new ModelResourceLocation(ModRealisticTrafficControl.MODID + ":vertical_wig_wag_arm", "normal"));
+		bakeModel(e, new ModelResourceLocation(ModRealisticTrafficControl.MODID + ":vertical_wig_wag_arm", "lamp=off"));
+		bakeModel(e, new ModelResourceLocation(ModRealisticTrafficControl.MODID + ":vertical_wig_wag_arm", "lamp=on"));
+		bakeModel(e, new ModelResourceLocation(ModRealisticTrafficControl.MODID + ":wig_wag_arm_mount", "normal"));
+		bakeModel(e, new ModelResourceLocation(ModRealisticTrafficControl.MODID + ":wig_wag_arm", "normal"));
+		bakeModel(e, new ModelResourceLocation(ModRealisticTrafficControl.MODID + ":wig_wag_arm", "lamp=off"));
+		bakeModel(e, new ModelResourceLocation(ModRealisticTrafficControl.MODID + ":wig_wag_arm", "lamp=on"));
+		bakeModel(e, new ModelResourceLocation(ModRealisticTrafficControl.MODID + ":lower_wig_wag_arm", "normal"));
+		bakeModel(e, new ModelResourceLocation(ModRealisticTrafficControl.MODID + ":lower_wig_wag_arm", "lamp=off"));
+		bakeModel(e, new ModelResourceLocation(ModRealisticTrafficControl.MODID + ":lower_wig_wag_arm", "lamp=on"));
 	}
 
 	private static void bakeModel(ModelBakeEvent e, ModelResourceLocation location)

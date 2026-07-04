@@ -30,6 +30,15 @@ public abstract class BellBaseTileEntity extends TileEntity implements ILoopable
 		return nbt;
 	}
 	
+	public boolean getIsRinging()
+	{
+		return isRinging;
+	}
+
+	public boolean isAffectedByRelayBellStopTimer() {
+		return true;
+	}
+	
 	public void setIsRinging(boolean ringing)
 	{
 		this.isRinging = ringing;

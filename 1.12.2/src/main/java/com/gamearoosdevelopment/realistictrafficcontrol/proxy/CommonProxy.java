@@ -61,6 +61,7 @@ import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockType3Barrier
 import com.gamearoosdevelopment.realistictrafficcontrol.gui.GuiProxy;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemCone;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemCoverHook;
+import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemCrossingRelayBox;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemCrossingRelayTuner;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemStreetSign;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemTrafficLight1Frame;
@@ -138,6 +139,38 @@ public class CommonProxy {
 	public static void registerBlocks(RegistryEvent.Register<Block> e)
 	{
 		e.getRegistry().register(new BlockCrossingGateBase());
+		e.getRegistry().register(new BlockCrossingGateGate());
+		e.getRegistry().register(new BlockCrossingGateLamps());
+		e.getRegistry().register(new BlockCrossingGatePole());
+		e.getRegistry().register(new BlockCrossingGateCrossbuck());
+		e.getRegistry().register(new BlockSafetranType3());
+		e.getRegistry().register(new BlockCrossingRelaySE());
+		e.getRegistry().register(new BlockCrossingRelaySW());
+		e.getRegistry().register(new BlockCrossingRelayNW());
+		e.getRegistry().register(new BlockCrossingRelayNE());
+		e.getRegistry().register(new BlockCrossingRelayTopSE());
+		e.getRegistry().register(new BlockCrossingRelayTopSW());
+		e.getRegistry().register(new BlockCrossingRelayTopNW());
+		e.getRegistry().register(new BlockCrossingRelayTopNE());
+		e.getRegistry().register(new BlockOverheadPole());
+		e.getRegistry().register(new BlockOverhead());
+		e.getRegistry().register(new BlockOverheadLamps());
+		e.getRegistry().register(new BlockOverheadCrossbuck());
+		e.getRegistry().register(new BlockSafetranMechanical());
+		e.getRegistry().register(new BlockWigWag());
+		e.getRegistry().register(new BlockShuntBorder());
+		e.getRegistry().register(new BlockShuntIsland());
+		e.getRegistry().register(new BlockTrafficRail());
+		e.getRegistry().register(new BlockWCHBell());
+		e.getRegistry().register(new BlockWCHMechanicalBell());
+		e.getRegistry().register(new BlockVerticalWigWag());
+		e.getRegistry().register(new BlockPoleBase());
+		e.getRegistry().register(new BlockQuietZoneSignal());
+		e.getRegistry().register(new BlockPedCrossingLamps());
+		e.getRegistry().register(new BlockGateGuard());
+		e.getRegistry().register(new BlockTeardropBell());
+		e.getRegistry().register(new BlockSafetranType1());
+		e.getRegistry().register(new BlockWaysideHorn());
 		e.getRegistry().register(new BlockWireAnchor());
 		e.getRegistry().register(new BlockPole());
 		e.getRegistry().register(new BlockWoodPole());
@@ -211,6 +244,20 @@ public class CommonProxy {
 
 		
 		
+		GameRegistry.registerTileEntity(CrossingGateGateTileEntity.class, ModRealisticTrafficControl.MODID + "_crossinggategate");
+		GameRegistry.registerTileEntity(SafetranType3TileEntity.class, ModRealisticTrafficControl.MODID + "_safetrantyp3");
+		GameRegistry.registerTileEntity(RelayTileEntity.class, ModRealisticTrafficControl.MODID + "_relay");
+		GameRegistry.registerTileEntity(SafetranMechanicalTileEntity.class, ModRealisticTrafficControl.MODID + "_safetranmechanical");
+		GameRegistry.registerTileEntity(WigWagTileEntity.class, ModRealisticTrafficControl.MODID + "_wigwag");
+		GameRegistry.registerTileEntity(ShuntBorderTileEntity.class, ModRealisticTrafficControl.MODID + "_shuntborder");
+		GameRegistry.registerTileEntity(ShuntIslandTileEntity.class, ModRealisticTrafficControl.MODID + "_shuntisland");
+		GameRegistry.registerTileEntity(WCHBellTileEntity.class, ModRealisticTrafficControl.MODID + "_wchbell");
+		GameRegistry.registerTileEntity(WCHMechanicalBellTileEntity.class, ModRealisticTrafficControl.MODID + "_wchmechanicalbell");
+		GameRegistry.registerTileEntity(CrossingLampsTileEntity.class, ModRealisticTrafficControl.MODID + "_crossinglamps");
+		GameRegistry.registerTileEntity(VerticalWigWagTileEntity.class, ModRealisticTrafficControl.MODID + "_verticalwigwag");
+		GameRegistry.registerTileEntity(TeardropBellTileEntity.class, ModRealisticTrafficControl.MODID + "_teardropbell");
+		GameRegistry.registerTileEntity(SafetranType1TileEntity.class, ModRealisticTrafficControl.MODID + "_safetrantype1");
+		GameRegistry.registerTileEntity(WaysideHornTileEntity.class, ModRealisticTrafficControl.MODID + "_waysidehorn");
 		GameRegistry.registerTileEntity(SignTileEntity.class, ModRealisticTrafficControl.MODID + "_sign");
 		GameRegistry.registerTileEntity(StreetLightSingleTileEntity.class, ModRealisticTrafficControl.MODID + "_streetsignsingle");
 		GameRegistry.registerTileEntity(StreetLightDoubleTileEntity.class, ModRealisticTrafficControl.MODID + "_streetlightdouble");
@@ -245,6 +292,7 @@ public class CommonProxy {
 	public static void registerItems(RegistryEvent.Register<Item> e)
 	{
 		
+		e.getRegistry().register(new ItemCrossingRelayBox());
 		e.getRegistry().register(new ItemCrossingRelayTuner());
 		e.getRegistry().register(new ItemCoverHook());
 		e.getRegistry().register(new ItemWireCutter());
@@ -272,6 +320,30 @@ public class CommonProxy {
 		
 		
 		e.getRegistry().register(new ItemBlock(ModBlocks.crossing_gate_base).setRegistryName(ModBlocks.crossing_gate_base.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.crossing_gate_gate).setRegistryName(ModBlocks.crossing_gate_gate.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.crossing_gate_lamps).setRegistryName(ModBlocks.crossing_gate_lamps.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.crossing_gate_pole).setRegistryName(ModBlocks.crossing_gate_pole.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.crossing_gate_crossbuck).setRegistryName(ModBlocks.crossing_gate_crossbuck.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.safetran_type_3).setRegistryName(ModBlocks.safetran_type_3.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.overhead_pole).setRegistryName(ModBlocks.overhead_pole.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.overhead).setRegistryName(ModBlocks.overhead.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.overhead_lamps).setRegistryName(ModBlocks.overhead_lamps.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.overhead_crossbuck).setRegistryName(ModBlocks.overhead_crossbuck.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.safetran_mechanical).setRegistryName(ModBlocks.safetran_mechanical.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.wig_wag).setRegistryName(ModBlocks.wig_wag.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.shunt_border).setRegistryName(ModBlocks.shunt_border.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.shunt_island).setRegistryName(ModBlocks.shunt_island.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.traffic_rail).setRegistryName(ModBlocks.traffic_rail.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.wch_bell).setRegistryName(ModBlocks.wch_bell.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.wch_mechanical_bell).setRegistryName(ModBlocks.wch_mechanical_bell.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.vertical_wig_wag).setRegistryName(ModBlocks.vertical_wig_wag.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.pole_base).setRegistryName(ModBlocks.pole_base.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.quiet_zone_signal).setRegistryName(ModBlocks.quiet_zone_signal.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.ped_crossing_lamps).setRegistryName(ModBlocks.ped_crossing_lamps.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.gate_guard).setRegistryName(ModBlocks.gate_guard.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.teardrop_bell).setRegistryName(ModBlocks.teardrop_bell.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.safetran_type_1).setRegistryName(ModBlocks.safetran_type_1.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.wayside_horn).setRegistryName(ModBlocks.wayside_horn.getRegistryName()));
 		e.getRegistry().register(new ItemBlock(ModBlocks.wire_anchor).setRegistryName(ModBlocks.wire_anchor.getRegistryName()));
 
 		e.getRegistry().register(new ItemBlock(ModBlocks.pole).setRegistryName(ModBlocks.pole.getRegistryName()));
@@ -347,6 +419,9 @@ public class CommonProxy {
 		e.getRegistry().register(ModSounds.wigWag);
 		e.getRegistry().register(ModSounds.wch_mechanical_bell);
 		e.getRegistry().register(ModSounds.screwdriver);
+		e.getRegistry().register(ModSounds.teardrop_bell);
+		e.getRegistry().register(ModSounds.safetranType1Event);
+		e.getRegistry().register(ModSounds.waysideHornEvent);
 	}
 
 	public void preInit(FMLPreInitializationEvent e)

@@ -10,6 +10,8 @@ public class ModItems {
 	
 	@ObjectHolder("crossing_relay_tuner")
 	public static ItemCrossingRelayTuner crossing_relay_tuner;
+	@ObjectHolder("crossing_relay_box")
+	public static ItemCrossingRelayBox crossing_relay_box;
 	@ObjectHolder("cover_hook")
 	public static ItemCoverHook cover_hook;
 	@ObjectHolder("wire_cutter")
@@ -53,7 +55,7 @@ public class ModItems {
 
 	public static void initModels(ModelRegistryEvent e)
 	{
-		
+		crossing_relay_box.initModel();
 		crossing_relay_tuner.initModel();
 		cover_hook.initModel();
 		wire_cutter.initModel();
