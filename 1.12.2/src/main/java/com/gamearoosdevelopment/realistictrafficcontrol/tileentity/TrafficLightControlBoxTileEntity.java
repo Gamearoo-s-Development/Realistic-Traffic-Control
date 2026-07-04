@@ -17,7 +17,9 @@ import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficSenso
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficSensorRight;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficSensorStraight;
 import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficControl;
-import com.gamearoosdevelopment.realistictrafficcontrol.util.CustomAngleCalculator;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.ApproachMovementBulbHelper;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.ApproachMovementSettings;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.TrafficLightFacingResolver;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.EnumTrafficLightBulbTypes;
 import com.google.common.collect.ImmutableList;
 
@@ -78,9 +80,42 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 	private boolean splitDirectionsEnabled = false;
 	private boolean splitNorthSouthEnabled = true;
 	private boolean splitWestEastEnabled = true;
-	
+	private final EnumMap<EnumFacing, ApproachMovementSettings> approachMovementSettings = new EnumMap<>(EnumFacing.class);
 
-	
+	public TrafficLightControlBoxTileEntity() {
+		for (EnumFacing facing : new EnumFacing[] { EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.EAST, EnumFacing.WEST }) {
+			approachMovementSettings.put(facing, new ApproachMovementSettings());
+		}
+	}
+
+	public ApproachMovementSettings getMovementSettings(EnumFacing facing) {
+		ApproachMovementSettings settings = approachMovementSettings.get(facing);
+		if (settings == null) {
+			settings = new ApproachMovementSettings();
+			approachMovementSettings.put(facing, settings);
+		}
+		return settings;
+	}
+
+	public void setMovementSettings(EnumFacing facing, ApproachMovementSettings settings) {
+		approachMovementSettings.put(facing, settings == null ? new ApproachMovementSettings() : settings.copy());
+		markDirty();
+	}
+
+	private void writeMovementSettingsToNBT(NBTTagCompound compound) {
+		for (EnumFacing facing : new EnumFacing[] { EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.EAST, EnumFacing.WEST }) {
+			compound.setTag("movement" + facing.getName2(), getMovementSettings(facing).writeToNBT());
+		}
+	}
+
+	private void readMovementSettingsFromNBT(NBTTagCompound compound) {
+		for (EnumFacing facing : new EnumFacing[] { EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.EAST, EnumFacing.WEST }) {
+			String key = "movement" + facing.getName2();
+			if (compound.hasKey(key)) {
+				getMovementSettings(facing).readFromNBT(compound.getCompoundTag(key));
+			}
+		}
+	}
 	public void setNightFlashEnabled(boolean enabled) {
 	    this.nightFlashEnabled = enabled;
 	    markDirty(); // Ensure the tile is saved
@@ -195,6 +230,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		compound.setBoolean("splitNorthSouthEnabled", splitNorthSouthEnabled);
 		compound.setBoolean("splitWestEastEnabled", splitWestEastEnabled);
 		compound.setBoolean("FyaNightOnlyEnabled", fyaNightOnlyEnabled);
+		writeMovementSettingsToNBT(compound);
 
 		
 		    compound.setInteger("TicksInCurrentStage", ticksInCurrentStage);
@@ -309,6 +345,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		if (compound.hasKey("FyaNightOnlyEnabled")) {
 			fyaNightOnlyEnabled = compound.getBoolean("FyaNightOnlyEnabled");
 		}
+		readMovementSettingsFromNBT(compound);
 
 		
 	 
@@ -374,6 +411,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		compound.setBoolean("hasSouth", hasSouth);
 		compound.setBoolean("hasEast", hasEast);
 		compound.setBoolean("hasWest", hasWest);
+		writeMovementSettingsToNBT(compound);
 
 		getAutomator().setSyncData(compound);
 		
@@ -415,6 +453,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		if (tag.hasKey("FyaNightOnlyEnabled")) {
 			fyaNightOnlyEnabled = tag.getBoolean("FyaNightOnlyEnabled");
 		}
+		readMovementSettingsFromNBT(tag);
 		getAutomator().readSyncData(tag);
 	}
 	
@@ -687,6 +726,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		compound.setBoolean("hasSouth", hasSouth);
 		compound.setBoolean("hasEast", hasEast);
 		compound.setBoolean("hasWest", hasWest);
+		writeMovementSettingsToNBT(compound);
 		getAutomator().setSyncData(compound);
 		
 		return compound;
@@ -704,6 +744,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		if (compound.hasKey("hasSouth")) this.hasSouth = compound.getBoolean("hasSouth");
 		if (compound.hasKey("hasEast")) this.hasEast = compound.getBoolean("hasEast");
 		if (compound.hasKey("hasWest")) this.hasWest = compound.getBoolean("hasWest");
+		readMovementSettingsFromNBT(compound);
 		markDirty();
 		world.notifyBlockUpdate(getPos(), world.getBlockState(getPos()), world.getBlockState(getPos()), 3);
 	}
@@ -1482,6 +1523,34 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 				result.Direction2Sensor = true;
 				result.Direction2SensorLeft = false;
 			}
+
+			applyMovementSensorRules(dir1, result, true);
+			applyMovementSensorRules(dir2, result, false);
+		}
+
+		private void applyMovementSensorRules(EnumFacing facing, SensorCheckResult result, boolean isDir1) {
+			ApproachMovementSettings settings = TrafficLightControlBoxTileEntity.this.getMovementSettings(facing);
+			if (!settings.straightEnabled) {
+				if (isDir1) {
+					result.Direction1Sensor = false;
+				} else {
+					result.Direction2Sensor = false;
+				}
+			}
+			if (!settings.leftEnabled) {
+				if (isDir1) {
+					result.Direction1SensorLeft = false;
+				} else {
+					result.Direction2SensorLeft = false;
+				}
+			}
+			if (!settings.rightEnabled) {
+				if (isDir1) {
+					result.Direction1SensorRight = false;
+				} else {
+					result.Direction2SensorRight = false;
+				}
+			}
 		}
 
 		
@@ -1647,7 +1716,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						.stream()
 						.forEach(tl -> {
 							IBlockState tlBs = world.getBlockState(tl.getPos());
-							if (CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction1.getOpposite()))
+							if (TrafficLightFacingResolver.isFacing(tl, direction1.getOpposite()))
 							{
 								tl.powerOff();
 								tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
@@ -1666,7 +1735,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 								return;
 							}
 							
-							if (!CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction1))
+							if (!TrafficLightFacingResolver.isFacing(tl, direction1))
 							{
 								return;
 							}
@@ -1686,7 +1755,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					.stream()
 					.forEach(tl -> {
 						IBlockState tlBs = world.getBlockState(tl.getPos());
-						if (!CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction1cw))
+						if (!TrafficLightFacingResolver.isFacing(tl, direction1cw))
 						{
 							tl.powerOff();
 							tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
@@ -1722,7 +1791,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					.stream()
 					.forEach(tl -> {
 						IBlockState tlBs = world.getBlockState(tl.getPos());
-						if (CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction2.getOpposite()))
+						if (TrafficLightFacingResolver.isFacing(tl, direction2.getOpposite()))
 						{
 							tl.powerOff();
 							tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
@@ -1767,7 +1836,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 							return;
 						}
 						
-						if (!CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction2))
+						if (!TrafficLightFacingResolver.isFacing(tl, direction2))
 						{
 							return;
 						}
@@ -1787,7 +1856,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					.stream()
 					.forEach(tl -> {
 						IBlockState tlBs = world.getBlockState(tl.getPos());						
-						if (!CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction2cw))
+						if (!TrafficLightFacingResolver.isFacing(tl, direction2cw))
 						{
 							tl.powerOff();
 							tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
@@ -1857,7 +1926,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						.stream()
 						.forEach(tl -> {
 							IBlockState tlBs = world.getBlockState(tl.getPos());
-							if (CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction1.getOpposite()))
+							if (TrafficLightFacingResolver.isFacing(tl, direction1.getOpposite()))
 							{
 								
 								tl.powerOff();
@@ -1904,7 +1973,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 							
 							
 							
-							if (!CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction1))
+							if (!TrafficLightFacingResolver.isFacing(tl, direction1))
 							{
 								return;
 							}
@@ -1929,7 +1998,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					.forEach(tl -> {
 						IBlockState tlBs = world.getBlockState(tl.getPos());
 						
-						if (CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction1cw.getOpposite()))
+						if (TrafficLightFacingResolver.isFacing(tl, direction1cw.getOpposite()))
 						{
 							tl.powerOff();
 							tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
@@ -1944,7 +2013,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 							tl.setActive(EnumTrafficLightBulbTypes.NoLeftTurn, true, false);
 						}
 						
-						if (!CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction1cw))
+						if (!TrafficLightFacingResolver.isFacing(tl, direction1cw))
 						{
 							return;
 						}
@@ -1967,7 +2036,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					.stream()
 					.forEach(tl -> {
 						IBlockState tlBs = world.getBlockState(tl.getPos());
-						if (CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction2.getOpposite()))
+						if (TrafficLightFacingResolver.isFacing(tl, direction2.getOpposite()))
 						{
 							
 							tl.powerOff();
@@ -2010,7 +2079,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 							tl.setActive(EnumTrafficLightBulbTypes.NoRightTurn, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.NoLeftTurn, true, false);
 						}
-						if (!CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction2))
+						if (!TrafficLightFacingResolver.isFacing(tl, direction2))
 						{
 							return;
 						}
@@ -2034,7 +2103,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					.stream()
 					.forEach(tl -> {
 						IBlockState tlBs = world.getBlockState(tl.getPos());
-						if (CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction2cw.getOpposite()))
+						if (TrafficLightFacingResolver.isFacing(tl, direction2cw.getOpposite()))
 						{
 							tl.powerOff();
 							tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
@@ -2050,7 +2119,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						}
 						
 						
-						if (!CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction2cw))
+						if (!TrafficLightFacingResolver.isFacing(tl, direction2cw))
 						{
 							return;
 						}
@@ -2112,7 +2181,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					.stream()
 					.forEach(tl -> {
 						IBlockState tlBs = world.getBlockState(tl.getPos());
-						if (!CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction1))
+						if (!TrafficLightFacingResolver.isFacing(tl, direction1))
 						{
 							return;
 						}
@@ -2134,7 +2203,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					.stream()
 					.forEach(tl -> {
 						IBlockState tlBs = world.getBlockState(tl.getPos());
-						if (!CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction1cw))
+						if (!TrafficLightFacingResolver.isFacing(tl, direction1cw))
 						{
 							return;
 						}
@@ -2157,7 +2226,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					.stream()
 					.forEach(tl -> {
 						IBlockState tlBs = world.getBlockState(tl.getPos());
-						if (!CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction2))
+						if (!TrafficLightFacingResolver.isFacing(tl, direction2))
 						{
 							return;
 						}
@@ -2179,7 +2248,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					.stream()
 					.forEach(tl -> {
 						IBlockState tlBs = world.getBlockState(tl.getPos());
-						if (!CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction2cw))
+						if (!TrafficLightFacingResolver.isFacing(tl, direction2cw))
 						{
 							return;
 						}
@@ -2211,8 +2280,8 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						tl.powerOff();
 						final IBlockState tlBs = world.getBlockState(tl.getPos());
 						final int rotation = tlBs.getValue(BlockBaseTrafficLight.ROTATION);
-						final boolean facesDir1 = CustomAngleCalculator.isRotationFacing(rotation, direction1);
-						final boolean facesDir2 = CustomAngleCalculator.isRotationFacing(rotation, direction2);
+						final boolean facesDir1 = TrafficLightFacingResolver.isFacing(tl, direction1);
+						final boolean facesDir2 = TrafficLightFacingResolver.isFacing(tl, direction2);
 						if (splitYellow) {
 							final boolean allowYellow = (facesDir1 && splitYellowDir == direction1) || (facesDir2 && splitYellowDir == direction2);
 							if (!allowYellow) {
@@ -2272,7 +2341,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						if ((allowFyaNowYellow || isFyaDayTransitionYellow) && splitYellow && opposingRightTurnFacing != null) {
 							final IBlockState tlBs = world.getBlockState(tl.getPos());
 							final int rotation = tlBs.getValue(BlockBaseTrafficLight.ROTATION);
-							allowOpposingRightTurnYellow = CustomAngleCalculator.isRotationFacing(rotation, opposingRightTurnFacing);
+							allowOpposingRightTurnYellow = TrafficLightFacingResolver.isFacing(tl, opposingRightTurnFacing);
 						} else {
 							allowOpposingRightTurnYellow = false;
 						}
@@ -2309,8 +2378,8 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						{
 							final IBlockState tlBs = world.getBlockState(tl.getPos());
 							final int rotation = tlBs.getValue(BlockBaseTrafficLight.ROTATION);
-							final boolean facesDir1 = CustomAngleCalculator.isRotationFacing(rotation, direction1);
-							final boolean facesDir2 = CustomAngleCalculator.isRotationFacing(rotation, direction2);
+							final boolean facesDir1 = TrafficLightFacingResolver.isFacing(tl, direction1);
+							final boolean facesDir2 = TrafficLightFacingResolver.isFacing(tl, direction2);
 							final boolean allowGreen = !split || (facesDir1 && splitDir == direction1) || (facesDir2 && splitDir == direction2);
 							final boolean oppositeApproachDisabled = !split && ((facesDir1 && !isApproachEnabled(direction2)) || (facesDir2 && !isApproachEnabled(direction1)));
 							final boolean allowFyaNow = !TrafficLightControlBoxTileEntity.this.fyaNightOnlyEnabled || TrafficLightControlBoxTileEntity.this.inNightFlash;
@@ -2442,7 +2511,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						if (split && opposingRightTurnFacing != null) {
 							final IBlockState tlBs = world.getBlockState(tl.getPos());
 							final int rotation = tlBs.getValue(BlockBaseTrafficLight.ROTATION);
-							allowOpposingRightTurn = CustomAngleCalculator.isRotationFacing(rotation, opposingRightTurnFacing);
+							allowOpposingRightTurn = TrafficLightFacingResolver.isFacing(tl, opposingRightTurnFacing);
 						} else {
 							allowOpposingRightTurn = false;
 						}
@@ -2536,23 +2605,53 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 			// If an approach is disabled (ex: hasNorth=false), it must stay red regardless of stage.
 			forceDisabledApproachesRed(trafficLightsForRightOfWay);
 			forceDisabledApproachesRed(trafficLightsOpposingRightOfWay);
+			applyMovementConfigToLights(trafficLightsForRightOfWay);
+			applyMovementConfigToLights(trafficLightsOpposingRightOfWay);
 
 			return stage;
 		}
 
+		private void applyMovementConfigToLights(List<BaseTrafficLightTileEntity> lights) {
+			for (BaseTrafficLightTileEntity tl : lights) {
+				EnumFacing facing = TrafficLightFacingResolver.resolveApproachFacing(tl);
+				if (!isSplitDirectionEnabled(facing)) {
+					continue;
+				}
+				ApproachMovementBulbHelper.applyOverrides(tl, TrafficLightControlBoxTileEntity.this.getMovementSettings(facing));
+			}
+		}
+
+		private boolean isStraightMovementEnabled(EnumFacing facing) {
+			return TrafficLightControlBoxTileEntity.this.getMovementSettings(facing).straightEnabled;
+		}
+
+		private boolean isLeftMovementEnabled(EnumFacing facing) {
+			return TrafficLightControlBoxTileEntity.this.getMovementSettings(facing).leftEnabled;
+		}
+
+		private boolean isRightMovementEnabled(EnumFacing facing) {
+			return TrafficLightControlBoxTileEntity.this.getMovementSettings(facing).rightEnabled;
+		}
+
 		private void forceDisabledApproachesRed(List<BaseTrafficLightTileEntity> lights) {
 			for (BaseTrafficLightTileEntity tl : lights) {
-				IBlockState tlBs = world.getBlockState(tl.getPos());
-				int rotation = tlBs.getValue(BlockBaseTrafficLight.ROTATION);
+				EnumFacing approach = TrafficLightFacingResolver.resolveApproachFacing(tl);
 				boolean disabled = false;
-				if (CustomAngleCalculator.isRotationFacing(rotation, EnumFacing.NORTH)) {
-					disabled = !TrafficLightControlBoxTileEntity.this.hasNorth;
-				} else if (CustomAngleCalculator.isRotationFacing(rotation, EnumFacing.SOUTH)) {
-					disabled = !TrafficLightControlBoxTileEntity.this.hasSouth;
-				} else if (CustomAngleCalculator.isRotationFacing(rotation, EnumFacing.EAST)) {
-					disabled = !TrafficLightControlBoxTileEntity.this.hasEast;
-				} else if (CustomAngleCalculator.isRotationFacing(rotation, EnumFacing.WEST)) {
-					disabled = !TrafficLightControlBoxTileEntity.this.hasWest;
+				switch (approach) {
+					case NORTH:
+						disabled = !TrafficLightControlBoxTileEntity.this.hasNorth;
+						break;
+					case SOUTH:
+						disabled = !TrafficLightControlBoxTileEntity.this.hasSouth;
+						break;
+					case EAST:
+						disabled = !TrafficLightControlBoxTileEntity.this.hasEast;
+						break;
+					case WEST:
+						disabled = !TrafficLightControlBoxTileEntity.this.hasWest;
+						break;
+					default:
+						break;
 				}
 
 				if (!disabled) {
@@ -2936,27 +3035,30 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		        		// In split mode, skip protected arrow sequencing and just serve the active approach.
 		        		return pedCheckedGreen(currentRightOfWay);
 		        	}
-		            if (sensorResult.Direction1SensorRight) {
+		            if (sensorResult.Direction1SensorRight && isRightMovementEnabled(rowDir1)) {
 		                this.stageStartTime = world.getTotalWorldTime();
 		                ticksInStage = 0;
 		                setNextUpdate(getAutomator().getRightArrowTime());
 		                return Stages.Direction1RightTurnArrow;
-		            } else if (sensorResult.Direction2SensorRight) {
+		            } else if (sensorResult.Direction2SensorRight && isRightMovementEnabled(rowDir2)) {
 		                this.stageStartTime = world.getTotalWorldTime();
 		                ticksInStage = 0;
 		                setNextUpdate(getAutomator().getRightArrowTime());
 		                return Stages.Direction2RightTurnArrow;
-		            } else if ((sensorResult.Direction1SensorLeft && sensorResult.Direction2SensorLeft) || (bothApproachesEnabled && arrowMinimum != 0)) {
+		            } else if (((sensorResult.Direction1SensorLeft && isLeftMovementEnabled(rowDir1))
+		            		&& (sensorResult.Direction2SensorLeft && isLeftMovementEnabled(rowDir2)))
+		            		|| (bothApproachesEnabled && arrowMinimum != 0
+		            				&& (isLeftMovementEnabled(rowDir1) || isLeftMovementEnabled(rowDir2)))) {
 		                ticksInStage = 0;
 		                this.stageStartTime = world.getTotalWorldTime();
 		                setNextUpdate(arrowMinimum);
 		                return Stages.BothTurnArrow;
-		            } else if (sensorResult.Direction1SensorLeft) {
+		            } else if (sensorResult.Direction1SensorLeft && isLeftMovementEnabled(rowDir1)) {
 		                ticksInStage = 0;
 		                this.stageStartTime = world.getTotalWorldTime();
 		                setNextUpdate(arrowMinNS);
 		                return Stages.Direction1LeftTurnArrow;
-		            } else if (sensorResult.Direction2SensorLeft) {
+		            } else if (sensorResult.Direction2SensorLeft && isLeftMovementEnabled(rowDir2)) {
 		                ticksInStage = 0;
 		                this.stageStartTime = world.getTotalWorldTime();
 		                setNextUpdate(arrowMinEW);

@@ -10,6 +10,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 
@@ -30,6 +31,7 @@ public class BaseTrafficLightTileEntity extends TileEntity implements ITickable 
 	private boolean hasCover;
 	private boolean hasPole;
 	private boolean suppressHorizontalBar;
+	private EnumFacing configuredApproachFacing = null;
 
 	public BaseTrafficLightTileEntity(int bulbCount) {
 		super();
@@ -72,6 +74,33 @@ public class BaseTrafficLightTileEntity extends TileEntity implements ITickable 
 
 	public void setHorizontalBarSuppressed(boolean suppress) {
 		this.suppressHorizontalBar = suppress;
+		markDirtyAndSync();
+	}
+
+	public EnumFacing getConfiguredApproachFacing() {
+		return configuredApproachFacing;
+	}
+
+	public void setConfiguredApproachFacing(EnumFacing facing) {
+		if (facing != null && !facing.getAxis().isHorizontal()) {
+			return;
+		}
+		this.configuredApproachFacing = facing;
+		markDirtyAndSync();
+	}
+
+	public void cycleConfiguredApproachFacing() {
+		if (configuredApproachFacing == null) {
+			configuredApproachFacing = EnumFacing.NORTH;
+		} else if (configuredApproachFacing == EnumFacing.NORTH) {
+			configuredApproachFacing = EnumFacing.SOUTH;
+		} else if (configuredApproachFacing == EnumFacing.SOUTH) {
+			configuredApproachFacing = EnumFacing.EAST;
+		} else if (configuredApproachFacing == EnumFacing.EAST) {
+			configuredApproachFacing = EnumFacing.WEST;
+		} else {
+			configuredApproachFacing = null;
+		}
 		markDirtyAndSync();
 	}
 
@@ -335,6 +364,11 @@ public class BaseTrafficLightTileEntity extends TileEntity implements ITickable 
 		tag.setBoolean("cover", hasCover());
 		tag.setBoolean("pole", hasPole());
 		tag.setBoolean("suppressHorizontalBar", suppressHorizontalBar);
+		if (configuredApproachFacing != null) {
+			tag.setInteger("configuredApproachFacing", configuredApproachFacing.getHorizontalIndex());
+		} else {
+			tag.setInteger("configuredApproachFacing", -1);
+		}
 	}
 
 	private void readStateFromTag(NBTTagCompound tag) {
@@ -374,6 +408,10 @@ public class BaseTrafficLightTileEntity extends TileEntity implements ITickable 
 		hasCover = tag.getBoolean("cover");
 		hasPole = tag.getBoolean("pole");
 		suppressHorizontalBar = tag.getBoolean("suppressHorizontalBar");
+		if (tag.hasKey("configuredApproachFacing")) {
+			int facingIndex = tag.getInteger("configuredApproachFacing");
+			configuredApproachFacing = facingIndex < 0 ? null : EnumFacing.getHorizontal(facingIndex);
+		}
 	}
 
 	private boolean matchesSlotBulb(int slot, EnumTrafficLightBulbTypes type) {

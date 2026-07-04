@@ -110,6 +110,7 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 	private boolean editingNorthSouth = true; // default to N/S
 	
 	private GuiButtonExt toggleAutoDirectionButton;
+	private GuiButton advancedOptionsButton;
 	
 	private TrafficLightControlBoxTileEntity _te;
 	public TrafficLightControlBoxGui(TrafficLightControlBoxTileEntity te, EntityPlayer player)
@@ -240,33 +241,9 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 			autoModeSouth = new GuiButtonExtSelectable(700, horizontalCenter - 107, verticalCenter - 78, 25, 20, "W/E");
 			this.buttonList.add(autoModeNorth);
 		    this.buttonList.add(autoModeSouth);
-		    
-			this.nightFlashToggle = new GuiButtonToggle(9001, horizontalCenter + 107, verticalCenter - 78, 25, 20, _te.isNightFlashEnabled());
-		    this.buttonList.add(nightFlashToggle);
-		    this.northMain = new GuiButtonToggle2(9002, horizontalCenter + 107, verticalCenter - 56, 25, 20, _te.isNorthMainEnabled());
-		    this.buttonList.add(northMain);
-		    this.hawkBeaconToggle = new GuiButtonToggleHawk(9003, horizontalCenter + 107, verticalCenter - 34, 25, 20, _te.isHawkBeaconEnabled());
-		    this.buttonList.add(hawkBeaconToggle);
-		    this.splitDirectionsToggle = new GuiButtonToggleSplitDirections(9004, horizontalCenter + 107, verticalCenter - 12, 25, 20, _te.isSplitDirectionsEnabled());
-		    this.buttonList.add(splitDirectionsToggle);
-		    this.splitNSToggle = new GuiButtonToggleSplitNS(9005, horizontalCenter + 107, verticalCenter + 10, 25, 20, _te.isSplitNorthSouthEnabled());
-		    this.buttonList.add(splitNSToggle);
-		    this.splitEWToggle = new GuiButtonToggleSplitEW(9006, horizontalCenter + 107, verticalCenter + 32, 25, 20, _te.isSplitWestEastEnabled());
-		    this.buttonList.add(splitEWToggle);
 
-			this.fyaNightOnlyToggle = new GuiButtonToggleFyaNightOnly(9007, horizontalCenter + 107, verticalCenter + 144, 25, 20, _te.isFyaNightOnlyEnabled());
-			this.buttonList.add(fyaNightOnlyToggle);
-
-		    // Per-approach enables (N/S/E/W). OFF forces that direction to stay red.
-		    this.approachNorthToggle = new GuiButtonToggleApproach(9010, horizontalCenter + 107, verticalCenter + 54, 25, 20, net.minecraft.util.EnumFacing.NORTH, _te.hasNorth);
-		    this.approachSouthToggle = new GuiButtonToggleApproach(9011, horizontalCenter + 107, verticalCenter + 76, 25, 20, net.minecraft.util.EnumFacing.SOUTH, _te.hasSouth);
-		    this.approachEastToggle = new GuiButtonToggleApproach(9012, horizontalCenter + 107, verticalCenter + 98, 25, 20, net.minecraft.util.EnumFacing.EAST, _te.hasEast);
-		    this.approachWestToggle = new GuiButtonToggleApproach(9013, horizontalCenter + 107, verticalCenter + 120, 25, 20, net.minecraft.util.EnumFacing.WEST, _te.hasWest);
-		    this.buttonList.add(approachNorthToggle);
-		    this.buttonList.add(approachSouthToggle);
-		    this.buttonList.add(approachEastToggle);
-		    this.buttonList.add(approachWestToggle);
-
+		    advancedOptionsButton = new GuiButtonExt(8000, horizontalCenter - 107, verticalCenter - 56, 51, 20, "Advanced");
+		    this.buttonList.add(advancedOptionsButton);
 		}
 
 		greenMinimumNS = new GuiTextField(ELEMENT_IDS.greenMinimum, fontRenderer, xNS, yStart, 105, 20);
@@ -408,6 +385,9 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 		
 		manualModeNorth.visible = manualMode;
 		manualModeSouth.visible = manualMode;
+		if (advancedOptionsButton != null) {
+			advancedOptionsButton.visible = _currentMode == Modes.Automatic;
+		}
 	}
 
 	
@@ -817,6 +797,10 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 	
 	@Override
 	protected void actionPerformed(GuiButton button) throws IOException {
+		if (button.id == 8000) {
+			Minecraft.getMinecraft().displayGuiScreen(new TrafficLightControlBoxAdvancedGui(this, _te, player));
+			return;
+		}
 		if (button.id == 600) { // Your toggleAutoDirectionButton ID
 		    editingNorthSouth = true;
 		  //  initGui(); // Reinitialize GUI to reload correct text fields

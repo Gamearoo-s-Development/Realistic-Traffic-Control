@@ -56,5 +56,11 @@ public class ModNetworkHandler {
 				packetId++,
 				Side.SERVER
 		);
+		INSTANCE.registerMessage(
+				PacketSetApproachMovement.Handler.class,
+				PacketSetApproachMovement.class,
+				packetId++,
+				Side.SERVER
+		);
     }
 }

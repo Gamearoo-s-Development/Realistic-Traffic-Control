@@ -9,6 +9,8 @@ import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.BaseTrafficLi
 import com.gamearoosdevelopment.realistictrafficcontrol.util.CustomAngleCalculator;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.EnumTrafficLightBulbTypes;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
@@ -29,6 +31,8 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
 public abstract class BaseItemTrafficLightFrame extends Item {
+	private static final String NBT_APPROACH_FACING = "approachFacing";
+
 	public BaseItemTrafficLightFrame(String name)
 	{
 		super();
@@ -61,7 +65,7 @@ public abstract class BaseItemTrafficLightFrame extends Item {
 	@Override
 	public abstract void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag flagIn);
 
-	protected void addFrameIdentityTooltip(List<String> tooltip)
+	protected void addFrameIdentityTooltip(ItemStack stack, List<String> tooltip)
 	{
 		ResourceLocation registryName = getRegistryName();
 		String path = registryName == null ? "" : registryName.getResourcePath();
@@ -94,6 +98,35 @@ public abstract class BaseItemTrafficLightFrame extends Item {
 
 		tooltip.add("Type: " + typeLabel);
 		tooltip.add("Bulb slots: " + getBulbCount());
+		addApproachFacingTooltip(stack, tooltip);
+	}
+
+	@Nullable
+	public EnumFacing getConfiguredApproachFacing(ItemStack stack) {
+		NBTTagCompound tag = stack.getTagCompound();
+		if (tag == null || !tag.hasKey(NBT_APPROACH_FACING)) {
+			return null;
+		}
+		int facingIndex = tag.getInteger(NBT_APPROACH_FACING);
+		return facingIndex < 0 ? null : EnumFacing.getHorizontal(facingIndex);
+	}
+
+	public void setConfiguredApproachFacing(ItemStack stack, @Nullable EnumFacing facing) {
+		NBTTagCompound tag = stack.getTagCompound();
+		if (tag == null) {
+			tag = new NBTTagCompound();
+			stack.setTagCompound(tag);
+		}
+		tag.setInteger(NBT_APPROACH_FACING, facing == null ? -1 : facing.getHorizontalIndex());
+	}
+
+	protected void addApproachFacingTooltip(ItemStack stack, List<String> tooltip) {
+		EnumFacing facing = getConfiguredApproachFacing(stack);
+		if (facing == null) {
+			tooltip.add("Approach: Auto (from rotation)");
+		} else {
+			tooltip.add("Approach: " + facing.getName().substring(0, 1).toUpperCase() + facing.getName().substring(1));
+		}
 	}
 	
 	protected abstract BlockBaseTrafficLight getBaseBlockTrafficLight();
@@ -133,6 +166,7 @@ public abstract class BaseItemTrafficLightFrame extends Item {
 		
 		trafficLight.setBulbsBySlot(primaryBulbsBySlot, secondaryBulbsBySlot);
 		trafficLight.setAllowFlashBySlot(allowFlashBySlot);
+		trafficLight.setConfiguredApproachFacing(getConfiguredApproachFacing(heldItem));
 		
 		player.getHeldItemMainhand().shrink(1);
 		
@@ -151,6 +185,9 @@ public abstract class BaseItemTrafficLightFrame extends Item {
 		IItemHandler handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
 		NBTBase capTag = CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.getStorage().writeNBT(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, handler, null);
 		tag.setTag("ClientInventory", capTag);
+		if (stack.getTagCompound() != null && stack.getTagCompound().hasKey(NBT_APPROACH_FACING)) {
+			tag.setInteger(NBT_APPROACH_FACING, stack.getTagCompound().getInteger(NBT_APPROACH_FACING));
+		}
 		
 		return tag;
 	}
@@ -163,6 +200,14 @@ public abstract class BaseItemTrafficLightFrame extends Item {
 		{
 			IItemHandler handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
 			CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.getStorage().readNBT(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, handler, null, nbt.getTag("ClientInventory"));
+		}
+		if (nbt != null && nbt.hasKey(NBT_APPROACH_FACING)) {
+			NBTTagCompound tag = stack.getTagCompound();
+			if (tag == null) {
+				tag = new NBTTagCompound();
+				stack.setTagCompound(tag);
+			}
+			tag.setInteger(NBT_APPROACH_FACING, nbt.getInteger(NBT_APPROACH_FACING));
 		}
 	}
 

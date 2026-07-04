@@ -83,6 +83,10 @@ public abstract class BaseTrafficLightFrameContainer extends Container {
 	protected abstract List<FrameSlotInfo> buildSlotInfo();
 	
 	protected abstract int getYSize();
+
+	public int getPlayerInventoryTopY() {
+		return 119 + (getYSize() - 200);
+	}
 	
 	public ItemStack getFrameStack() { return frameStack; }
 
