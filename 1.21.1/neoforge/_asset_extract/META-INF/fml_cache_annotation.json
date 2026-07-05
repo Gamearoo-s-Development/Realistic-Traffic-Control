@@ -1,0 +1,1648 @@
+{
+  "com/gamearoosdevelopment/realistictrafficcontrol/CC/TrafficLightCardPeripheral": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/CC/TrafficLightCardPeripheral",
+    "interfaces": [
+      "dan200/computercraft/api/peripheral/IPeripheral"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/ModBlocks": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/ModBlocks",
+    "annotations": [
+      {
+        "type": "CLASS",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "com/gamearoosdevelopment/realistictrafficcontrol/ModBlocks",
+        "value": {
+          "value": "realistictrafficcontrol"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "crossing_gate_base",
+        "value": {
+          "value": "crossing_gate_base"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "crossing_gate_gate",
+        "value": {
+          "value": "crossing_gate_gate"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "crossing_gate_lamps",
+        "value": {
+          "value": "crossing_gate_lamps"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "crossing_gate_pole",
+        "value": {
+          "value": "crossing_gate_pole"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "crossing_gate_crossbuck",
+        "value": {
+          "value": "crossing_gate_crossbuck"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "safetran_type_3",
+        "value": {
+          "value": "safetran_type_3"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "crossing_relay_se",
+        "value": {
+          "value": "crossing_relay_se"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "crossing_relay_sw",
+        "value": {
+          "value": "crossing_relay_sw"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "crossing_relay_nw",
+        "value": {
+          "value": "crossing_relay_nw"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "crossing_relay_ne",
+        "value": {
+          "value": "crossing_relay_ne"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "crossing_relay_top_sw",
+        "value": {
+          "value": "crossing_relay_top_sw"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "crossing_relay_top_se",
+        "value": {
+          "value": "crossing_relay_top_se"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "crossing_relay_top_nw",
+        "value": {
+          "value": "crossing_relay_top_nw"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "crossing_relay_top_ne",
+        "value": {
+          "value": "crossing_relay_top_ne"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "overhead_pole",
+        "value": {
+          "value": "overhead_pole"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "overhead",
+        "value": {
+          "value": "overhead"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "overhead_lamps",
+        "value": {
+          "value": "overhead_lamps"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "overhead_crossbuck",
+        "value": {
+          "value": "overhead_crossbuck"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "safetran_mechanical",
+        "value": {
+          "value": "safetran_mechanical"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "wig_wag",
+        "value": {
+          "value": "wig_wag"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "vertical_wig_wag",
+        "value": {
+          "value": "vertical_wig_wag"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "shunt_border",
+        "value": {
+          "value": "shunt_border"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "shunt_island",
+        "value": {
+          "value": "shunt_island"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_rail",
+        "value": {
+          "value": "traffic_rail"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "wch_bell",
+        "value": {
+          "value": "wch_bell"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "wch_mechanical_bell",
+        "value": {
+          "value": "wch_mechanical_bell"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "pole_base",
+        "value": {
+          "value": "pole_base"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "quiet_zone_signal",
+        "value": {
+          "value": "quiet_zone_signal"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "ped_crossing_lamps",
+        "value": {
+          "value": "ped_crossing_lamps"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "gate_guard",
+        "value": {
+          "value": "gate_guard"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "teardrop_bell",
+        "value": {
+          "value": "teardrop_bell"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "safetran_type_1",
+        "value": {
+          "value": "safetran_type_1"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "wayside_horn",
+        "value": {
+          "value": "wayside_horn"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "stand",
+        "value": {
+          "value": "stand"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "generator",
+        "value": {
+          "value": "generator"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "pole",
+        "value": {
+          "value": "pole"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "wood_pole",
+        "value": {
+          "value": "wood_pole"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "wire_anchor",
+        "value": {
+          "value": "wire_anchor"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "plus_pole",
+        "value": {
+          "value": "plus_pole"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "t_pole",
+        "value": {
+          "value": "t_pole"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "d_pole",
+        "value": {
+          "value": "d_pole"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "dh_pole",
+        "value": {
+          "value": "dh_pole"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "tag",
+        "value": {
+          "value": "tag"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "c_pole",
+        "value": {
+          "value": "c_pole"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "h_pole",
+        "value": {
+          "value": "h_pole"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "ch_pole",
+        "value": {
+          "value": "ch_pole"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "u_t_pole",
+        "value": {
+          "value": "u_t_pole"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "sign",
+        "value": {
+          "value": "sign"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "cone",
+        "value": {
+          "value": "cone"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "channelizer",
+        "value": {
+          "value": "channelizer"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "drum",
+        "value": {
+          "value": "drum"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "street_light_single",
+        "value": {
+          "value": "street_light_single"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "light_source",
+        "value": {
+          "value": "light_source"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "street_light_double",
+        "value": {
+          "value": "street_light_double"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_light",
+        "value": {
+          "value": "traffic_light"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_light_hoz",
+        "value": {
+          "value": "traffic_light_hoz"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_light_control_box",
+        "value": {
+          "value": "traffic_light_control_box"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "type_3_barrier",
+        "value": {
+          "value": "type_3_barrier"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "type_3_barrier_right",
+        "value": {
+          "value": "type_3_barrier_right"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "concrete_barrier",
+        "value": {
+          "value": "concrete_barrier"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "horizontal_pole",
+        "value": {
+          "value": "horizontal_pole"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_sensor_left",
+        "value": {
+          "value": "traffic_sensor_left"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_sensor_straight",
+        "value": {
+          "value": "traffic_sensor_straight"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "street_sign",
+        "value": {
+          "value": "street_sign"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_light_5",
+        "value": {
+          "value": "traffic_light_5"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_light_5_hoz",
+        "value": {
+          "value": "traffic_light_5_hoz"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_light_5_upper",
+        "value": {
+          "value": "traffic_light_5_upper"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_light_doghouse",
+        "value": {
+          "value": "traffic_light_doghouse"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_light_1",
+        "value": {
+          "value": "traffic_light_1"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_light_2",
+        "value": {
+          "value": "traffic_light_2"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_light_2_hoz",
+        "value": {
+          "value": "traffic_light_2_hoz"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_light_4",
+        "value": {
+          "value": "traffic_light_4"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_light_4_hoz",
+        "value": {
+          "value": "traffic_light_4_hoz"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_light_6",
+        "value": {
+          "value": "traffic_light_6"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_light_8",
+        "value": {
+          "value": "traffic_light_8"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_light_7",
+        "value": {
+          "value": "traffic_light_7"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "pedestrian_button",
+        "value": {
+          "value": "pedestrian_button"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_sensor_right",
+        "value": {
+          "value": "traffic_sensor_right"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "redstone_sensor",
+        "value": {
+          "value": "redstone_sensor"
+        }
+      }
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/ModItems": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/ModItems",
+    "annotations": [
+      {
+        "type": "CLASS",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "com/gamearoosdevelopment/realistictrafficcontrol/ModItems",
+        "value": {
+          "value": "realistictrafficcontrol"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "crossing_relay_tuner",
+        "value": {
+          "value": "crossing_relay_tuner"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "crossing_relay_box",
+        "value": {
+          "value": "crossing_relay_box"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "cover_hook",
+        "value": {
+          "value": "cover_hook"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "wire_cutter",
+        "value": {
+          "value": "wire_cutter"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_light_bulb",
+        "value": {
+          "value": "traffic_light_bulb"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_light_frame",
+        "value": {
+          "value": "traffic_light_frame"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_light_hoz_frame",
+        "value": {
+          "value": "traffic_light_hoz_frame"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "street_sign",
+        "value": {
+          "value": "street_sign"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_light_5_frame",
+        "value": {
+          "value": "traffic_light_5_frame"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_light_5_hoz_frame",
+        "value": {
+          "value": "traffic_light_5_hoz_frame"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_light_doghouse_frame",
+        "value": {
+          "value": "traffic_light_doghouse_frame"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_light_1_frame",
+        "value": {
+          "value": "traffic_light_1_frame"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_light_2_frame",
+        "value": {
+          "value": "traffic_light_2_frame"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_light_2_hoz_frame",
+        "value": {
+          "value": "traffic_light_2_hoz_frame"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_light_4_frame",
+        "value": {
+          "value": "traffic_light_4_frame"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_light_4_hoz_frame",
+        "value": {
+          "value": "traffic_light_4_hoz_frame"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_light_6_frame",
+        "value": {
+          "value": "traffic_light_6_frame"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_light_8_frame",
+        "value": {
+          "value": "traffic_light_8_frame"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_light_7_frame",
+        "value": {
+          "value": "traffic_light_7_frame"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "traffic_light_card",
+        "value": {
+          "value": "traffic_light_card"
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/registry/GameRegistry$ObjectHolder;",
+        "target": "screwdriver",
+        "value": {
+          "value": "screwdriver"
+        }
+      }
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/ModRealisticTrafficControl": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/ModRealisticTrafficControl",
+    "annotations": [
+      {
+        "type": "CLASS",
+        "name": "Lnet/minecraftforge/fml/common/Mod;",
+        "target": "com/gamearoosdevelopment/realistictrafficcontrol/ModRealisticTrafficControl",
+        "values": {
+          "acceptedMinecraftVersions": {
+            "value": "[1.12.2]"
+          },
+          "guiFactory": {
+            "value": "com.gamearoosdevelopment.realistictrafficcontrol.client.ModGuiFactory"
+          },
+          "modid": {
+            "value": "realistictrafficcontrol"
+          },
+          "name": {
+            "value": "Realistic Traffic Control"
+          },
+          "useMetadata": {
+            "type": "BOOL",
+            "value": "true"
+          },
+          "version": {
+            "value": "4.0.0"
+          }
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/SidedProxy;",
+        "target": "proxy",
+        "values": {
+          "clientSide": {
+            "value": "com.gamearoosdevelopment.realistictrafficcontrol.proxy.ClientProxy"
+          },
+          "serverSide": {
+            "value": "com.gamearoosdevelopment.realistictrafficcontrol.proxy.ServerProxy"
+          }
+        }
+      },
+      {
+        "type": "FIELD",
+        "name": "Lnet/minecraftforge/fml/common/Mod$Instance;",
+        "target": "instance"
+      },
+      {
+        "type": "METHOD",
+        "name": "Lnet/minecraftforge/fml/common/Mod$EventHandler;",
+        "target": "preInit(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V"
+      },
+      {
+        "type": "METHOD",
+        "name": "Lnet/minecraftforge/fml/common/Mod$EventHandler;",
+        "target": "init(Lnet/minecraftforge/fml/common/event/FMLInitializationEvent;)V"
+      },
+      {
+        "type": "METHOD",
+        "name": "Lnet/minecraftforge/fml/common/Mod$EventHandler;",
+        "target": "postInit(Lnet/minecraftforge/fml/common/event/FMLPostInitializationEvent;)V"
+      },
+      {
+        "type": "METHOD",
+        "name": "Lnet/minecraftforge/fml/common/Mod$EventHandler;",
+        "target": "onServerStart(Lnet/minecraftforge/fml/common/event/FMLServerStartingEvent;)V"
+      }
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockCrossingGateLamps": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockCrossingGateLamps",
+    "interfaces": [
+      "com/gamearoosdevelopment/realistictrafficcontrol/blocks/IHorizontalPoleConnectable"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockCrossingGatePole": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockCrossingGatePole",
+    "interfaces": [
+      "com/gamearoosdevelopment/realistictrafficcontrol/blocks/IHorizontalPoleConnectable"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockLampBase$EnumState": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockLampBase$EnumState",
+    "interfaces": [
+      "net/minecraft/util/IStringSerializable"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockRedstoneSensor": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockRedstoneSensor",
+    "interfaces": [
+      "net/minecraft/block/ITileEntityProvider"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockRelayBase": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockRelayBase",
+    "interfaces": [
+      "net/minecraft/block/ITileEntityProvider"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockRotatableCrossingLamps": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockRotatableCrossingLamps",
+    "interfaces": [
+      "com/gamearoosdevelopment/realistictrafficcontrol/blocks/IHorizontalPoleConnectable"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockSafetranMechanical": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockSafetranMechanical",
+    "interfaces": [
+      "net/minecraft/block/ITileEntityProvider"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockSafetranType1": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockSafetranType1",
+    "interfaces": [
+      "net/minecraft/block/ITileEntityProvider"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockSafetranType3": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockSafetranType3",
+    "interfaces": [
+      "net/minecraft/block/ITileEntityProvider"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockShuntBase": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockShuntBase",
+    "interfaces": [
+      "net/minecraft/block/ITileEntityProvider"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockSign": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockSign",
+    "interfaces": [
+      "net/minecraft/block/ITileEntityProvider"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockStreetLightDouble": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockStreetLightDouble",
+    "interfaces": [
+      "net/minecraft/block/ITileEntityProvider"
+    ],
+    "annotations": [
+      {
+        "type": "CLASS",
+        "name": "Lnet/minecraftforge/fml/common/Mod$EventBusSubscriber;",
+        "target": "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockStreetLightDouble"
+      }
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockStreetLightSingle": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockStreetLightSingle",
+    "interfaces": [
+      "net/minecraft/block/ITileEntityProvider"
+    ],
+    "annotations": [
+      {
+        "type": "CLASS",
+        "name": "Lnet/minecraftforge/fml/common/Mod$EventBusSubscriber;",
+        "target": "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockStreetLightSingle"
+      },
+      {
+        "type": "METHOD",
+        "name": "Lnet/minecraftforge/fml/common/eventhandler/SubscribeEvent;",
+        "target": "onBlockBreak(Lnet/minecraftforge/event/world/BlockEvent$BreakEvent;)V"
+      }
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockTeardropBell": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockTeardropBell",
+    "interfaces": [
+      "net/minecraft/block/ITileEntityProvider"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockTrafficLightControlBox": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockTrafficLightControlBox",
+    "interfaces": [
+      "net/minecraft/block/ITileEntityProvider"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockVerticalWigWag": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockVerticalWigWag",
+    "interfaces": [
+      "net/minecraft/block/ITileEntityProvider"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockWCHMechanicalBell": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockWCHMechanicalBell",
+    "interfaces": [
+      "net/minecraft/block/ITileEntityProvider"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockWigWag": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockWigWag",
+    "interfaces": [
+      "net/minecraft/block/ITileEntityProvider"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockWireAnchor": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/blocks/BlockWireAnchor",
+    "interfaces": [
+      "net/minecraft/block/ITileEntityProvider"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/blocks/model/BaseBakedModel": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/blocks/model/BaseBakedModel",
+    "interfaces": [
+      "net/minecraft/client/renderer/block/model/IBakedModel"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/blocks/model/ModelLoader": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/blocks/model/ModelLoader",
+    "interfaces": [
+      "net/minecraftforge/client/model/ICustomModelLoader"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/blocks/model/ModelStreetLightDouble": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/blocks/model/ModelStreetLightDouble",
+    "interfaces": [
+      "net/minecraftforge/client/model/IModel"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/blocks/model/ModelStreetLightSingle": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/blocks/model/ModelStreetLightSingle",
+    "interfaces": [
+      "net/minecraftforge/client/model/IModel"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/client/ModGuiFactory": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/client/ModGuiFactory",
+    "interfaces": [
+      "net/minecraftforge/fml/client/IModGuiFactory"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/event/EntityClassRenderer": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/event/EntityClassRenderer",
+    "annotations": [
+      {
+        "type": "CLASS",
+        "name": "Lnet/minecraftforge/fml/common/Mod$EventBusSubscriber;",
+        "target": "com/gamearoosdevelopment/realistictrafficcontrol/event/EntityClassRenderer",
+        "value": {
+          "type": "ENUM",
+          "values": [
+            "Lnet/minecraftforge/fml/relauncher/Side;/CLIENT"
+          ]
+        }
+      },
+      {
+        "type": "METHOD",
+        "name": "Lnet/minecraftforge/fml/common/eventhandler/SubscribeEvent;",
+        "target": "renderEntity(Lnet/minecraftforge/client/event/RenderGameOverlayEvent$Post;)V"
+      },
+      {
+        "type": "METHOD",
+        "name": "Lnet/minecraftforge/fml/common/eventhandler/SubscribeEvent;",
+        "target": "keyPress(Lnet/minecraftforge/fml/common/gameevent/InputEvent$KeyInputEvent;)V"
+      }
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/event/JoinEventHandler": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/event/JoinEventHandler",
+    "annotations": [
+      {
+        "type": "CLASS",
+        "name": "Lnet/minecraftforge/fml/common/Mod$EventBusSubscriber;",
+        "target": "com/gamearoosdevelopment/realistictrafficcontrol/event/JoinEventHandler"
+      },
+      {
+        "type": "METHOD",
+        "name": "Lnet/minecraftforge/fml/common/eventhandler/SubscribeEvent;",
+        "target": "join(Lnet/minecraftforge/fml/common/gameevent/PlayerEvent$PlayerLoggedInEvent;)V"
+      }
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/event/SignPackReloaderEventHandler": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/event/SignPackReloaderEventHandler",
+    "annotations": [
+      {
+        "type": "CLASS",
+        "name": "Lnet/minecraftforge/fml/common/Mod$EventBusSubscriber;",
+        "target": "com/gamearoosdevelopment/realistictrafficcontrol/event/SignPackReloaderEventHandler",
+        "value": {
+          "type": "ENUM",
+          "values": [
+            "Lnet/minecraftforge/fml/relauncher/Side;/CLIENT"
+          ]
+        }
+      },
+      {
+        "type": "METHOD",
+        "name": "Lnet/minecraftforge/fml/common/eventhandler/SubscribeEvent;",
+        "target": "onKeyPress(Lnet/minecraftforge/fml/common/gameevent/TickEvent$RenderTickEvent;)V"
+      }
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/event/WorldEventHandler": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/event/WorldEventHandler",
+    "annotations": [
+      {
+        "type": "CLASS",
+        "name": "Lnet/minecraftforge/fml/common/Mod$EventBusSubscriber;",
+        "target": "com/gamearoosdevelopment/realistictrafficcontrol/event/WorldEventHandler"
+      },
+      {
+        "type": "METHOD",
+        "name": "Lnet/minecraftforge/fml/common/eventhandler/SubscribeEvent;",
+        "target": "onLoad(Lnet/minecraftforge/event/world/WorldEvent$Load;)V"
+      },
+      {
+        "type": "METHOD",
+        "name": "Lnet/minecraftforge/fml/common/eventhandler/SubscribeEvent;",
+        "target": "onUnload(Lnet/minecraftforge/event/world/WorldEvent$Unload;)V"
+      },
+      {
+        "type": "METHOD",
+        "name": "Lnet/minecraftforge/fml/common/eventhandler/SubscribeEvent;",
+        "target": "onTick(Lnet/minecraftforge/fml/common/gameevent/TickEvent$WorldTickEvent;)V"
+      }
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/gui/GuiProxy": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/gui/GuiProxy",
+    "interfaces": [
+      "net/minecraftforge/fml/common/network/IGuiHandler"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/item/ItemTrafficLightFrameCapabilityProvider": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/item/ItemTrafficLightFrameCapabilityProvider",
+    "interfaces": [
+      "net/minecraftforge/common/capabilities/ICapabilityProvider",
+      "net/minecraftforge/common/capabilities/ICapabilitySerializable"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketSetApproachMovement": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketSetApproachMovement",
+    "interfaces": [
+      "net/minecraftforge/fml/common/network/simpleimpl/IMessage"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketSetApproachMovement$Handler": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketSetApproachMovement$Handler",
+    "interfaces": [
+      "net/minecraftforge/fml/common/network/simpleimpl/IMessageHandler"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketSignPackCheck": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketSignPackCheck",
+    "interfaces": [
+      "net/minecraftforge/fml/common/network/simpleimpl/IMessage"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketSignPackCheck$Handler": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketSignPackCheck$Handler",
+    "interfaces": [
+      "net/minecraftforge/fml/common/network/simpleimpl/IMessageHandler"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketSyncableTileEntity": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketSyncableTileEntity",
+    "interfaces": [
+      "net/minecraftforge/fml/common/network/simpleimpl/IMessage"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketSyncableTileEntity$Handler": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketSyncableTileEntity$Handler",
+    "interfaces": [
+      "net/minecraftforge/fml/common/network/simpleimpl/IMessageHandler"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketToggleApproachEnabled": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketToggleApproachEnabled",
+    "interfaces": [
+      "net/minecraftforge/fml/common/network/simpleimpl/IMessage"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketToggleApproachEnabled$Handler": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketToggleApproachEnabled$Handler",
+    "interfaces": [
+      "net/minecraftforge/fml/common/network/simpleimpl/IMessageHandler"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketToggleFyaNightOnly": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketToggleFyaNightOnly",
+    "interfaces": [
+      "net/minecraftforge/fml/common/network/simpleimpl/IMessage"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketToggleFyaNightOnly$Handler": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketToggleFyaNightOnly$Handler",
+    "interfaces": [
+      "net/minecraftforge/fml/common/network/simpleimpl/IMessageHandler"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketToggleHawkBeacon": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketToggleHawkBeacon",
+    "interfaces": [
+      "net/minecraftforge/fml/common/network/simpleimpl/IMessage"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketToggleHawkBeacon$Handler": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketToggleHawkBeacon$Handler",
+    "interfaces": [
+      "net/minecraftforge/fml/common/network/simpleimpl/IMessageHandler"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketToggleMain": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketToggleMain",
+    "interfaces": [
+      "net/minecraftforge/fml/common/network/simpleimpl/IMessage"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketToggleMain$Handler": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketToggleMain$Handler",
+    "interfaces": [
+      "net/minecraftforge/fml/common/network/simpleimpl/IMessageHandler"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketToggleNightFlash": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketToggleNightFlash",
+    "interfaces": [
+      "net/minecraftforge/fml/common/network/simpleimpl/IMessage"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketToggleNightFlash$Handler": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketToggleNightFlash$Handler",
+    "interfaces": [
+      "net/minecraftforge/fml/common/network/simpleimpl/IMessageHandler"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketToggleSplitAxis": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketToggleSplitAxis",
+    "interfaces": [
+      "net/minecraftforge/fml/common/network/simpleimpl/IMessage"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketToggleSplitAxis$Handler": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketToggleSplitAxis$Handler",
+    "interfaces": [
+      "net/minecraftforge/fml/common/network/simpleimpl/IMessageHandler"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketToggleSplitDirections": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketToggleSplitDirections",
+    "interfaces": [
+      "net/minecraftforge/fml/common/network/simpleimpl/IMessage"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketToggleSplitDirections$Handler": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketToggleSplitDirections$Handler",
+    "interfaces": [
+      "net/minecraftforge/fml/common/network/simpleimpl/IMessageHandler"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketTrafficLightFrameFacingUpdate": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketTrafficLightFrameFacingUpdate",
+    "interfaces": [
+      "net/minecraftforge/fml/common/network/simpleimpl/IMessage"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketTrafficLightFrameFacingUpdate$Handler": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketTrafficLightFrameFacingUpdate$Handler",
+    "interfaces": [
+      "net/minecraftforge/fml/common/network/simpleimpl/IMessageHandler"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketTrafficLightFrameGuiUpdate": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketTrafficLightFrameGuiUpdate",
+    "interfaces": [
+      "net/minecraftforge/fml/common/network/simpleimpl/IMessage"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketTrafficLightFrameGuiUpdate$Handler": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketTrafficLightFrameGuiUpdate$Handler",
+    "interfaces": [
+      "net/minecraftforge/fml/common/network/simpleimpl/IMessageHandler"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketUpdateSign": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketUpdateSign",
+    "interfaces": [
+      "net/minecraftforge/fml/common/network/simpleimpl/IMessage"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketUpdateSign$Handler": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/network/PacketUpdateSign$Handler",
+    "interfaces": [
+      "net/minecraftforge/fml/common/network/simpleimpl/IMessageHandler"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/network/ServerSideSoundPacket": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/network/ServerSideSoundPacket",
+    "interfaces": [
+      "net/minecraftforge/fml/common/network/simpleimpl/IMessage"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/network/ServerSideSoundPacket$Handler": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/network/ServerSideSoundPacket$Handler",
+    "interfaces": [
+      "net/minecraftforge/fml/common/network/simpleimpl/IMessageHandler"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/oc/TrafficLightCardDriver$CardEnvironment": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/oc/TrafficLightCardDriver$CardEnvironment",
+    "annotations": [
+      {
+        "type": "METHOD",
+        "name": "Lli/cil/oc/api/machine/Callback;",
+        "target": "pairSensor(Lli/cil/oc/api/machine/Context;Lli/cil/oc/api/machine/Arguments;)[Ljava/lang/Object;",
+        "values": {
+          "doc": {
+            "value": "pairSensor(x:int, y:int, z:int):boolean OR pairSensor(id:long):boolean -- Pairs or unpairs a sensor to this card"
+          }
+        }
+      },
+      {
+        "type": "METHOD",
+        "name": "Lli/cil/oc/api/machine/Callback;",
+        "target": "pairPedButton(Lli/cil/oc/api/machine/Context;Lli/cil/oc/api/machine/Arguments;)[Ljava/lang/Object;",
+        "values": {
+          "doc": {
+            "value": "pairPedButton(x:int, y:int, z:int):boolean, string OR pairPedButton(id:long):boolean, string -- Pairs or unpairs a pedestrian button to this card"
+          }
+        }
+      },
+      {
+        "type": "METHOD",
+        "name": "Lli/cil/oc/api/machine/Callback;",
+        "target": "listPedButtons(Lli/cil/oc/api/machine/Context;Lli/cil/oc/api/machine/Arguments;)[Ljava/lang/Object;",
+        "values": {
+          "doc": {
+            "value": "listPedButtons():array -- Returns a list of pedestrian button positions paired to this card"
+          }
+        }
+      },
+      {
+        "type": "METHOD",
+        "name": "Lli/cil/oc/api/machine/Callback;",
+        "target": "pressPedButton(Lli/cil/oc/api/machine/Context;Lli/cil/oc/api/machine/Arguments;)[Ljava/lang/Object;",
+        "values": {
+          "doc": {
+            "value": "pressPedButton(x:int, y:int, z:int):boolean, string OR pressPedButton(id:long):boolean, string -- Simulates pressing a pedestrian button"
+          }
+        }
+      },
+      {
+        "type": "METHOD",
+        "name": "Lli/cil/oc/api/machine/Callback;",
+        "target": "listBlockPos(Lli/cil/oc/api/machine/Context;Lli/cil/oc/api/machine/Arguments;)[Ljava/lang/Object;",
+        "values": {
+          "direct": {
+            "type": "BOOL",
+            "value": "true"
+          },
+          "doc": {
+            "value": "listBlockPos():array -- Retrieves a list of block positions currently in use by the card"
+          }
+        }
+      },
+      {
+        "type": "METHOD",
+        "name": "Lli/cil/oc/api/machine/Callback;",
+        "target": "listSensors(Lli/cil/oc/api/machine/Context;Lli/cil/oc/api/machine/Arguments;)[Ljava/lang/Object;",
+        "values": {
+          "doc": {
+            "value": "listSensors():array -- Returns a list of sensor positions"
+          }
+        }
+      },
+      {
+        "type": "METHOD",
+        "name": "Lli/cil/oc/api/machine/Callback;",
+        "target": "changeBulb(Lli/cil/oc/api/machine/Context;Lli/cil/oc/api/machine/Arguments;)[Ljava/lang/Object;",
+        "values": {
+          "doc": {
+            "value": "changeBulb(x:int, y:int, z:int, oldBulb:string, newBulb:string):boolean, string OR changeBulb(id:long, oldBulb:string, newBulb:string)"
+          }
+        }
+      },
+      {
+        "type": "METHOD",
+        "name": "Lli/cil/oc/api/machine/Callback;",
+        "target": "isSensorTripped(Lli/cil/oc/api/machine/Context;Lli/cil/oc/api/machine/Arguments;)[Ljava/lang/Object;",
+        "values": {
+          "doc": {
+            "value": "isSensorTripped(x:int, y:int, z:int):boolean OR isSensorTripped(id:long):boolean"
+          }
+        }
+      },
+      {
+        "type": "METHOD",
+        "name": "Lli/cil/oc/api/machine/Callback;",
+        "target": "listBlockIDs(Lli/cil/oc/api/machine/Context;Lli/cil/oc/api/machine/Arguments;)[Ljava/lang/Object;",
+        "values": {
+          "direct": {
+            "type": "BOOL",
+            "value": "true"
+          },
+          "doc": {
+            "value": "listBlockIDs():array -- Retrieves a list of block ids currently in use by the card"
+          }
+        }
+      },
+      {
+        "type": "METHOD",
+        "name": "Lli/cil/oc/api/machine/Callback;",
+        "target": "states(Lli/cil/oc/api/machine/Context;Lli/cil/oc/api/machine/Arguments;)[Ljava/lang/Object;",
+        "values": {
+          "direct": {
+            "type": "BOOL",
+            "value": "true"
+          },
+          "doc": {
+            "value": "states():array -- Retrieves a list of all possible states"
+          },
+          "getter": {
+            "type": "BOOL",
+            "value": "true"
+          }
+        }
+      },
+      {
+        "type": "METHOD",
+        "name": "Lli/cil/oc/api/machine/Callback;",
+        "target": "setState(Lli/cil/oc/api/machine/Context;Lli/cil/oc/api/machine/Arguments;)[Ljava/lang/Object;",
+        "values": {
+          "doc": {
+            "value": "setState(x:int, y:int, z:int, state:string, active:boolean, flash:boolean):boolean, string OR setState(id:long, state:string, active:boolean, flash:boolean) -- Sets the state of the specified traffic light"
+          }
+        }
+      },
+      {
+        "type": "METHOD",
+        "name": "Lli/cil/oc/api/machine/Callback;",
+        "target": "clearStates(Lli/cil/oc/api/machine/Context;Lli/cil/oc/api/machine/Arguments;)[Ljava/lang/Object;",
+        "values": {
+          "doc": {
+            "value": "clearStates(x:int, y:int, z:int):boolean, string OR clearStates(id:long):boolean, string -- Sets all states to inactive for the specified traffic light"
+          }
+        }
+      },
+      {
+        "type": "METHOD",
+        "name": "Lli/cil/oc/api/machine/Callback;",
+        "target": "getStates(Lli/cil/oc/api/machine/Context;Lli/cil/oc/api/machine/Arguments;)[Ljava/lang/Object;",
+        "values": {
+          "doc": {
+            "value": "getStates(x:int, y:int, z:int):boolean, string/table OR getStates(id:long):boolean, string/table -- Returns a table where the key is the state and value is a table that has an active and flash key"
+          }
+        }
+      }
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/oc/TrafficLightCardDriver$CardEnvironment$StateInfo": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/oc/TrafficLightCardDriver$CardEnvironment$StateInfo",
+    "interfaces": [
+      "li/cil/oc/api/machine/Value"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/proxy/ClientProxy": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/proxy/ClientProxy",
+    "annotations": [
+      {
+        "type": "CLASS",
+        "name": "Lnet/minecraftforge/fml/common/Mod$EventBusSubscriber;",
+        "target": "com/gamearoosdevelopment/realistictrafficcontrol/proxy/ClientProxy",
+        "value": {
+          "type": "ENUM",
+          "values": [
+            "Lnet/minecraftforge/fml/relauncher/Side;/CLIENT"
+          ]
+        }
+      },
+      {
+        "type": "METHOD",
+        "name": "Lnet/minecraftforge/fml/common/eventhandler/SubscribeEvent;",
+        "target": "preInit(Lnet/minecraftforge/fml/common/event/FMLPreInitializationEvent;)V"
+      },
+      {
+        "type": "METHOD",
+        "name": "Lnet/minecraftforge/fml/common/eventhandler/SubscribeEvent;",
+        "target": "registerModels(Lnet/minecraftforge/client/event/ModelRegistryEvent;)V"
+      },
+      {
+        "type": "METHOD",
+        "name": "Lnet/minecraftforge/fml/common/eventhandler/SubscribeEvent;",
+        "target": "bakeModels(Lnet/minecraftforge/client/event/ModelBakeEvent;)V"
+      }
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/proxy/CommonProxy": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/proxy/CommonProxy",
+    "annotations": [
+      {
+        "type": "CLASS",
+        "name": "Lnet/minecraftforge/fml/common/Mod$EventBusSubscriber;",
+        "target": "com/gamearoosdevelopment/realistictrafficcontrol/proxy/CommonProxy"
+      },
+      {
+        "type": "METHOD",
+        "name": "Lnet/minecraftforge/fml/common/eventhandler/SubscribeEvent;",
+        "target": "registerBlocks(Lnet/minecraftforge/event/RegistryEvent$Register;)V"
+      },
+      {
+        "type": "METHOD",
+        "name": "Lnet/minecraftforge/fml/common/eventhandler/SubscribeEvent;",
+        "target": "registerItems(Lnet/minecraftforge/event/RegistryEvent$Register;)V"
+      },
+      {
+        "type": "METHOD",
+        "name": "Lnet/minecraftforge/fml/common/eventhandler/SubscribeEvent;",
+        "target": "registerSounds(Lnet/minecraftforge/event/RegistryEvent$Register;)V"
+      }
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/proxy/TrafficLightPeripheralProvider$1": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/proxy/TrafficLightPeripheralProvider$1",
+    "interfaces": [
+      "dan200/computercraft/api/peripheral/IPeripheralProvider"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/recipe/RecipeFactory": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/recipe/RecipeFactory",
+    "interfaces": [
+      "net/minecraftforge/common/crafting/IRecipeFactory"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/tileentity/BaseTrafficLightTileEntity": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/tileentity/BaseTrafficLightTileEntity",
+    "interfaces": [
+      "net/minecraft/util/ITickable"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/tileentity/BellBaseTileEntity": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/tileentity/BellBaseTileEntity",
+    "interfaces": [
+      "com/gamearoosdevelopment/realistictrafficcontrol/util/ILoopableSoundTileEntity"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/tileentity/CrossingGateGateTileEntity": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/tileentity/CrossingGateGateTileEntity",
+    "interfaces": [
+      "net/minecraft/util/ITickable",
+      "com/gamearoosdevelopment/realistictrafficcontrol/util/ILoopableSoundTileEntity"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/tileentity/RelayTileEntity": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/tileentity/RelayTileEntity",
+    "interfaces": [
+      "net/minecraft/util/ITickable",
+      "com/gamearoosdevelopment/realistictrafficcontrol/scanner/IScannerSubscriber",
+      "com/gamearoosdevelopment/realistictrafficcontrol/tileentity/IHasRotationProperty"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/tileentity/StreetSign": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/tileentity/StreetSign",
+    "interfaces": [
+      "net/minecraftforge/common/util/INBTSerializable"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/tileentity/TileEntityRedstoneSensor": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/tileentity/TileEntityRedstoneSensor",
+    "interfaces": [
+      "net/minecraft/util/ITickable"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/tileentity/TrafficLightControlBoxTileEntity": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/tileentity/TrafficLightControlBoxTileEntity",
+    "interfaces": [
+      "net/minecraft/util/ITickable"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/tileentity/VerticalWigWagTileEntity": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/tileentity/VerticalWigWagTileEntity",
+    "interfaces": [
+      "net/minecraft/util/ITickable"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/tileentity/WigWagTileEntity": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/tileentity/WigWagTileEntity",
+    "interfaces": [
+      "net/minecraft/util/ITickable"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/util/ConfigReload": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/util/ConfigReload",
+    "annotations": [
+      {
+        "type": "CLASS",
+        "name": "Lnet/minecraftforge/fml/common/Mod$EventBusSubscriber;",
+        "target": "com/gamearoosdevelopment/realistictrafficcontrol/util/ConfigReload",
+        "values": {
+          "modid": {
+            "value": "realistictrafficcontrol"
+          }
+        }
+      },
+      {
+        "type": "METHOD",
+        "name": "Lnet/minecraftforge/fml/common/eventhandler/SubscribeEvent;",
+        "target": "onConfigChanged(Lnet/minecraftforge/fml/client/event/ConfigChangedEvent$OnConfigChangedEvent;)V"
+      }
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/util/LoopableTileEntitySound": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/util/LoopableTileEntitySound",
+    "interfaces": [
+      "net/minecraft/client/audio/ITickableSound"
+    ]
+  },
+  "com/gamearoosdevelopment/realistictrafficcontrol/util/UnlistedPropertyInteger": {
+    "name": "com/gamearoosdevelopment/realistictrafficcontrol/util/UnlistedPropertyInteger",
+    "interfaces": [
+      "net/minecraftforge/common/property/IUnlistedProperty"
+    ]
+  }
+}

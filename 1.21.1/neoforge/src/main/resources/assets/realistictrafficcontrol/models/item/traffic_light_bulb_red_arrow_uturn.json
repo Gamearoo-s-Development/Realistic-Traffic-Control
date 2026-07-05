@@ -1,0 +1,7 @@
+{
+	"parent": "realistictrafficcontrol:item/traffic_light_bulb_base",
+	"textures":
+	{
+		"lampTex": "realistictrafficcontrol:block/red_arrow_uturn"
+	}
+}

@@ -1,0 +1,40 @@
+{
+  "variants": {
+    "facing=north,state=off": {
+      "model": "realistictrafficcontrol:block/overhead_lamps"
+    },
+    "facing=north,state=flash1": {
+      "model": "realistictrafficcontrol:block/overhead_lamps"
+    },
+    "facing=north,state=flash2": {
+      "model": "realistictrafficcontrol:block/overhead_lamps"
+    },
+    "facing=south,state=off": {
+      "model": "realistictrafficcontrol:block/overhead_lamps"
+    },
+    "facing=south,state=flash1": {
+      "model": "realistictrafficcontrol:block/overhead_lamps"
+    },
+    "facing=south,state=flash2": {
+      "model": "realistictrafficcontrol:block/overhead_lamps"
+    },
+    "facing=east,state=off": {
+      "model": "realistictrafficcontrol:block/overhead_lamps"
+    },
+    "facing=east,state=flash1": {
+      "model": "realistictrafficcontrol:block/overhead_lamps"
+    },
+    "facing=east,state=flash2": {
+      "model": "realistictrafficcontrol:block/overhead_lamps"
+    },
+    "facing=west,state=off": {
+      "model": "realistictrafficcontrol:block/overhead_lamps"
+    },
+    "facing=west,state=flash1": {
+      "model": "realistictrafficcontrol:block/overhead_lamps"
+    },
+    "facing=west,state=flash2": {
+      "model": "realistictrafficcontrol:block/overhead_lamps"
+    }
+  }
+}

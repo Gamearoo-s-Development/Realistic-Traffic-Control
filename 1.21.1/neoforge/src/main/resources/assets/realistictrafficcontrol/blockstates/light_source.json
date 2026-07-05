@@ -1,0 +1,1 @@
+{ "multipart": [ { "apply": { "model": "realistictrafficcontrol:block/light_source" } } ] }

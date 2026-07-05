@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "realistictrafficcontrol:block/horizontal_pole" },
+    "facing=south": { "model": "realistictrafficcontrol:block/horizontal_pole", "y": 180 },
+    "facing=west": { "model": "realistictrafficcontrol:block/horizontal_pole", "y": 270 },
+    "facing=east": { "model": "realistictrafficcontrol:block/horizontal_pole", "y": 90 }
+  }
+}

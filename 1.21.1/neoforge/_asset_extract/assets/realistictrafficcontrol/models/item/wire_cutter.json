@@ -1,0 +1,110 @@
+{
+  "format_version": "1.21.6",
+  "credit": "Gamearoo wire cutter revised by ChatGPT",
+  "textures": {
+    "0": "blocks/concrete_light_blue",
+    "1": "blocks/concrete_gray",
+    "particle": "blocks/concrete_light_blue"
+  },
+  "elements": [
+    {
+      "name": "Handle_Left",
+      "from": [6, 0, 6],
+      "to": [7, 8, 7],
+      "faces": {
+        "north": {"texture": "#0"},
+        "south": {"texture": "#0"},
+        "east": {"texture": "#0"},
+        "west": {"texture": "#0"},
+        "up": {"texture": "#0"},
+        "down": {"texture": "#0"}
+      }
+    },
+    {
+      "name": "Handle_Right",
+      "from": [9, 0, 6],
+      "to": [10, 8, 7],
+      "faces": {
+        "north": {"texture": "#0"},
+        "south": {"texture": "#0"},
+        "east": {"texture": "#0"},
+        "west": {"texture": "#0"},
+        "up": {"texture": "#0"},
+        "down": {"texture": "#0"}
+      }
+    },
+    {
+      "name": "Blade_Left",
+      "from": [6.5, 8, 6],
+      "to": [7.5, 12, 6.5],
+      "faces": {
+        "north": {"texture": "#1"},
+        "south": {"texture": "#1"},
+        "east": {"texture": "#1"},
+        "west": {"texture": "#1"},
+        "up": {"texture": "#1"},
+        "down": {"texture": "#1"}
+      }
+    },
+    {
+      "name": "Blade_Right",
+      "from": [8.5, 8, 6],
+      "to": [9.5, 12, 6.5],
+      "faces": {
+        "north": {"texture": "#1"},
+        "south": {"texture": "#1"},
+        "east": {"texture": "#1"},
+        "west": {"texture": "#1"},
+        "up": {"texture": "#1"},
+        "down": {"texture": "#1"}
+      }
+    },
+    {
+      "name": "Blade_Hinge",
+      "from": [7.5, 8, 6],
+      "to": [8.5, 9, 7],
+      "faces": {
+        "north": {"texture": "#1"},
+        "south": {"texture": "#1"},
+        "east": {"texture": "#1"},
+        "west": {"texture": "#1"},
+        "up": {"texture": "#1"},
+        "down": {"texture": "#1"}
+      }
+    }
+  ],
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [0, 90, 0],
+      "translation": [0, 4, 1],
+      "scale": [0.55, 0.55, 0.55]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [0, 90, 0],
+      "translation": [0, 4, 1],
+      "scale": [0.55, 0.55, 0.55]
+    },
+    "firstperson_righthand": {
+      "rotation": [0, -90, 25],
+      "translation": [1.13, 3.2, 1.13],
+      "scale": [0.68, 0.68, 0.68]
+    },
+    "firstperson_lefthand": {
+      "rotation": [0, -90, 25],
+      "translation": [1.13, 3.2, 1.13],
+      "scale": [0.68, 0.68, 0.68]
+    },
+    "gui": {
+      "rotation": [30, -135, 0],
+      "scale": [0.625, 0.625, 0.625]
+    },
+    "ground": {
+      "rotation": [90, 0, 0],
+      "translation": [4, 3, 4],
+      "scale": [0.25, 0.25, 0.25]
+    },
+    "fixed": {
+      "scale": [0.5, 0.5, 0.5]
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "realistictrafficcontrol:item/traffic_light_card_tier1"
+  },
+  "overrides": [
+    { "predicate": { "realistictrafficcontrol:card_tier": 1.0 }, "model": "realistictrafficcontrol:item/traffic_light_card_tier2" },
+    { "predicate": { "realistictrafficcontrol:card_tier": 2.0 }, "model": "realistictrafficcontrol:item/traffic_light_card_tier3" },
+    { "predicate": { "realistictrafficcontrol:card_tier": 3.0 }, "model": "realistictrafficcontrol:item/traffic_light_card_creative" }
+  ]
+}

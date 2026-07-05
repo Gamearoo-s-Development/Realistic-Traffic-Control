@@ -1,0 +1,22 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"# #",
+		"#E#",
+		"###"
+	],
+	"key": {
+		"#": {
+			"item": "minecraft:stone",
+			"data": 0
+		},
+		
+		"E": {
+			"item": "minecraft:redstone_block"
+		}
+	},
+	"result": {
+		"item": "realistictrafficcontrol:traffic_sensor_straight",
+		"count": 1
+	}
+}

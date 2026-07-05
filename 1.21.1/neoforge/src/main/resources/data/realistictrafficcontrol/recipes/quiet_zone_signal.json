@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "minecraft:dye"
+    },
+    {
+      "item": "realistictrafficcontrol:traffic_light_1_frame"
+    }
+  ],
+  "result": {
+    "id": "realistictrafficcontrol:quiet_zone_signal",
+    "count": 1
+  }
+}

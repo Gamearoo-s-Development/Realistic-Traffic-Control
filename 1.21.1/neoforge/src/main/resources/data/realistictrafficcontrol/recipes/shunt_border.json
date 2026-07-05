@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#",
+    "R",
+    "S"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:orange_terracotta"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "S": {
+      "item": "minecraft:stone"
+    }
+  },
+  "result": {
+    "id": "realistictrafficcontrol:shunt_border",
+    "count": 1
+  }
+}

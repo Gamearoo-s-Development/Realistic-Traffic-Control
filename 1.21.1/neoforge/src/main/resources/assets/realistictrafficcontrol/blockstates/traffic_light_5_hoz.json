@@ -1,0 +1,6 @@
+{
+  "multipart": [
+    { "apply": { "model": "realistictrafficcontrol:block/traffic_light_5_hoz" } },
+    { "when": { "cover": "true" }, "apply": { "model": "realistictrafficcontrol:block/traffic_light5_hoz_covered" } }
+  ]
+}

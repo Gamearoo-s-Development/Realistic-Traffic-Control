@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " I ",
+    " J ",
+    " G "
+  ],
+  "key": {
+    "G": {
+      "tag": "c:ingots/gold"
+    },
+    "I": {
+      "tag": "c:ingots/iron"
+    },
+    "J": {
+      "item": "minecraft:noteblock"
+    }
+  },
+  "result": {
+    "id": "realistictrafficcontrol:safetran_type_1",
+    "count": 1
+  }
+}

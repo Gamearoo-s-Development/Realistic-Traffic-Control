@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "realistictrafficcontrol:block/crossing_relay_sw" },
+    "facing=east": { "model": "realistictrafficcontrol:block/crossing_relay_sw", "y": 90 },
+    "facing=south": { "model": "realistictrafficcontrol:block/crossing_relay_sw", "y": 180 },
+    "facing=west": { "model": "realistictrafficcontrol:block/crossing_relay_sw", "y": 270 }
+  }
+}

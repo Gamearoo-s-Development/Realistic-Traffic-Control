@@ -1,0 +1,25 @@
+{    "type": "minecraft:crafting_shaped",   "pattern": [     "   ",     "III",     " L "  ],   "key": {   	"I": 	{ 		
+        param($m)
+        $ore = $m.Groups[1].Value
+        if ($oreMap.ContainsKey($ore)) {
+            '"item": "' + $oreMap[$ore] + '"'
+        } else {
+            '"tag": "c:' + ($ore.ToLower() -replace 'ingot','') + '"'
+        }
+     	},   	"L": 	{ 		
+        param($m)
+        $ore = $m.Groups[1].Value
+        if ($oreMap.ContainsKey($ore)) {
+            '"item": "' + $oreMap[$ore] + '"'
+        } else {
+            '"tag": "c:' + ($ore.ToLower() -replace 'ingot','') + '"'
+        }
+    , 		"data": 0 	}   },   "result": {     
+        param($m)
+        $id = $m.Groups[1].Value
+        if ($id -like 'traffic_light_bulb*') {
+            '"id": "realistictrafficcontrol:traffic_light_bulb", "components": { "realistictrafficcontrol:bulb_type": 0 }'
+        } else {
+            '"id": "realistictrafficcontrol:' + $id + '"'
+        }
+    ,     "count": 4   } }

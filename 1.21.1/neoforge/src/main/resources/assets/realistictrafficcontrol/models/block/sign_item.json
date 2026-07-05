@@ -1,0 +1,24 @@
+{
+	"credit": "Model generated using MrCrayfish's Model Creator (http://mrcrayfish.com/modelcreator/)",
+	"textures": {
+		"0": "realistictrafficcontrol:block/generic",
+		"1": "realistictrafficcontrol:block/signs/df35999e-5ec7-4829-af99-e3bfd6c51c42/circle/circle0",
+		"particle": "realistictrafficcontrol:block/generic"
+	},
+	"elements": [
+		{
+			"name": "Sign Front",
+			"from": [0, 0, -5.9],
+			"to": [16, 16, -5.9],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 0, -15]},
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "texture": "#1"},
+				"east": {"uv": [0, 0, 0, 16], "texture": "#0"},
+				"south": {"uv": [0, 0, 16, 16], "texture": "#1"},
+				"west": {"uv": [0, 0, 0, 16], "texture": "#0"},
+				"up": {"uv": [0, 0, 16, 0], "texture": "#0"},
+				"down": {"uv": [0, 0, 16, 0], "texture": "#0"}
+			}
+		}
+	]
+}

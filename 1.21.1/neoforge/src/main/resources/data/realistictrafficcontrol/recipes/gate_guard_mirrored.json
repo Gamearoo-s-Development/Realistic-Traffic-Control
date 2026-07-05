@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "NN ",
+    " NP",
+    "NN "
+  ],
+  "key": {
+    "P": {
+      "item": "realistictrafficcontrol:crossing_gate_pole"
+    },
+    "N": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "id": "realistictrafficcontrol:gate_guard",
+    "count": 1
+  }
+}

@@ -1,0 +1,28 @@
+# gradle
+.gradle/
+build/
+!src/generated/resources/.cache/
+
+# eclipse
+*.launch
+.settings/
+.metadata/
+bin/
+
+# idea
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# vscode
+.vscode/
+
+# macos
+*.DS_Store
+
+# fabric/neoforge run dir
+run/
+runs/
+run-data/

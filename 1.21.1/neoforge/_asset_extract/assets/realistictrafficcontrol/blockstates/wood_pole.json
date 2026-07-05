@@ -1,0 +1,60 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "model": "realistictrafficcontrol:wood_pole"
+    },
+    "variants": {
+        "normal": [{}],
+        "inventory": [{}],
+        "north": {
+        	"true": {
+        		"submodel": {
+        			"northExt": { "model": "realistictrafficcontrol:crossing_gate_pole_ext" }
+        		}
+        	},
+        	"false": { }
+        },
+        "west": {
+        	"true": {
+        		"submodel": {
+        			"westExt": { "model": "realistictrafficcontrol:crossing_gate_pole_ext", "y": 270 }
+        		}
+        	},
+        	"false": { }
+        },
+        "south": {
+        	"true": {
+        		"submodel": {
+        			"southExt": { "model": "realistictrafficcontrol:crossing_gate_pole_ext", "y": 180 }
+        		}
+        	},
+        	"false": { }
+        },
+        "east": {
+        	"true": {
+        		"submodel": {
+        			"eastExt": { "model": "realistictrafficcontrol:crossing_gate_pole_ext", "y": 90 }
+        		}
+        	},
+        	"false": { }
+        },
+        "rotation": { 
+        	"0": { },
+        	"1": {  },
+        	"2": {  },
+        	"3": {  },
+        	"4": {  },
+        	"5": {  },
+        	"6": {},
+        	"7": {  },
+        	"8": {  },
+        	"9": { },
+        	"10": {  },
+        	"11": {  },
+        	"12": {  },
+        	"13": { },
+        	"14": {  },
+        	"15": { }
+        }
+    }
+}
