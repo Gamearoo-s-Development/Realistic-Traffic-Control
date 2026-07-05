@@ -27,3 +27,11 @@ MinecraftForge-Credits.txt
 CREDITS-fml.txt
 deps/
 libs/
+
+# 1.21.1 port reference extracts and local dev scripts (live outside the mod tree)
+/port-tools/
+1.21.1/neoforge/_asset_extract/
+1.21.1/neoforge/_gui_check/
+1.21.1/neoforge/_sound_extract/
+1.21.1/neoforge/scripts/
+1.21.1/neoforge/assets/
