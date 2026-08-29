@@ -5,7 +5,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 
 public class GuiButtonToggleMovement extends GuiButton {
-	private final String movementLabel;
+	private String movementLabel;
 	private boolean toggled;
 
 	public GuiButtonToggleMovement(int id, int x, int y, int width, int height, String movementLabel, boolean initialState) {
@@ -24,6 +24,10 @@ public class GuiButtonToggleMovement extends GuiButton {
 
 	public void setToggled(boolean toggled) {
 		this.toggled = toggled;
+	}
+
+	public void setMovementLabel(String movementLabel) {
+		this.movementLabel = movementLabel;
 	}
 
 	@Override

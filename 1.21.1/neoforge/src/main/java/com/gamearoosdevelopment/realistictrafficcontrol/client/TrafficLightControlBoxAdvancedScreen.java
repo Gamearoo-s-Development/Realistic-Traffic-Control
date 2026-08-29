@@ -1,6 +1,7 @@
 package com.gamearoosdevelopment.realistictrafficcontrol.client;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.client.gui.ControlBoxWidgets;
+import com.gamearoosdevelopment.realistictrafficcontrol.client.gui.ControlBoxWidgets.FyaToggle;
 import com.gamearoosdevelopment.realistictrafficcontrol.client.gui.ControlBoxWidgets.IdleToggle;
 import com.gamearoosdevelopment.realistictrafficcontrol.client.gui.ControlBoxWidgets.LabeledToggle;
 import com.gamearoosdevelopment.realistictrafficcontrol.client.gui.ControlBoxWidgets.MovementToggle;
@@ -8,7 +9,6 @@ import com.gamearoosdevelopment.realistictrafficcontrol.client.gui.ControlBoxWid
 import com.gamearoosdevelopment.realistictrafficcontrol.menu.TrafficLightControlBoxMenu;
 import com.gamearoosdevelopment.realistictrafficcontrol.network.SetApproachMovementPayload;
 import com.gamearoosdevelopment.realistictrafficcontrol.network.ToggleApproachEnabledPayload;
-import com.gamearoosdevelopment.realistictrafficcontrol.network.ToggleFyaNightOnlyPayload;
 import com.gamearoosdevelopment.realistictrafficcontrol.network.ToggleHawkBeaconPayload;
 import com.gamearoosdevelopment.realistictrafficcontrol.network.ToggleMainPayload;
 import com.gamearoosdevelopment.realistictrafficcontrol.network.ToggleNightFlashPayload;
@@ -16,7 +16,8 @@ import com.gamearoosdevelopment.realistictrafficcontrol.network.ToggleSplitAxisP
 import com.gamearoosdevelopment.realistictrafficcontrol.network.ToggleSplitDirectionsPayload;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLightControlBoxBlockEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.ApproachMovementSettings;
-import com.gamearoosdevelopment.realistictrafficcontrol.util.IdleBulbState;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.FyaMode;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.IdleBulbMode;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -35,9 +36,12 @@ public class TrafficLightControlBoxAdvancedScreen extends AbstractContainerScree
     private static final int ID_STRAIGHT = 20;
     private static final int ID_LEFT = 21;
     private static final int ID_RIGHT = 22;
+    private static final int ID_SHARED_TURNS = 23;
     private static final int ID_STRAIGHT_IDLE = 30;
     private static final int ID_LEFT_IDLE = 31;
     private static final int ID_RIGHT_IDLE = 32;
+    private static final int ID_FYA_LEFT = 40;
+    private static final int ID_FYA_RIGHT = 41;
     private static final int ROW_HEIGHT = 22;
 
     private final TrafficLightControlBoxScreen parent;
@@ -49,9 +53,12 @@ public class TrafficLightControlBoxAdvancedScreen extends AbstractContainerScree
     private MovementToggle straightToggle;
     private MovementToggle leftToggle;
     private MovementToggle rightToggle;
+    private LabeledToggle sharedTurnsToggle;
     private IdleToggle straightIdleToggle;
     private IdleToggle leftIdleToggle;
     private IdleToggle rightIdleToggle;
+    private FyaToggle leftFyaToggle;
+    private FyaToggle rightFyaToggle;
 
     public TrafficLightControlBoxAdvancedScreen(TrafficLightControlBoxScreen parent, TrafficLightControlBoxMenu menu,
             Inventory inventory, Component title) {
@@ -83,6 +90,7 @@ public class TrafficLightControlBoxAdvancedScreen extends AbstractContainerScree
         int approachX = cx - 214;
         int enabledX = cx - 182;
         int idleX = cx - 96;
+        int fyaX = cx - 18;
         int rowY = cy - 78;
         int systemCol1X = cx + 8;
         int systemCol2X = cx + 150;
@@ -100,9 +108,16 @@ public class TrafficLightControlBoxAdvancedScreen extends AbstractContainerScree
         straightToggle = addMovement(ID_STRAIGHT, enabledX, rowY, "Straight", settings.straightEnabled);
         leftToggle = addMovement(ID_LEFT, enabledX, rowY + ROW_HEIGHT, "Left", settings.leftEnabled);
         rightToggle = addMovement(ID_RIGHT, enabledX, rowY + ROW_HEIGHT * 2, "Right", settings.rightEnabled);
-        straightIdleToggle = addIdle(ID_STRAIGHT_IDLE, idleX, rowY, "Straight", settings.straightIdle);
-        leftIdleToggle = addIdle(ID_LEFT_IDLE, idleX, rowY + ROW_HEIGHT, "Left", settings.leftIdle);
-        rightIdleToggle = addIdle(ID_RIGHT_IDLE, idleX, rowY + ROW_HEIGHT * 2, "Right", settings.rightIdle);
+        sharedTurnsToggle = addSharedTurns(enabledX, rowY + ROW_HEIGHT * 3, settings.sharedTurns);
+        straightIdleToggle = addIdle(ID_STRAIGHT_IDLE, idleX, rowY, "Straight", settings.straightIdle, true);
+        leftIdleToggle = addIdle(ID_LEFT_IDLE, idleX, rowY + ROW_HEIGHT, "Left", settings.leftIdle, false);
+        rightIdleToggle = addIdle(ID_RIGHT_IDLE, idleX, rowY + ROW_HEIGHT * 2, "Right", settings.rightIdle, false);
+        leftFyaToggle = addFya(ID_FYA_LEFT, fyaX, rowY + ROW_HEIGHT, "Left", settings.leftFya);
+        rightFyaToggle = addFya(ID_FYA_RIGHT, fyaX, rowY + ROW_HEIGHT * 2, "Right", settings.rightFya);
+        straightIdleToggle.setMovementEnabled(settings.straightEnabled);
+        leftIdleToggle.setMovementEnabled(settings.leftEnabled);
+        rightIdleToggle.setMovementEnabled(settings.rightEnabled);
+        refreshMovementButtons();
 
         addSystemToggle(systemCol1X, rowY, box.isNightFlashEnabled(),
                 on -> new ToggleNightFlashPayload(pos(), on), box::setNightFlashEnabled,
@@ -127,9 +142,6 @@ public class TrafficLightControlBoxAdvancedScreen extends AbstractContainerScree
         addApproachToggle(systemCol2X, rowY + ROW_HEIGHT, Direction.SOUTH, box.hasSouth);
         addApproachToggle(systemCol2X, rowY + ROW_HEIGHT * 2, Direction.EAST, box.hasEast);
         addApproachToggle(systemCol2X, rowY + ROW_HEIGHT * 3, Direction.WEST, box.hasWest);
-        addSystemToggle(systemCol2X, rowY + ROW_HEIGHT * 4, box.isFyaNightOnlyEnabled(),
-                on -> new ToggleFyaNightOnlyPayload(pos(), on), box::setFyaNightOnlyEnabled,
-                s -> s ? "FYA Night Only: ON" : "FYA Night Only: OFF");
     }
 
     private SelectableTab addTab(int x, int y, String label, Direction facing) {
@@ -153,10 +165,13 @@ public class TrafficLightControlBoxAdvancedScreen extends AbstractContainerScree
             ApproachMovementSettings settings = box.getMovementSettings(selectedApproach);
             if (id == ID_STRAIGHT) {
                 settings.straightEnabled = straightToggle.isToggled();
+                straightIdleToggle.setMovementEnabled(settings.straightEnabled);
             } else if (id == ID_LEFT) {
                 settings.leftEnabled = leftToggle.isToggled();
+                leftIdleToggle.setMovementEnabled(settings.leftEnabled);
             } else {
                 settings.rightEnabled = rightToggle.isToggled();
+                rightIdleToggle.setMovementEnabled(settings.rightEnabled);
             }
             box.setMovementSettings(selectedApproach, settings);
             syncMovement(settings);
@@ -164,8 +179,24 @@ public class TrafficLightControlBoxAdvancedScreen extends AbstractContainerScree
         return addRenderableWidget(toggle);
     }
 
-    private IdleToggle addIdle(int id, int x, int y, String label, IdleBulbState initial) {
-        IdleToggle toggle = new IdleToggle(x, y, 74, 18, label, initial);
+    private LabeledToggle addSharedTurns(int x, int y, boolean initial) {
+        LabeledToggle toggle = new LabeledToggle(x, y, 25, 18, initial,
+                on -> on ? "Shared: ON" : "Shared: OFF");
+        toggle.setOnToggle(() -> {
+            TrafficLightControlBoxBlockEntity box = getBox();
+            if (box == null) {
+                return;
+            }
+            ApproachMovementSettings settings = box.getMovementSettings(selectedApproach);
+            settings.sharedTurns = toggle.isToggled();
+            box.setMovementSettings(selectedApproach, settings);
+            syncMovement(settings);
+        });
+        return addRenderableWidget(toggle);
+    }
+
+    private IdleToggle addIdle(int id, int x, int y, String label, IdleBulbMode initial, boolean straightOnly) {
+        IdleToggle toggle = new IdleToggle(x, y, 74, 18, label, initial, straightOnly);
         toggle.setOnToggle(() -> {
             TrafficLightControlBoxBlockEntity box = getBox();
             if (box == null) {
@@ -178,6 +209,25 @@ public class TrafficLightControlBoxAdvancedScreen extends AbstractContainerScree
                 settings.leftIdle = leftIdleToggle.getState();
             } else {
                 settings.rightIdle = rightIdleToggle.getState();
+            }
+            box.setMovementSettings(selectedApproach, settings);
+            syncMovement(settings);
+        });
+        return addRenderableWidget(toggle);
+    }
+
+    private FyaToggle addFya(int id, int x, int y, String label, FyaMode initial) {
+        FyaToggle toggle = new FyaToggle(x, y, 74, 18, label, initial);
+        toggle.setOnToggle(() -> {
+            TrafficLightControlBoxBlockEntity box = getBox();
+            if (box == null) {
+                return;
+            }
+            ApproachMovementSettings settings = box.getMovementSettings(selectedApproach);
+            if (id == ID_FYA_LEFT) {
+                settings.leftFya = toggle.getMode();
+            } else {
+                settings.rightFya = toggle.getMode();
             }
             box.setMovementSettings(selectedApproach, settings);
             syncMovement(settings);
@@ -249,9 +299,15 @@ public class TrafficLightControlBoxAdvancedScreen extends AbstractContainerScree
         straightToggle.setToggled(settings.straightEnabled);
         leftToggle.setToggled(settings.leftEnabled);
         rightToggle.setToggled(settings.rightEnabled);
+        sharedTurnsToggle.setToggled(settings.sharedTurns);
         straightIdleToggle.setState(settings.straightIdle);
         leftIdleToggle.setState(settings.leftIdle);
         rightIdleToggle.setState(settings.rightIdle);
+        leftFyaToggle.setMode(settings.leftFya);
+        rightFyaToggle.setMode(settings.rightFya);
+        straightIdleToggle.setMovementEnabled(settings.straightEnabled);
+        leftIdleToggle.setMovementEnabled(settings.leftEnabled);
+        rightIdleToggle.setMovementEnabled(settings.rightEnabled);
     }
 
     @Override
@@ -278,11 +334,14 @@ public class TrafficLightControlBoxAdvancedScreen extends AbstractContainerScree
         graphics.drawString(font, "Dir", cx - 214, cy - 88, 0xAAAAAA);
         graphics.drawString(font, "Enabled", cx - 182, cy - 88, 0xAAAAAA);
         graphics.drawString(font, "Idle if OFF", cx - 96, cy - 88, 0xAAAAAA);
+        graphics.drawString(font, "FYA", cx - 18, cy - 88, 0xAAAAAA);
         graphics.drawString(font, "System Options", cx + 8, cy - 100, 0xFFFF55);
         graphics.drawString(font, "Modes", cx + 8, cy - 88, 0xAAAAAA);
         graphics.drawString(font, "Approach", cx + 150, cy - 88, 0xAAAAAA);
-        graphics.drawCenteredString(font, "Idle Red = stay red when movement OFF  |  Idle Green = stay green",
-                cx, cy + 92, 0x888888);
+        graphics.drawCenteredString(font, "Idle if OFF: only applies when movement is disabled (grey = ON)",
+                cx, cy + 74, 0x888888);
+        graphics.drawCenteredString(font, "Shared Turns: left + U-turn + right arrows with straight (this approach only)",
+                cx, cy + 86, 0x888888);
     }
 
     @Override

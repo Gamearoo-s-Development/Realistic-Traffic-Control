@@ -1,20 +1,8 @@
 {
   "variants": {
-    "rotation=0": { "model": "realistictrafficcontrol:block/traffic_sensor_left" },
-    "rotation=1": { "model": "realistictrafficcontrol:block/traffic_sensor_left" },
-    "rotation=2": { "model": "realistictrafficcontrol:block/traffic_sensor_left" },
-    "rotation=3": { "model": "realistictrafficcontrol:block/traffic_sensor_left" },
-    "rotation=4": { "model": "realistictrafficcontrol:block/traffic_sensor_left" },
-    "rotation=5": { "model": "realistictrafficcontrol:block/traffic_sensor_left" },
-    "rotation=6": { "model": "realistictrafficcontrol:block/traffic_sensor_left" },
-    "rotation=7": { "model": "realistictrafficcontrol:block/traffic_sensor_left" },
-    "rotation=8": { "model": "realistictrafficcontrol:block/traffic_sensor_left" },
-    "rotation=9": { "model": "realistictrafficcontrol:block/traffic_sensor_left" },
-    "rotation=10": { "model": "realistictrafficcontrol:block/traffic_sensor_left" },
-    "rotation=11": { "model": "realistictrafficcontrol:block/traffic_sensor_left" },
-    "rotation=12": { "model": "realistictrafficcontrol:block/traffic_sensor_left" },
-    "rotation=13": { "model": "realistictrafficcontrol:block/traffic_sensor_left" },
-    "rotation=14": { "model": "realistictrafficcontrol:block/traffic_sensor_left" },
-    "rotation=15": { "model": "realistictrafficcontrol:block/traffic_sensor_left" }
+    "facing=north": { "model": "realistictrafficcontrol:block/traffic_sensor_left" },
+    "facing=east": { "model": "realistictrafficcontrol:block/traffic_sensor_left", "y": 90 },
+    "facing=south": { "model": "realistictrafficcontrol:block/traffic_sensor_left", "y": 180 },
+    "facing=west": { "model": "realistictrafficcontrol:block/traffic_sensor_left", "y": 270 }
   }
 }

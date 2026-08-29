@@ -10,6 +10,8 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
 public class ItemTrafficLightFrameCapabilityProvider implements ICapabilityProvider, ICapabilitySerializable<NBTTagCompound> {
+	private static final String NBT_APPROACH_FACING = "approachFacing";
+
 	private final ItemStackHandler handler;
 	private ItemStack stack;
 	private final int BULB_COUNT;
@@ -55,6 +57,12 @@ public class ItemTrafficLightFrameCapabilityProvider implements ICapabilityProvi
 	public NBTTagCompound serializeNBT() {
 		NBTTagCompound tag = new NBTTagCompound();
 		tag.setTag("items", handler.serializeNBT());
+		if (stack != null) {
+			NBTTagCompound stackTag = stack.getTagCompound();
+			if (stackTag != null && stackTag.hasKey(NBT_APPROACH_FACING)) {
+				tag.setInteger(NBT_APPROACH_FACING, stackTag.getInteger(NBT_APPROACH_FACING));
+			}
+		}
 		return tag;
 	}
 
@@ -63,6 +71,14 @@ public class ItemTrafficLightFrameCapabilityProvider implements ICapabilityProvi
 		if (nbt.hasKey("items"))
 		{
 			handler.deserializeNBT((NBTTagCompound)nbt.getTag("items"));
+		}
+		if (stack != null && nbt.hasKey(NBT_APPROACH_FACING)) {
+			NBTTagCompound stackTag = stack.getTagCompound();
+			if (stackTag == null) {
+				stackTag = new NBTTagCompound();
+				stack.setTagCompound(stackTag);
+			}
+			stackTag.setInteger(NBT_APPROACH_FACING, nbt.getInteger(NBT_APPROACH_FACING));
 		}
 	}	
 }

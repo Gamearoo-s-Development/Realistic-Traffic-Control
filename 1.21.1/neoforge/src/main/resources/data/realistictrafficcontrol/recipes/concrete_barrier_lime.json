@@ -7,11 +7,14 @@
   ],
   "key": {
     "C": {
-      "item": "minecraft:concrete"
+      "item": "minecraft:lime_concrete"
     }
   },
   "result": {
     "id": "realistictrafficcontrol:concrete_barrier",
-    "count": 6
+    "count": 6,
+    "components": {
+      "realistictrafficcontrol:barrier_dye": 5
+    }
   }
 }

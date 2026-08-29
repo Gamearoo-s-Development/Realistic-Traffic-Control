@@ -1,6 +1,7 @@
 package com.gamearoosdevelopment.realistictrafficcontrol.client.gui;
 
-import com.gamearoosdevelopment.realistictrafficcontrol.util.IdleBulbState;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.FyaMode;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.IdleBulbMode;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -144,13 +145,21 @@ public final class ControlBoxWidgets {
 
     public static class IdleToggle extends AbstractWidget {
         private final String movementLabel;
-        private IdleBulbState state;
+        private final boolean straightOnly;
+        private IdleBulbMode mode;
+        private boolean movementEnabled;
         private Runnable onToggle;
 
-        public IdleToggle(int x, int y, int w, int h, String movementLabel, IdleBulbState initial) {
+        public IdleToggle(int x, int y, int w, int h, String movementLabel, IdleBulbMode initial, boolean straightOnly) {
             super(x, y, w, h, Component.empty());
             this.movementLabel = movementLabel;
-            this.state = initial;
+            this.straightOnly = straightOnly;
+            this.mode = straightOnly ? initial.normalizeForStraight() : initial;
+        }
+
+        public void setMovementEnabled(boolean movementEnabled) {
+            this.movementEnabled = movementEnabled;
+            this.active = !movementEnabled;
         }
 
         public void setOnToggle(Runnable onToggle) {
@@ -158,26 +167,94 @@ public final class ControlBoxWidgets {
         }
 
         public void toggle() {
-            state = state == IdleBulbState.RED ? IdleBulbState.GREEN : IdleBulbState.RED;
+            if (movementEnabled) {
+                return;
+            }
+            mode = straightOnly ? mode.nextForStraight() : mode.next();
             if (onToggle != null) {
                 onToggle.run();
             }
         }
 
-        public IdleBulbState getState() {
-            return state;
+        public IdleBulbMode getState() {
+            return mode;
         }
 
-        public void setState(IdleBulbState state) {
-            this.state = state;
+        public void setState(IdleBulbMode state) {
+            this.mode = straightOnly ? state.normalizeForStraight() : state;
         }
 
         @Override
         protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-            boolean isGreen = state == IdleBulbState.GREEN;
-            graphics.fill(getX(), getY(), getX() + width, getY() + height, isGreen ? 0xFF00AA00 : 0xFFAA0000);
-            String label = movementLabel + ": " + (isGreen ? "Green" : "Red");
-            graphics.drawString(net.minecraft.client.Minecraft.getInstance().font, label, getX() + 4, getY() + 6, 0xFFFFFF);
+            int color;
+            if (movementEnabled) {
+                color = 0xFF555555;
+            } else {
+                color = switch (mode) {
+                    case ARROW_GREEN, SOLID_GREEN -> 0xFF00AA00;
+                    case ARROW_YELLOW, SOLID_YELLOW -> 0xFFAAAA00;
+                    default -> 0xFFAA0000;
+                };
+            }
+            graphics.fill(getX(), getY(), getX() + width, getY() + height, color);
+            String label = movementEnabled
+                    ? movementLabel + ": ON"
+                    : movementLabel + ": " + mode.getShortLabel();
+            graphics.drawString(net.minecraft.client.Minecraft.getInstance().font, label, getX() + 4, getY() + 6,
+                    movementEnabled ? 0x888888 : 0xFFFFFF);
+        }
+
+        @Override
+        public void onClick(double mouseX, double mouseY) {
+            toggle();
+        }
+
+        @Override
+        protected void updateWidgetNarration(NarrationElementOutput output) {
+            defaultButtonNarrationText(output);
+        }
+    }
+
+    public static class FyaToggle extends AbstractWidget {
+        private final String movementLabel;
+        private FyaMode mode;
+        private Runnable onToggle;
+
+        public FyaToggle(int x, int y, int w, int h, String movementLabel, FyaMode initial) {
+            super(x, y, w, h, Component.empty());
+            this.movementLabel = movementLabel;
+            this.mode = initial;
+        }
+
+        public void setOnToggle(Runnable onToggle) {
+            this.onToggle = onToggle;
+        }
+
+        public void toggle() {
+            mode = mode.next();
+            if (onToggle != null) {
+                onToggle.run();
+            }
+        }
+
+        public FyaMode getMode() {
+            return mode;
+        }
+
+        public void setMode(FyaMode mode) {
+            this.mode = mode;
+        }
+
+        @Override
+        protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+            int color = switch (mode) {
+                case OFF -> 0xFFAA0000;
+                case NIGHT_ONLY -> 0xFFAA8800;
+                default -> 0xFF00AA00;
+            };
+            graphics.fill(getX(), getY(), getX() + width, getY() + height, color);
+            graphics.drawString(net.minecraft.client.Minecraft.getInstance().font,
+                    movementLabel + ": " + mode.getShortLabel(), getX() + 4, getY() + 6, 0xFFFFFF);
         }
 
         @Override

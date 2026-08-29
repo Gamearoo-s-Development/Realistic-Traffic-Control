@@ -1,5 +1,6 @@
 package com.gamearoosdevelopment.realistictrafficcontrol.network;
 
+import com.gamearoosdevelopment.realistictrafficcontrol.gui.BaseTrafficLightFrameContainer;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.BaseItemTrafficLightFrame;
 
 import io.netty.buffer.ByteBuf;
@@ -37,14 +38,37 @@ public class PacketTrafficLightFrameFacingUpdate implements IMessage {
 		}
 
 		private void handle(PacketTrafficLightFrameFacingUpdate packet, MessageContext ctx) {
-			ItemStack stack = ctx.getServerHandler().player.getHeldItemMainhand();
-			if (!(stack.getItem() instanceof BaseItemTrafficLightFrame)) {
+			net.minecraft.entity.player.EntityPlayerMP player = ctx.getServerHandler().player;
+			EnumFacing facing = packet.facingOrdinal < 0 ? null : EnumFacing.getHorizontal(packet.facingOrdinal);
+
+			ItemStack stack = ItemStack.EMPTY;
+			if (player.openContainer instanceof BaseTrafficLightFrameContainer) {
+				stack = ((BaseTrafficLightFrameContainer) player.openContainer).getFrameStack();
+			}
+			if (stack.isEmpty()) {
+				stack = player.inventory.getCurrentItem();
+			}
+			if (stack.isEmpty() || !(stack.getItem() instanceof BaseItemTrafficLightFrame)) {
 				return;
 			}
 
 			BaseItemTrafficLightFrame frameItem = (BaseItemTrafficLightFrame) stack.getItem();
-			EnumFacing facing = packet.facingOrdinal < 0 ? null : EnumFacing.getHorizontal(packet.facingOrdinal);
 			frameItem.setConfiguredApproachFacing(stack, facing);
+
+			// Keep held stack references in sync with the edited frame stack.
+			ItemStack main = player.getHeldItemMainhand();
+			if (!main.isEmpty() && main.getItem() instanceof BaseItemTrafficLightFrame) {
+				frameItem.setConfiguredApproachFacing(main, facing);
+			}
+			ItemStack off = player.getHeldItemOffhand();
+			if (!off.isEmpty() && off.getItem() instanceof BaseItemTrafficLightFrame) {
+				((BaseItemTrafficLightFrame) off.getItem()).setConfiguredApproachFacing(off, facing);
+			}
+
+			player.inventory.markDirty();
+			if (player.openContainer != null) {
+				player.openContainer.detectAndSendChanges();
+			}
 		}
 	}
 }

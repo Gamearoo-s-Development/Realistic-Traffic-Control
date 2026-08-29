@@ -32,6 +32,10 @@ import net.minecraft.world.SimpleMenuProvider;
 /** Port of 1.12.2 {@code BlockCrossingGateGate}. Arm geometry is rendered by BER. */
 public class BlockCrossingGateGate extends Block implements EntityBlock {
 
+    private static final VoxelShape POLE_SHAPE = Block.box(7, 0, 7, 9, 16, 9);
+    private static final VoxelShape GEARBOX_SHAPE = Block.box(9, 6, 5, 15, 14, 11);
+    private static final VoxelShape STATIC_SHAPE = Shapes.or(POLE_SHAPE, GEARBOX_SHAPE);
+
     public BlockCrossingGateGate(Properties properties) {
         super(properties);
         registerDefaultState(getStateDefinition().any().setValue(RTCProperties.ROTATION, 0));
@@ -50,12 +54,12 @@ public class BlockCrossingGateGate extends Block implements EntityBlock {
 
     @Override
     public RenderShape getRenderShape(BlockState state) {
-        return RenderShape.INVISIBLE;
+        return RenderShape.MODEL;
     }
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return Shapes.empty();
+        return STATIC_SHAPE;
     }
 
     @Override

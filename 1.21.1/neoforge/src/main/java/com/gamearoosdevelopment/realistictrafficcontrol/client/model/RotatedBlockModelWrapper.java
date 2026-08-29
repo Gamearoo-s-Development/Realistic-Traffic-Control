@@ -4,11 +4,13 @@ import com.gamearoosdevelopment.realistictrafficcontrol.blocks.RTCProperties;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.RTCRotation;
 
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.BakedModelWrapper;
+import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.model.QuadTransformers;
 
 import com.mojang.math.Transformation;
@@ -24,7 +26,8 @@ import java.util.List;
  */
 public class RotatedBlockModelWrapper extends BakedModelWrapper<BakedModel> {
 
-    private static final Vector3f BLOCK_CENTER = new Vector3f(8, 8, 8);
+    // Baked quad vertices are in block-space units (0..1), not model JSON units (0..16).
+    private static final Vector3f BLOCK_CENTER = new Vector3f(0.5f, 0.5f, 0.5f);
 
     public RotatedBlockModelWrapper(BakedModel original) {
         super(original);
@@ -32,7 +35,16 @@ public class RotatedBlockModelWrapper extends BakedModelWrapper<BakedModel> {
 
     @Override
     public List<BakedQuad> getQuads(BlockState state, Direction side, RandomSource random) {
-        List<BakedQuad> quads = super.getQuads(state, side, random);
+        return rotate(super.getQuads(state, side, random), state);
+    }
+
+    @Override
+    public List<BakedQuad> getQuads(BlockState state, Direction side, RandomSource random,
+            ModelData modelData, RenderType renderType) {
+        return rotate(super.getQuads(state, side, random, modelData, renderType), state);
+    }
+
+    private static List<BakedQuad> rotate(List<BakedQuad> quads, BlockState state) {
         if (state == null || !state.hasProperty(RTCProperties.ROTATION)) {
             return quads;
         }
@@ -40,8 +52,8 @@ public class RotatedBlockModelWrapper extends BakedModelWrapper<BakedModel> {
         if (rotation == 0) {
             return quads;
         }
-        float degrees = RTCRotation.degreesForStep(rotation);
-        float radians = (float) Math.toRadians(-degrees);
+        float degrees = RTCRotation.placementRotationDegrees(rotation);
+        float radians = (float) Math.toRadians(degrees);
         Matrix4f matrix = new Matrix4f()
                 .translate(BLOCK_CENTER)
                 .rotateY(radians)

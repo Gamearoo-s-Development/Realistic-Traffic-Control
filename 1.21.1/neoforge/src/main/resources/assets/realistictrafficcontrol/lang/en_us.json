@@ -240,5 +240,21 @@
   "realistictrafficcontrol.traffic_light_bulb.yellowArrowUTurn.name": "(RTC) U-Turn Arrow Bulb (Yellow)",
   "realistictrafficcontrol.traffic_light_bulb.yellowArrowUTurn2.name": "(RTC) U-Turn Arrow Bulb2 (Yellow (Flash Only or OC))",
   "realistictrafficcontrol.traffic_light_bulb.yellowArrowUTurn3.name": "(RTC) U-Turn Arrow Bulb3 (Yellow (Non Flasher))",
-  "realistictrafficcontrol.traffic_light_bulb.yellow_x.name": "(RTC) X Bulb (Yellow)"
+  "realistictrafficcontrol.traffic_light_bulb.yellow_x.name": "(RTC) X Bulb (Yellow)",
+  "block.realistictrafficcontrol.crossing_gate_base": "(RTC) Crossing Base",
+  "block.realistictrafficcontrol.crossing_gate_gate": "(RTC) Crossing Gate",
+  "block.realistictrafficcontrol.crossing_gate_lamps": "(RTC) Crossing Lamps",
+  "block.realistictrafficcontrol.overhead_lamps": "(RTC) Overhead Lamps",
+  "block.realistictrafficcontrol.ped_crossing_lamps": "(RTC) Pedestrian Crossing Lamps",
+  "block.realistictrafficcontrol.redstone_sensor": "(RTC) Traffic Sensor (Redstone)",
+  "block.realistictrafficcontrol.sign": "(RTC) Sign",
+  "block.realistictrafficcontrol.street_light_double": "(RTC) Street Light (Double)",
+  "block.realistictrafficcontrol.street_light_single": "(RTC) Street Light (Single)",
+  "block.realistictrafficcontrol.street_sign": "(RTC) Street Sign",
+  "block.realistictrafficcontrol.traffic_rail": "(RTC) Guardrail",
+  "block.realistictrafficcontrol.type_3_barrier": "(RTC) Type 3 Barrier",
+  "block.realistictrafficcontrol.type_3_barrier_right": "(RTC) Type 3 Barrier",
+  "block.realistictrafficcontrol.vertical_wig_wag": "(RTC) Upper Quadrant Wig Wag",
+  "block.realistictrafficcontrol.wig_wag": "(RTC) Wig Wag",
+  "block.realistictrafficcontrol.wire_anchor": "(RTC) Wire Anchor"
 }

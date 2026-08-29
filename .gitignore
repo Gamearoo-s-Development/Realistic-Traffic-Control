@@ -30,6 +30,11 @@ libs/
 
 # 1.21.1 port reference extracts and local dev scripts (live outside the mod tree)
 /port-tools/
+!/port-tools/
+/port-tools/*
+!/port-tools/scripts/
+/port-tools/scripts/*
+!/port-tools/scripts/audit-crossing-textures.ps1
 1.21.1/neoforge/_asset_extract/
 1.21.1/neoforge/_gui_check/
 1.21.1/neoforge/_sound_extract/

@@ -7,6 +7,7 @@ import com.gamearoosdevelopment.realistictrafficcontrol.item.CrossingRelayBoxIte
 import com.gamearoosdevelopment.realistictrafficcontrol.item.CrossingRelayTunerItem;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemCone;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemStreetSign;
+import com.gamearoosdevelopment.realistictrafficcontrol.item.ConcreteBarrierBlockItem;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.ScrewdriverItem;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.TrafficLightBulbItem;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.TrafficLightCardItem;
@@ -132,7 +133,9 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> VERTICAL_WIG_WAG = simpleBlockItem("vertical_wig_wag", ModBlocks.VERTICAL_WIG_WAG);
 
     // --- barriers ---
-    public static final DeferredItem<BlockItem> CONCRETE_BARRIER = simpleBlockItem("concrete_barrier", ModBlocks.CONCRETE_BARRIER);
+    public static final DeferredItem<ConcreteBarrierBlockItem> CONCRETE_BARRIER =
+            ITEMS.register("concrete_barrier",
+                    () -> new ConcreteBarrierBlockItem(ModBlocks.CONCRETE_BARRIER.get(), new Item.Properties()));
     public static final DeferredItem<BlockItem> TYPE_3_BARRIER = simpleBlockItem("type_3_barrier", ModBlocks.TYPE_3_BARRIER);
     public static final DeferredItem<BlockItem> TYPE_3_BARRIER_RIGHT =
             simpleBlockItem("type_3_barrier_right", ModBlocks.TYPE_3_BARRIER_RIGHT);

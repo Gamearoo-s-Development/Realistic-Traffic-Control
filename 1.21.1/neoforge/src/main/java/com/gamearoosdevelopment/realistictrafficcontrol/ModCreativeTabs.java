@@ -124,7 +124,10 @@ public final class ModCreativeTabs {
             }));
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> BARRIERS = TABS.register("b_tab",
             () -> tab("b_tab", ModItems.CONCRETE_BARRIER, (params, output) -> {
-                output.accept(ModItems.CONCRETE_BARRIER.get());
+                for (int dye = 0; dye < 16; dye++) {
+                    output.accept(com.gamearoosdevelopment.realistictrafficcontrol.item.ConcreteBarrierBlockItem
+                            .withDye(ModItems.CONCRETE_BARRIER.get(), dye));
+                }
                 output.accept(ModItems.TYPE_3_BARRIER.get());
                 output.accept(ModItems.TYPE_3_BARRIER_RIGHT.get());
             }));

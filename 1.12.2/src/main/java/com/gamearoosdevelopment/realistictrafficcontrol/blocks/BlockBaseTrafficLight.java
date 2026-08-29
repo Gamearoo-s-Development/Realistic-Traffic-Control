@@ -276,7 +276,11 @@ public abstract class BlockBaseTrafficLight extends Block {
 			
 			stackCompound.setBoolean("always-flash-" + i, trafficLight.getAllowFlashBySlot(i));
 		}
-		
+
+		EnumFacing approachFacing = trafficLight.getConfiguredApproachFacing();
+		stackCompound.setInteger(BaseItemTrafficLightFrame.NBT_APPROACH_FACING_KEY,
+				approachFacing == null ? -1 : approachFacing.getHorizontalIndex());
+
 		frameStack.setTagCompound(frameStack.getItem().getNBTShareTag(frameStack));
 		
 		return frameStack;

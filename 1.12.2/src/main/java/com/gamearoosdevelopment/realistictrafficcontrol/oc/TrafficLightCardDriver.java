@@ -1,6 +1,9 @@
 package com.gamearoosdevelopment.realistictrafficcontrol.oc;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,6 +23,7 @@ import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.PedestrianBut
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLightControlBoxTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.CustomAngleCalculator;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.EnumTrafficLightBulbTypes;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.TrafficLightOcApproachHelper;
 
 import li.cil.oc.api.Network;
 import li.cil.oc.api.driver.item.Slot;
@@ -417,6 +421,177 @@ public class TrafficLightCardDriver extends DriverItem {
 			
 			return new Object[] { blockPositions };
 		}
+
+		@Callback(direct = true, doc = "listDirections():array -- Lists approach directions (north/south/east/west) that have paired traffic lights")
+		public Object[] listDirections(Context c, Arguments args) {
+			java.util.LinkedHashSet<String> directions = new java.util.LinkedHashSet<>();
+			for (BaseTrafficLightTileEntity light : getPairedTrafficLights()) {
+				directions.add(TrafficLightOcApproachHelper.approachName(TrafficLightOcApproachHelper.resolveApproach(light)));
+			}
+			return new Object[] { new ArrayList<>(directions) };
+		}
+
+		@Callback(direct = true, doc = "listPairedLights():array -- Returns paired lights as tables with x, y, z, and direction fields")
+		public Object[] listPairedLights(Context c, Arguments args) {
+			ArrayList<Map<String, Object>> entries = new ArrayList<>();
+			for (BaseTrafficLightTileEntity light : getPairedTrafficLights()) {
+				BlockPos pos = light.getPos();
+				Map<String, Object> entry = new LinkedHashMap<>();
+				entry.put("x", pos.getX());
+				entry.put("y", pos.getY());
+				entry.put("z", pos.getZ());
+				entry.put("id", pos.toLong());
+				entry.put("direction", TrafficLightOcApproachHelper.approachName(TrafficLightOcApproachHelper.resolveApproach(light)));
+				entries.add(entry);
+			}
+			return new Object[] { entries };
+		}
+
+		@Callback(direct = true, doc = "listBlockPosByDirection(direction:string):array -- Returns positions of paired lights for the given approach direction")
+		public Object[] listBlockPosByDirection(Context c, Arguments args) throws Exception {
+			EnumFacing direction = TrafficLightOcApproachHelper.parseApproach(args.checkString(0));
+			ArrayList<Integer[]> blockPositions = new ArrayList<>();
+			for (BaseTrafficLightTileEntity light : getPairedTrafficLightsForDirection(direction)) {
+				BlockPos pos = light.getPos();
+				blockPositions.add(new Integer[] { pos.getX(), pos.getY(), pos.getZ() });
+			}
+			return new Object[] { blockPositions };
+		}
+
+		@Callback(doc = "setStateForDirection(direction:string, state:string, active:boolean, flash:boolean):boolean, string -- Sets the bulb state on all paired lights for the given approach direction")
+		public Object[] setStateForDirection(Context c, Arguments args) throws Exception {
+			EnumFacing direction = TrafficLightOcApproachHelper.parseApproach(args.checkString(0));
+			String state = args.checkString(1);
+			boolean active = args.checkBoolean(2);
+			boolean flash = args.checkBoolean(3);
+
+			if (!bulbTypesByString.containsKey(state)) {
+				return new Object[] { false, "Invalid state specified" };
+			}
+
+			EnumTrafficLightBulbTypes bulbType = bulbTypesByString.get(state);
+			List<BaseTrafficLightTileEntity> lights = getPairedTrafficLightsForDirection(direction);
+			if (lights.isEmpty()) {
+				return new Object[] { false, "No paired lights for direction " + TrafficLightOcApproachHelper.approachName(direction) };
+			}
+
+			int applied = 0;
+			int skipped = 0;
+			BlockPos hostPos = new BlockPos(host.xPosition(), host.yPosition(), host.zPosition());
+			for (BaseTrafficLightTileEntity trafficLight : lights) {
+				if (!trafficLight.hasBulb(bulbType)) {
+					skipped++;
+					continue;
+				}
+				double draw = Config.trafficLightCardDrawPerBlock * hostPos.distanceSq(trafficLight.getPos());
+				if (!((ComponentConnector) node()).tryChangeBuffer(-draw)) {
+					return new Object[] { false, "Not enough energy after " + applied + " light(s)" };
+				}
+				trafficLight.setActive(bulbType, active, flash);
+				applied++;
+			}
+
+			if (applied == 0) {
+				return new Object[] { false, "No paired lights for direction contain bulb " + state };
+			}
+			String message = "Applied to " + applied + " light(s)";
+			if (skipped > 0) {
+				message += " (" + skipped + " skipped, missing bulb)";
+			}
+			return new Object[] { true, message };
+		}
+
+		@Callback(doc = "clearStatesForDirection(direction:string):boolean, string -- Clears all bulb states on paired lights for the given approach direction")
+		public Object[] clearStatesForDirection(Context c, Arguments args) throws Exception {
+			EnumFacing direction = TrafficLightOcApproachHelper.parseApproach(args.checkString(0));
+			List<BaseTrafficLightTileEntity> lights = getPairedTrafficLightsForDirection(direction);
+			if (lights.isEmpty()) {
+				return new Object[] { false, "No paired lights for direction " + TrafficLightOcApproachHelper.approachName(direction) };
+			}
+
+			BlockPos hostPos = new BlockPos(host.xPosition(), host.yPosition(), host.zPosition());
+			int cleared = 0;
+			for (BaseTrafficLightTileEntity trafficLight : lights) {
+				double draw = Config.trafficLightCardDrawPerBlock * hostPos.distanceSq(trafficLight.getPos());
+				if (!((ComponentConnector) node()).tryChangeBuffer(-draw)) {
+					return new Object[] { false, "Not enough energy after " + cleared + " light(s)" };
+				}
+				trafficLight.powerOff();
+				trafficLight.setActive(EnumTrafficLightBulbTypes.DontCross, false, false);
+				cleared++;
+			}
+			return new Object[] { true, "Cleared " + cleared + " light(s)" };
+		}
+
+		@Callback(doc = "getStatesForDirection(direction:string):boolean, table -- Returns bulb states keyed by paired light position id for the given approach direction")
+		public Object[] getStatesForDirection(Context c, Arguments args) throws Exception {
+			EnumFacing direction = TrafficLightOcApproachHelper.parseApproach(args.checkString(0));
+			List<BaseTrafficLightTileEntity> lights = getPairedTrafficLightsForDirection(direction);
+			if (lights.isEmpty()) {
+				return new Object[] { false, "No paired lights for direction " + TrafficLightOcApproachHelper.approachName(direction) };
+			}
+
+			BlockPos hostPos = new BlockPos(host.xPosition(), host.yPosition(), host.zPosition());
+			Map<Long, Map<String, StateInfo>> results = new LinkedHashMap<>();
+			for (BaseTrafficLightTileEntity trafficLight : lights) {
+				double draw = Config.trafficLightCardDrawPerBlock * hostPos.distanceSq(trafficLight.getPos());
+				if (!((ComponentConnector) node()).tryChangeBuffer(-draw)) {
+					return new Object[] { false, "Not enough energy" };
+				}
+				results.put(trafficLight.getPos().toLong(), buildStateInfoMap(trafficLight));
+			}
+			return new Object[] { true, results };
+		}
+
+		@Callback(doc = "changeBulbForDirection(direction:string, oldBulb:string, newBulb:string):boolean, string -- Replaces a bulb type on all paired lights for the given approach direction")
+		public Object[] changeBulbForDirection(Context c, Arguments args) throws Exception {
+			EnumFacing direction = TrafficLightOcApproachHelper.parseApproach(args.checkString(0));
+			String oldBulbStr = args.checkString(1);
+			String newBulbStr = args.checkString(2);
+
+			if (!bulbTypesByString.containsKey(oldBulbStr) || !bulbTypesByString.containsKey(newBulbStr)) {
+				return new Object[] { false, "Invalid bulb type(s)" };
+			}
+
+			EnumTrafficLightBulbTypes oldBulb = bulbTypesByString.get(oldBulbStr);
+			EnumTrafficLightBulbTypes newBulb = bulbTypesByString.get(newBulbStr);
+			List<BaseTrafficLightTileEntity> lights = getPairedTrafficLightsForDirection(direction);
+			if (lights.isEmpty()) {
+				return new Object[] { false, "No paired lights for direction " + TrafficLightOcApproachHelper.approachName(direction) };
+			}
+
+			int changed = 0;
+			int skipped = 0;
+			for (BaseTrafficLightTileEntity tile : lights) {
+				int frameToReplace = -1;
+				for (int i = 0; i < tile.getBulbCount(); i++) {
+					if (tile.getBulbTypeBySlot(i) == oldBulb) {
+						frameToReplace = i;
+						break;
+					}
+				}
+				if (frameToReplace == -1) {
+					skipped++;
+					continue;
+				}
+				tile.setActive(oldBulb, true, false);
+				host.world().markBlockRangeForRenderUpdate(tile.getPos(), tile.getPos());
+				tile.setBulbType(frameToReplace, newBulb);
+				tile.markDirty();
+				host.world().notifyBlockUpdate(tile.getPos(), tile.getWorld().getBlockState(tile.getPos()), tile.getWorld().getBlockState(tile.getPos()), 3);
+				tile.setActive(newBulb, true, false);
+				changed++;
+			}
+
+			if (changed == 0) {
+				return new Object[] { false, "Old bulb not found on any paired light for direction" };
+			}
+			String message = "Changed bulb on " + changed + " light(s)";
+			if (skipped > 0) {
+				message += " (" + skipped + " skipped)";
+			}
+			return new Object[] { true, message };
+		}
 		
 		private final Map<String, EnumTrafficLightBulbTypes> bulbTypesByString = Arrays.stream(EnumTrafficLightBulbTypes.values()).collect(Collectors.toMap(EnumTrafficLightBulbTypes::toString, Function.identity()));
 		private final Map<String, String> bulbTypeStringsByString = Arrays.stream(EnumTrafficLightBulbTypes.values()).collect(Collectors.toMap(EnumTrafficLightBulbTypes::toString, EnumTrafficLightBulbTypes::toString));
@@ -539,30 +714,7 @@ public class TrafficLightCardDriver extends DriverItem {
 			}
 			
 			BaseTrafficLightTileEntity trafficLight = (BaseTrafficLightTileEntity)posTE;
-			HashMap<String, StateInfo> stateInfos = new HashMap<>();
-			for(String bulbTypeString : bulbTypeStringsByString.keySet())
-			{
-				stateInfos.put(bulbTypeString, new StateInfo());
-			}
-			
-			HashSet<String> discoveredStates = new HashSet<>();
-			
-			for(int i = 0; i < trafficLight.getBulbCount(); i++)
-			{
-				EnumTrafficLightBulbTypes bulbType = trafficLight.getBulbTypeBySlot(i); 
-				if (bulbType == null)
-				{
-					continue;
-				}
-				
-				if (discoveredStates.add(bulbType.toString()))
-				{
-					stateInfos.get(bulbType.toString()).active = trafficLight.getActiveBySlot(i);
-					stateInfos.get(bulbType.toString()).flash = trafficLight.getFlashBySlot(i);
-				}
-			}
-			
-			return new Object[] { true, stateInfos };
+			return new Object[] { true, buildStateInfoMap(trafficLight) };
 		}
 		
 		private class StateInfo implements Value
@@ -629,12 +781,67 @@ public class TrafficLightCardDriver extends DriverItem {
 			throw new IllegalArgumentException("Could not determine block position");
 		}
 		
+		private List<BaseTrafficLightTileEntity> getPairedTrafficLights() {
+			NBTTagCompound cardTag = card.getTagCompound();
+			if (cardTag == null) {
+				return Collections.emptyList();
+			}
+
+			int maxTrafficLights = ItemTrafficLightCard.getMaxTrafficLights(card.getMetadata());
+			ArrayList<BaseTrafficLightTileEntity> lights = new ArrayList<>();
+			for (int i = 0; i < maxTrafficLights; i++) {
+				if (!cardTag.hasKey("light" + i) || cardTag.getLong("light" + i) == 0) {
+					continue;
+				}
+				BlockPos position = BlockPos.fromLong(cardTag.getLong("light" + i));
+				TileEntity te = host.world().getTileEntity(position);
+				if (te instanceof BaseTrafficLightTileEntity) {
+					lights.add((BaseTrafficLightTileEntity) te);
+				}
+			}
+			return lights;
+		}
+
+		private List<BaseTrafficLightTileEntity> getPairedTrafficLightsForDirection(EnumFacing direction) {
+			ArrayList<BaseTrafficLightTileEntity> lights = new ArrayList<>();
+			for (BaseTrafficLightTileEntity light : getPairedTrafficLights()) {
+				if (TrafficLightOcApproachHelper.resolveApproach(light) == direction) {
+					lights.add(light);
+				}
+			}
+			return lights;
+		}
+
+		private Map<String, StateInfo> buildStateInfoMap(BaseTrafficLightTileEntity trafficLight) {
+			HashMap<String, StateInfo> stateInfos = new HashMap<>();
+			for (String bulbTypeString : bulbTypeStringsByString.keySet()) {
+				stateInfos.put(bulbTypeString, new StateInfo());
+			}
+
+			HashSet<String> discoveredStates = new HashSet<>();
+			for (int i = 0; i < trafficLight.getBulbCount(); i++) {
+				EnumTrafficLightBulbTypes bulbType = trafficLight.getBulbTypeBySlot(i);
+				if (bulbType == null) {
+					continue;
+				}
+				if (discoveredStates.add(bulbType.toString())) {
+					stateInfos.get(bulbType.toString()).active = trafficLight.getActiveBySlot(i);
+					stateInfos.get(bulbType.toString()).flash = trafficLight.getFlashBySlot(i);
+				}
+			}
+			return stateInfos;
+		}
+
 		private boolean cardContainsPos(BlockPos pos)
 		{
+			NBTTagCompound cardTag = card.getTagCompound();
+			if (cardTag == null) {
+				return false;
+			}
 			long id = pos.toLong();
-			for(String lightKey : card.getTagCompound().getKeySet().stream().filter(key -> key.startsWith("light")).collect(Collectors.toList()))
+			for(String lightKey : cardTag.getKeySet().stream().filter(key -> key.startsWith("light")).collect(Collectors.toList()))
 			{
-				long tagKey = card.getTagCompound().getLong(lightKey);
+				long tagKey = cardTag.getLong(lightKey);
 				if (tagKey == id)
 				{
 					return true;

@@ -19,4 +19,9 @@ public final class RTCRotation {
         }
         return DEGREES[rotation];
     }
+
+    /** Y rotation applied to placed blocks and BER bulbs; matches 1.12.2 TESR {@code rotation * -22.5F}. */
+    public static float placementRotationDegrees(int rotation) {
+        return (rotation & 15) * -22.5f;
+    }
 }

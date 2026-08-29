@@ -4,6 +4,8 @@
 		"0": "realistictrafficcontrol:block/black",
 		"1": "realistictrafficcontrol:block/generic",
 		"3": "realistictrafficcontrol:block/lightgraynoisy",
+		"leftlamp": "realistictrafficcontrol:block/lamp_off",
+		"rightlamp": "realistictrafficcontrol:block/lamp_off",
 		"particle": "realistictrafficcontrol:block/black"
 	},
 	"elements": [
@@ -194,7 +196,7 @@
 						3,
 						3
 					],
-					"texture": "#0"
+					"texture": "#rightlamp"
 				},
 				"east": {
 					"uv": [
@@ -212,7 +214,7 @@
 						3,
 						3
 					],
-					"texture": "#0"
+					"texture": "#rightlamp"
 				},
 				"west": {
 					"uv": [
@@ -272,7 +274,7 @@
 						3,
 						3
 					],
-					"texture": "#0"
+					"texture": "#rightlamp"
 				},
 				"east": {
 					"uv": [
@@ -290,7 +292,7 @@
 						3,
 						3
 					],
-					"texture": "#0"
+					"texture": "#rightlamp"
 				},
 				"west": {
 					"uv": [
@@ -431,7 +433,7 @@
 						16,
 						16
 					],
-					"texture": "#0"
+					"texture": "#leftlamp"
 				},
 				"east": {
 					"uv": [
@@ -449,7 +451,7 @@
 						16,
 						16
 					],
-					"texture": "#0"
+					"texture": "#leftlamp"
 				},
 				"west": {
 					"uv": [
@@ -509,7 +511,7 @@
 						16,
 						16
 					],
-					"texture": "#0"
+					"texture": "#leftlamp"
 				},
 				"east": {
 					"uv": [
@@ -527,7 +529,7 @@
 						16,
 						16
 					],
-					"texture": "#0"
+					"texture": "#leftlamp"
 				},
 				"west": {
 					"uv": [

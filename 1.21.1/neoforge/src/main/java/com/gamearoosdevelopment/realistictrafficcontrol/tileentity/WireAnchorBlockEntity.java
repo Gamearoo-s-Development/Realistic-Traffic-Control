@@ -1,6 +1,7 @@
 package com.gamearoosdevelopment.realistictrafficcontrol.tileentity;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.ModBlockEntities;
+import com.gamearoosdevelopment.realistictrafficcontrol.ModBlocks;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -84,6 +85,29 @@ public class WireAnchorBlockEntity extends BlockEntity {
                 connections[i] = BlockPos.of(tag.getLong(key));
             }
         }
+        sanitizeConnections();
+    }
+
+    /** Drop links to missing or invalid anchors (prevents sky-line wire glitches from stale NBT). */
+    public void sanitizeConnections() {
+        if (level == null) {
+            return;
+        }
+        for (int i = 0; i < connections.length; i++) {
+            BlockPos target = connections[i];
+            if (target == null) {
+                continue;
+            }
+            if (!level.isLoaded(target) || !level.getBlockState(target).is(ModBlocks.WIRE_ANCHOR.get())) {
+                connections[i] = null;
+            }
+        }
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        sanitizeConnections();
     }
 
     @Override

@@ -32,6 +32,7 @@ import net.minecraftforge.items.IItemHandler;
 
 public abstract class BaseItemTrafficLightFrame extends Item {
 	private static final String NBT_APPROACH_FACING = "approachFacing";
+	public static final String NBT_APPROACH_FACING_KEY = NBT_APPROACH_FACING;
 
 	public BaseItemTrafficLightFrame(String name)
 	{
@@ -128,7 +129,7 @@ public abstract class BaseItemTrafficLightFrame extends Item {
 			tooltip.add("Approach: " + facing.getName().substring(0, 1).toUpperCase() + facing.getName().substring(1));
 		}
 	}
-	
+
 	protected abstract BlockBaseTrafficLight getBaseBlockTrafficLight();
 
 	@Override
@@ -185,9 +186,11 @@ public abstract class BaseItemTrafficLightFrame extends Item {
 		IItemHandler handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
 		NBTBase capTag = CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.getStorage().writeNBT(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, handler, null);
 		tag.setTag("ClientInventory", capTag);
+		int facingIndex = -1;
 		if (stack.getTagCompound() != null && stack.getTagCompound().hasKey(NBT_APPROACH_FACING)) {
-			tag.setInteger(NBT_APPROACH_FACING, stack.getTagCompound().getInteger(NBT_APPROACH_FACING));
+			facingIndex = stack.getTagCompound().getInteger(NBT_APPROACH_FACING);
 		}
+		tag.setInteger(NBT_APPROACH_FACING, facingIndex);
 		
 		return tag;
 	}

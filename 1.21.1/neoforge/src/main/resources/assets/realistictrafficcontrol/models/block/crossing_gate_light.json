@@ -3,6 +3,7 @@
 	"textures": {
 		"0": "realistictrafficcontrol:block/generic",
 		"1": "realistictrafficcontrol:block/black",
+		"lamp": "realistictrafficcontrol:block/lamp_off",
 		"2": "#lamp"
 	},
 	"elements": [

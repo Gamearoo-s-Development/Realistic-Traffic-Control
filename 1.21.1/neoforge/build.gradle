@@ -90,3 +90,9 @@ tasks.named('processResources', ProcessResources).configure {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
+
+tasks.register('auditCrossingTextures', Exec) {
+    workingDir layout.projectDirectory.dir('../..').asFile
+    commandLine 'powershell', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File',
+            'port-tools/scripts/audit-crossing-textures.ps1'
+}

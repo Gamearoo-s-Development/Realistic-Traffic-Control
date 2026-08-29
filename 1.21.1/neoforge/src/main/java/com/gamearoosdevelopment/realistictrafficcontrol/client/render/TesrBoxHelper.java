@@ -3,6 +3,8 @@ package com.gamearoosdevelopment.realistictrafficcontrol.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
@@ -31,6 +33,63 @@ public final class TesrBoxHelper {
             this.height = height;
             this.depth = depth;
             this.textureInfoCollection = textureInfoCollection;
+        }
+
+        public void render(PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+            render(poseStack, buffer, packedLight, texture -> {
+            });
+        }
+
+        /** Binds one {@link RenderType#entitySolid} buffer per distinct face texture (1.21 requirement). */
+        public void render(PoseStack poseStack, MultiBufferSource buffer, int packedLight,
+                Consumer<ResourceLocation> bindTexture) {
+            double[][] vertexPoints = getVertexPoints();
+            int index = 0;
+            int count = 0;
+            ResourceLocation currentTexture = null;
+            VertexConsumer consumer = null;
+            Matrix4f matrix = poseStack.last().pose();
+            for (double[] vertexPoint : vertexPoints) {
+                TextureInfo info = getTextureInfo(index);
+                if (currentTexture == null || !info.texture.equals(currentTexture)) {
+                    currentTexture = info.texture;
+                    bindTexture.accept(currentTexture);
+                    consumer = buffer.getBuffer(RenderType.entitySolid(currentTexture));
+                }
+
+                double uvX;
+                double uvY;
+                switch (count) {
+                    case 0 -> {
+                        uvX = info.getConvertedEndX();
+                        uvY = info.getConvertedEndY();
+                    }
+                    case 1 -> {
+                        uvX = info.getConvertedEndX();
+                        uvY = info.getConvertedStartY();
+                    }
+                    case 2 -> {
+                        uvX = info.getConvertedStartX();
+                        uvY = info.getConvertedStartY();
+                    }
+                    default -> {
+                        uvX = info.getConvertedStartX();
+                        uvY = info.getConvertedEndY();
+                    }
+                }
+
+                consumer.addVertex(matrix, (float) vertexPoint[0], (float) vertexPoint[1], (float) vertexPoint[2])
+                        .setColor(255, 255, 255, 255)
+                        .setUv((float) uvX, (float) uvY)
+                        .setOverlay(OverlayTexture.NO_OVERLAY)
+                        .setLight(packedLight)
+                        .setNormal(poseStack.last(), 0, 1, 0);
+                count++;
+                if (count >= 4) {
+                    index++;
+                    count = 0;
+                }
+            }
         }
 
         public void render(PoseStack poseStack, VertexConsumer consumer, int packedLight,

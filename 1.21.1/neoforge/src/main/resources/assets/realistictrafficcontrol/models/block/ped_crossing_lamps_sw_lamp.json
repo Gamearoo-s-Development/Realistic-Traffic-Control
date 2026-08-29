@@ -2,7 +2,8 @@
 	"parent": "block/block",
 	"textures": {
 		"particle": "realistictrafficcontrol:block/generic",
-		"rightlamptex": "#rightlamp"
+		"rightlamptex": "#rightlamp",
+		"rightlamp": "realistictrafficcontrol:block/lamp_off"
 	},
 	"elements": [
 		{

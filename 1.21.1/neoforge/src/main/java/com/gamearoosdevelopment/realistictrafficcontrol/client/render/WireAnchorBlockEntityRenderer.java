@@ -1,5 +1,6 @@
 package com.gamearoosdevelopment.realistictrafficcontrol.client.render;
 
+import com.gamearoosdevelopment.realistictrafficcontrol.ModBlocks;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.WireAnchorBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -14,6 +15,9 @@ import net.minecraft.world.phys.Vec3;
 /** Port of 1.12.2 {@code TESRWireAnchor} as a BER. */
 public class WireAnchorBlockEntityRenderer implements BlockEntityRenderer<WireAnchorBlockEntity> {
 
+    private static final int MAX_WIRE_SPAN = 48;
+    private static final int SEGMENTS = 16;
+
     public WireAnchorBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
     }
 
@@ -24,37 +28,40 @@ public class WireAnchorBlockEntityRenderer implements BlockEntityRenderer<WireAn
             return;
         }
         BlockPos origin = te.getBlockPos();
-        int segments = 16;
         double sag = 0.5;
-        double swayBase = 0.05;
-        if (te.getLevel().isThundering()) {
-            swayBase = 0.09;
-        } else if (te.getLevel().isRaining()) {
-            swayBase = 0.06;
-        }
+        double swayBase = te.getLevel().isThundering() ? 0.09 : te.getLevel().isRaining() ? 0.06 : 0.05;
         double tTime = (te.getLevel().getGameTime() + partialTick) / 10.0;
         VertexConsumer consumer = buffer.getBuffer(RenderType.lines());
+
+        Vec3 start = new Vec3(0.5, 0.40, 0.5);
 
         for (BlockPos target : te.connections) {
             if (target == null || target.compareTo(origin) <= 0) {
                 continue;
             }
-            Vec3 start = new Vec3(origin.getX() + 0.5, origin.getY() + 0.40, origin.getZ() + 0.5);
-            Vec3 end = new Vec3(target.getX() + 0.5, target.getY() + 0.40, target.getZ() + 0.5);
-            double sway = swayBase;
-            for (int i = 0; i < segments; i++) {
-                double t0 = (double) i / segments;
-                double t1 = (double) (i + 1) / segments;
-                Vec3 p0 = sagPoint(start, end, t0, sag, tTime, sway);
-                Vec3 p1 = sagPoint(start, end, t1, sag, tTime, sway);
-                poseStack.pushPose();
-                poseStack.translate(-origin.getX(), -origin.getY(), -origin.getZ());
-                var matrix = poseStack.last().pose();
+            if (!te.getLevel().getBlockState(target).is(ModBlocks.WIRE_ANCHOR.get())) {
+                continue;
+            }
+            int dx = target.getX() - origin.getX();
+            int dy = target.getY() - origin.getY();
+            int dz = target.getZ() - origin.getZ();
+            if (dx * dx + dy * dy + dz * dz > MAX_WIRE_SPAN * MAX_WIRE_SPAN) {
+                continue;
+            }
+
+            Vec3 end = new Vec3(dx + 0.5, dy + 0.40, dz + 0.5);
+            PoseStack.Pose pose = poseStack.last();
+            var matrix = pose.pose();
+
+            for (int i = 0; i < SEGMENTS; i++) {
+                double t0 = (double) i / SEGMENTS;
+                double t1 = (double) (i + 1) / SEGMENTS;
+                Vec3 p0 = sagPoint(start, end, t0, sag, tTime, swayBase);
+                Vec3 p1 = sagPoint(start, end, t1, sag, tTime, swayBase);
                 consumer.addVertex(matrix, (float) p0.x, (float) p0.y, (float) p0.z).setColor(0, 0, 0, 255)
-                        .setNormal(0, 1, 0);
+                        .setNormal(pose, 0f, 1f, 0f);
                 consumer.addVertex(matrix, (float) p1.x, (float) p1.y, (float) p1.z).setColor(0, 0, 0, 255)
-                        .setNormal(0, 1, 0);
-                poseStack.popPose();
+                        .setNormal(pose, 0f, 1f, 0f);
             }
         }
     }

@@ -90,6 +90,16 @@ public abstract class BaseTrafficLightFrameContainer extends Container {
 	
 	public ItemStack getFrameStack() { return frameStack; }
 
+	public void refreshFrameStackFromPlayer(EntityPlayer player) {
+		if (player == null) {
+			return;
+		}
+		ItemStack held = player.inventory.getCurrentItem();
+		if (!held.isEmpty() && held.getItem() == getValidFrameItem()) {
+			frameStack = held;
+		}
+	}
+
 	public List<FrameSlotInfo> getFrameSlotInfos() { return frameSlotInfos; }
 	
 	@Override

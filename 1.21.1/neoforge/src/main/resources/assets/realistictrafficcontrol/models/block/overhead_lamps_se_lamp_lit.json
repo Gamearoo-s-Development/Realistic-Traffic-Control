@@ -1,0 +1,6 @@
+{
+  "parent": "realistictrafficcontrol:block/overhead_lamps_se_lamp",
+  "textures": {
+    "rightlamp": "realistictrafficcontrol:block/red"
+  }
+}

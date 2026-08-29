@@ -93,11 +93,17 @@ public class BaseItemTrafficLightFrame extends Item {
     }
 
     public static boolean getAllowFlash(net.minecraft.world.item.ItemStack stack, int slot) {
-        return getData(stack).getBoolean("allowflash" + slot);
+        CompoundTag tag = getData(stack);
+        String key = "allowflash" + slot;
+        return !tag.contains(key) || tag.getBoolean(key);
     }
 
     public static Direction getConfiguredApproachFacing(net.minecraft.world.item.ItemStack stack) {
-        int index = getData(stack).getInt("configuredApproachFacing");
+        CompoundTag tag = getData(stack);
+        if (!tag.contains("configuredApproachFacing")) {
+            return null;
+        }
+        int index = tag.getInt("configuredApproachFacing");
         return index < 0 ? null : Direction.from2DDataValue(index);
     }
 
@@ -116,7 +122,7 @@ public class BaseItemTrafficLightFrame extends Item {
             pos = pos.relative(context.getClickedFace());
         }
 
-        int rotation = CustomAngleCalculator.getRotationForYaw(context.getPlayer().getYRot());
+        int rotation = CustomAngleCalculator.getRotationForYawCardinal(context.getPlayer().getYRot());
         BlockState placed = baseBlock.get().defaultBlockState().setValue(RTCProperties.ROTATION, rotation);
         level.setBlock(pos, placed, 3);
 

@@ -367,16 +367,18 @@ public class ItemCrossingRelayTuner extends Item {
 
 				if (state.getBlock() instanceof BlockBaseTrafficLight)
 				{
+					BaseTrafficLightTileEntity light = (BaseTrafficLightTileEntity) te;
 					int rotation = state.getValue(BlockBaseTrafficLight.ROTATION);
+					EnumFacing approach = TrafficLightControlBoxTileEntity.resolveTrafficLightApproach(light, rotation);
 
-					boolean operationResult = false;
-					if (CustomAngleCalculator.isEast(rotation) || CustomAngleCalculator.isWest(rotation))
+					boolean operationResult;
+					if (TrafficLightControlBoxTileEntity.isNorthSouthApproach(approach))
 					{
-						operationResult = controlBox.addOrRemoveWestEastTrafficLight(te.getPos());
+						operationResult = controlBox.addOrRemoveNorthSouthTrafficLight(te.getPos());
 					}
 					else
 					{
-						operationResult = controlBox.addOrRemoveNorthSouthTrafficLight(te.getPos());
+						operationResult = controlBox.addOrRemoveWestEastTrafficLight(te.getPos());
 					}
 
 					if (operationResult)

@@ -102,6 +102,9 @@ public class TrafficLightBlockEntity extends BlockEntity {
         }
         this.configuredApproachFacing = facing;
         markDirtyAndSync();
+        if (level != null && !level.isClientSide) {
+            TrafficLightControlBoxBlockEntity.notifyApproachFacingChanged(level, worldPosition);
+        }
     }
 
     public void cycleConfiguredApproachFacing() {
@@ -165,6 +168,97 @@ public class TrafficLightBlockEntity extends BlockEntity {
     }
 
     public void setActive(EnumTrafficLightBulbTypes bulbType, boolean active, boolean flash) {
+        // The secondary yellow turn bulbs are reserved for FYA flashing.
+        if (active && !flash && (bulbType == EnumTrafficLightBulbTypes.YellowArrowLeft2
+                || bulbType == EnumTrafficLightBulbTypes.YellowArrowRight2)) {
+            return;
+        }
+        setActiveForBulbType(bulbType, active, flash);
+        applySolidRedArrowAliases(bulbType, active, flash);
+        if (active && isSolidProceedBulb(bulbType)) {
+            clearSolidReds();
+        }
+    }
+
+    void applySolidRedArrowAliases(EnumTrafficLightBulbTypes bulbType, boolean active, boolean flash) {
+        if (active && (hasSolidGreenActive() || hasSolidYellowActive())) {
+            return;
+        }
+        if (isRightRedArrow(bulbType) && usesSolidBallForRightRed()) {
+            setSolidRedActive(active, flash);
+            return;
+        }
+        if (isLeftRedArrow(bulbType) && usesSolidBallForLeftRed()) {
+            setSolidRedActive(active, flash);
+        }
+    }
+
+    private boolean isSolidProceedBulb(EnumTrafficLightBulbTypes bulbType) {
+        return bulbType == EnumTrafficLightBulbTypes.Green
+                || bulbType == EnumTrafficLightBulbTypes.StraightGreen
+                || bulbType == EnumTrafficLightBulbTypes.Yellow
+                || bulbType == EnumTrafficLightBulbTypes.StraightYellow;
+    }
+
+    private void clearSolidReds() {
+        setActiveForBulbType(EnumTrafficLightBulbTypes.Red, false, false);
+        setActiveForBulbType(EnumTrafficLightBulbTypes.Red2, false, false);
+        setActiveForBulbType(EnumTrafficLightBulbTypes.StraightRed, false, false);
+        setActiveForBulbType(EnumTrafficLightBulbTypes.RedX, false, false);
+    }
+
+    /** Called after movement idle overrides so turn-idle red cannot sit with green/yellow. */
+    public void clearConflictingSolidRedsIfProceeding() {
+        if (hasSolidGreenActive() || hasSolidYellowActive()) {
+            clearSolidReds();
+        }
+    }
+
+    private boolean hasSolidGreenActive() {
+        for (int i = 0; i < bulbCount; i++) {
+            EnumTrafficLightBulbTypes sel = activeBulbSelectionBySlot.get(i);
+            if (sel == EnumTrafficLightBulbTypes.Green || sel == EnumTrafficLightBulbTypes.StraightGreen) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean hasSolidYellowActive() {
+        for (int i = 0; i < bulbCount; i++) {
+            EnumTrafficLightBulbTypes sel = activeBulbSelectionBySlot.get(i);
+            if (sel == EnumTrafficLightBulbTypes.Yellow || sel == EnumTrafficLightBulbTypes.StraightYellow) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isRightRedArrow(EnumTrafficLightBulbTypes bulbType) {
+        return bulbType == EnumTrafficLightBulbTypes.RedArrowRight
+                || bulbType == EnumTrafficLightBulbTypes.RedArrowRight2;
+    }
+
+    private boolean isLeftRedArrow(EnumTrafficLightBulbTypes bulbType) {
+        return bulbType == EnumTrafficLightBulbTypes.RedArrowLeft
+                || bulbType == EnumTrafficLightBulbTypes.RedArrowLeft2
+                || bulbType == EnumTrafficLightBulbTypes.RedArrowUTurn
+                || bulbType == EnumTrafficLightBulbTypes.RedArrowUTurn2;
+    }
+
+    private void setSolidRedActive(boolean active, boolean flash) {
+        for (EnumTrafficLightBulbTypes solidRed : new EnumTrafficLightBulbTypes[] {
+                EnumTrafficLightBulbTypes.Red,
+                EnumTrafficLightBulbTypes.Red2,
+                EnumTrafficLightBulbTypes.StraightRed,
+                EnumTrafficLightBulbTypes.RedX }) {
+            if (hasBulb(solidRed)) {
+                setActiveForBulbType(solidRed, active, flash);
+            }
+        }
+    }
+
+    private void setActiveForBulbType(EnumTrafficLightBulbTypes bulbType, boolean active, boolean flash) {
         boolean changed = false;
         for (int slot = 0; slot < bulbCount; slot++) {
             EnumTrafficLightBulbTypes primary = bulbsBySlot.get(slot);
@@ -191,8 +285,42 @@ public class TrafficLightBlockEntity extends BlockEntity {
             flashBySlot.put(i, false);
             activeBulbSelectionBySlot.remove(i);
         }
-        setActive(EnumTrafficLightBulbTypes.DontCross, true, false);
+        setActiveForBulbType(EnumTrafficLightBulbTypes.DontCross, true, false);
         markDirtyAndSync();
+    }
+
+    private boolean usesSolidBallForRightRed() {
+        boolean hasRightTurnArrows = hasBulb(EnumTrafficLightBulbTypes.YellowArrowRight)
+                || hasBulb(EnumTrafficLightBulbTypes.YellowArrowRight2)
+                || hasBulb(EnumTrafficLightBulbTypes.GreenArrowRight)
+                || hasBulb(EnumTrafficLightBulbTypes.GreenArrowRight2);
+        boolean hasRightRedArrow = hasBulb(EnumTrafficLightBulbTypes.RedArrowRight)
+                || hasBulb(EnumTrafficLightBulbTypes.RedArrowRight2);
+        boolean hasSolidRed = hasBulb(EnumTrafficLightBulbTypes.Red)
+                || hasBulb(EnumTrafficLightBulbTypes.Red2)
+                || hasBulb(EnumTrafficLightBulbTypes.StraightRed)
+                || hasBulb(EnumTrafficLightBulbTypes.RedX);
+        return hasRightTurnArrows && !hasRightRedArrow && hasSolidRed;
+    }
+
+    private boolean usesSolidBallForLeftRed() {
+        boolean hasLeftTurnArrows = hasBulb(EnumTrafficLightBulbTypes.YellowArrowLeft)
+                || hasBulb(EnumTrafficLightBulbTypes.YellowArrowLeft2)
+                || hasBulb(EnumTrafficLightBulbTypes.YellowArrowUTurn)
+                || hasBulb(EnumTrafficLightBulbTypes.YellowArrowUTurn2)
+                || hasBulb(EnumTrafficLightBulbTypes.GreenArrowLeft)
+                || hasBulb(EnumTrafficLightBulbTypes.GreenArrowLeft2)
+                || hasBulb(EnumTrafficLightBulbTypes.GreenArrowUTurn)
+                || hasBulb(EnumTrafficLightBulbTypes.GreenArrowUTurn2);
+        boolean hasLeftRedArrow = hasBulb(EnumTrafficLightBulbTypes.RedArrowLeft)
+                || hasBulb(EnumTrafficLightBulbTypes.RedArrowLeft2)
+                || hasBulb(EnumTrafficLightBulbTypes.RedArrowUTurn)
+                || hasBulb(EnumTrafficLightBulbTypes.RedArrowUTurn2);
+        boolean hasSolidRed = hasBulb(EnumTrafficLightBulbTypes.Red)
+                || hasBulb(EnumTrafficLightBulbTypes.Red2)
+                || hasBulb(EnumTrafficLightBulbTypes.StraightRed)
+                || hasBulb(EnumTrafficLightBulbTypes.RedX);
+        return hasLeftTurnArrows && !hasLeftRedArrow && hasSolidRed;
     }
 
     public boolean hasBulb(EnumTrafficLightBulbTypes bulbType) {

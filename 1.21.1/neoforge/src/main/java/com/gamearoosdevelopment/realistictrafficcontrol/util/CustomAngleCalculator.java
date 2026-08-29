@@ -27,6 +27,22 @@ public class CustomAngleCalculator {
         return Mth.floor((double) ((yaw + 180.0F) * 16.0F / 360.0F) + 0.5D) & 15;
     }
 
+    /** Nearest 4-way step (S/W/N/E) for frame-style placement. */
+    public static int getRotationForYawCardinal(float yaw) {
+        int raw = getRotationForYaw(yaw);
+        int best = cardinals[0];
+        int bestDist = 16;
+        for (int c : cardinals) {
+            int dist = Math.abs(raw - c);
+            dist = Math.min(dist, 16 - dist);
+            if (dist < bestDist) {
+                bestDist = dist;
+                best = c;
+            }
+        }
+        return best;
+    }
+
     public static boolean isCardinal(int rotation) {
         return Arrays.stream(cardinals).anyMatch(num -> num == rotation);
     }

@@ -19,7 +19,6 @@ import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleHawk
 import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleSplitDirections;
 import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleSplitAxis;
 import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleApproachEnabled;
-import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleFyaNightOnly;
 
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
@@ -100,7 +99,6 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 	private GuiButtonToggleApproach approachSouthToggle;
 	private GuiButtonToggleApproach approachEastToggle;
 	private GuiButtonToggleApproach approachWestToggle;
-	private GuiButtonToggleFyaNightOnly fyaNightOnlyToggle;
 	private GuiTextField crossTime;
 	private GuiTextField crossWarningTime;
 	
@@ -860,14 +858,6 @@ public class TrafficLightControlBoxGui extends GuiScreen {
 
 			_te.setSplitWestEastEnabled(enabled); // client-side
 			ModNetworkHandler.INSTANCE.sendToServer(new PacketToggleSplitAxis(_te.getPos(), PacketToggleSplitAxis.AXIS_EW, enabled));
-		}
-		if (button.id == 9007 && button instanceof GuiButtonToggleFyaNightOnly) {
-			GuiButtonToggleFyaNightOnly toggle = (GuiButtonToggleFyaNightOnly) button;
-			toggle.toggle();
-			boolean enabled = toggle.isToggled();
-
-			_te.setFyaNightOnlyEnabled(enabled); // client-side
-			ModNetworkHandler.INSTANCE.sendToServer(new PacketToggleFyaNightOnly(_te.getPos(), enabled));
 		}
 		if (button.id >= 9010 && button.id <= 9013 && button instanceof GuiButtonToggleApproach) {
 			GuiButtonToggleApproach toggle = (GuiButtonToggleApproach) button;

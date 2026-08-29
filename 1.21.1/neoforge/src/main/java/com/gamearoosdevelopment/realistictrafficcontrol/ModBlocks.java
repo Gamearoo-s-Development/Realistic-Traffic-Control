@@ -36,6 +36,7 @@ import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockType3Barrier
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockWigWag;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.HorizontalPoleBlock;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.LightSourceBlock;
+import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockConcreteBarrier;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.RotatedBlock;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.TrafficSensorBlock;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.TrafficSensorBlock.SensorKind;
@@ -144,17 +145,18 @@ public final class ModBlocks {
     public static final DeferredBlock<BlockVerticalWigWag> VERTICAL_WIG_WAG =
             BLOCKS.register("vertical_wig_wag", () -> new BlockVerticalWigWag(metal()));
 
-    // --- barriers (dye tinting deferred until textures + color handler are ported) ---
-    private static final VoxelShape BARRIER_SHAPE = Block.box(0, 0, 5, 16, 14, 11);
-
-    public static final DeferredBlock<RotatedBlock> CONCRETE_BARRIER = rotated("concrete_barrier", BARRIER_SHAPE,
-            BlockBehaviour.Properties.of().strength(2f).noOcclusion().sound(SoundType.STONE).requiresCorrectToolForDrops());
+    // --- barriers ---
+    public static final DeferredBlock<BlockConcreteBarrier> CONCRETE_BARRIER = BLOCKS.register("concrete_barrier",
+            () -> new BlockConcreteBarrier(BlockBehaviour.Properties.of().strength(2f).noOcclusion()
+                    .sound(SoundType.STONE).requiresCorrectToolForDrops()));
 
     // --- vehicle detection sensors (queried by the control box) ---
-    private static final VoxelShape SENSOR_SHAPE = Block.box(0, 0, 0, 16, 1, 16);
+    private static BlockBehaviour.Properties sensorProps() {
+        return BlockBehaviour.Properties.of().strength(2f).sound(SoundType.METAL).requiresCorrectToolForDrops();
+    }
 
     private static DeferredBlock<TrafficSensorBlock> sensor(String name, SensorKind kind) {
-        return BLOCKS.register(name, () -> new TrafficSensorBlock(metal(), SENSOR_SHAPE, kind));
+        return BLOCKS.register(name, () -> new TrafficSensorBlock(sensorProps(), kind));
     }
 
     public static final DeferredBlock<TrafficSensorBlock> TRAFFIC_SENSOR_LEFT = sensor("traffic_sensor_left", SensorKind.LEFT);

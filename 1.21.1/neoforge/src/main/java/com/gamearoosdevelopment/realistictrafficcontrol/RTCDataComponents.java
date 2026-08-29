@@ -55,6 +55,13 @@ public final class RTCDataComponents {
                     .networkSynchronized(ByteBufCodecs.COMPOUND_TAG)
                     .build());
 
+    /** Dye index (0–15) for concrete barrier items. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> BARRIER_DYE =
+            COMPONENTS.register("barrier_dye", () -> DataComponentType.<Integer>builder()
+                    .persistent(Codec.INT)
+                    .networkSynchronized(ByteBufCodecs.VAR_INT)
+                    .build());
+
     private RTCDataComponents() {
     }
 }

@@ -13,6 +13,8 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
  */
 public final class RTCProperties {
     public static final IntegerProperty ROTATION = IntegerProperty.create("rotation", 0, 15);
+    /** Concrete barrier dye (0 = white, 1–15 = colored concrete). */
+    public static final IntegerProperty BARRIER_DYE = IntegerProperty.create("dye", 0, 15);
     public static final BooleanProperty NORTH = BooleanProperty.create("north");
     public static final BooleanProperty SOUTH = BooleanProperty.create("south");
     public static final BooleanProperty EAST = BooleanProperty.create("east");

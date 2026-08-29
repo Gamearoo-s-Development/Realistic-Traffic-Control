@@ -218,7 +218,7 @@
 						3,
 						2
 					],
-					"texture": "#missing"
+					"texture": "#0"
 				},
 				"up": {
 					"uv": [
@@ -295,7 +295,7 @@
 						3,
 						2
 					],
-					"texture": "#missing"
+					"texture": "#0"
 				},
 				"up": {
 					"uv": [

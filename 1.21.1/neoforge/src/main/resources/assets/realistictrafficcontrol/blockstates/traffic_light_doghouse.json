@@ -1,6 +1,6 @@
 {
   "multipart": [
     { "apply": { "model": "realistictrafficcontrol:block/traffic_light_doghouse" } },
-    { "when": { "cover": "true" }, "apply": { "model": "realistictrafficcontrol:block/traffic_lightdoghouse_covered" } }
+    { "when": { "cover": true }, "apply": { "model": "realistictrafficcontrol:block/traffic_lightdoghouse_covered" } }
   ]
 }

@@ -1,0 +1,6 @@
+{
+  "parent": "realistictrafficcontrol:block/concrete_barrier",
+  "textures": {
+    "color": "minecraft:block/light_gray_concrete"
+  }
+}

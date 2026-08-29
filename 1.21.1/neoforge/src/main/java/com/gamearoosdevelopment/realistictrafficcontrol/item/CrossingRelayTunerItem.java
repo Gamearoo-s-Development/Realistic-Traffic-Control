@@ -15,6 +15,7 @@ import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.RelayBlockEnt
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLightBlockEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLightControlBoxBlockEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.CustomAngleCalculator;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.TrafficLightFacingResolver;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.VerticalWigWagBlockEntity;
 
 import net.minecraft.core.BlockPos;
@@ -232,12 +233,13 @@ public class CrossingRelayTunerItem extends Item {
             if (te instanceof TrafficLightBlockEntity) {
                 BlockState state = level.getBlockState(te.getBlockPos());
                 if (state.getBlock() instanceof BlockBaseTrafficLight) {
-                    int rotation = state.getValue(RTCProperties.ROTATION);
+                    Direction approach = TrafficLightFacingResolver.resolveApproachFacing(
+                            (TrafficLightBlockEntity) te);
                     boolean pairedLight;
-                    if (CustomAngleCalculator.isEast(rotation) || CustomAngleCalculator.isWest(rotation)) {
-                        pairedLight = controlBox.addOrRemoveWestEastTrafficLight(te.getBlockPos());
-                    } else {
+                    if (TrafficLightControlBoxBlockEntity.isNorthSouthApproach(approach)) {
                         pairedLight = controlBox.addOrRemoveNorthSouthTrafficLight(te.getBlockPos());
+                    } else {
+                        pairedLight = controlBox.addOrRemoveWestEastTrafficLight(te.getBlockPos());
                     }
                     player.displayClientMessage(Component.literal(pairedLight
                             ? "Paired Traffic Light to Traffic Light Control Box"

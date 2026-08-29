@@ -4,7 +4,8 @@
 		"0": "realistictrafficcontrol:block/generic",
 		"1": "realistictrafficcontrol:block/black",
 		"particle": "realistictrafficcontrol:block/generic",
-		"leftlamptex": "#leftlamp"
+		"leftlamptex": "#leftlamp",
+		"leftlamp": "realistictrafficcontrol:block/lamp_off"
 	},
 	"elements": [
 		{

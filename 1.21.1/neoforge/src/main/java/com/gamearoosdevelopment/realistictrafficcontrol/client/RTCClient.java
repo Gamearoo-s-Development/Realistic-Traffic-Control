@@ -4,6 +4,8 @@ import com.gamearoosdevelopment.realistictrafficcontrol.ModBlockEntities;
 import com.gamearoosdevelopment.realistictrafficcontrol.ModItems;
 import com.gamearoosdevelopment.realistictrafficcontrol.ModMenus;
 import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficControl;
+import com.gamearoosdevelopment.realistictrafficcontrol.client.CrossingLampClientModels;
+import com.gamearoosdevelopment.realistictrafficcontrol.client.WigWagClientModels;
 import com.gamearoosdevelopment.realistictrafficcontrol.client.model.RotatedBlockModelWrapper;
 import com.gamearoosdevelopment.realistictrafficcontrol.client.render.CrossingGateGateBlockEntityRenderer;
 import com.gamearoosdevelopment.realistictrafficcontrol.client.render.CrossingLampsBlockEntityRenderer;
@@ -16,6 +18,7 @@ import com.gamearoosdevelopment.realistictrafficcontrol.client.render.StreetLigh
 import com.gamearoosdevelopment.realistictrafficcontrol.client.render.StreetSignBlockEntityRenderer;
 import com.gamearoosdevelopment.realistictrafficcontrol.client.render.Type3BarrierBlockEntityRenderer;
 import com.gamearoosdevelopment.realistictrafficcontrol.client.render.WireAnchorBlockEntityRenderer;
+import com.gamearoosdevelopment.realistictrafficcontrol.item.ConcreteBarrierBlockItem;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.TrafficLightBulbItem;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.TrafficLightCardItem;
 
@@ -63,6 +66,10 @@ public final class RTCClient {
                     ModItems.TRAFFIC_LIGHT_BULB.get(),
                     ResourceLocation.fromNamespaceAndPath(ModRealisticTrafficControl.MODID, "bulb_type"),
                     (stack, level, entity, seed) -> TrafficLightBulbItem.getType(stack));
+            ItemProperties.register(
+                    ModItems.CONCRETE_BARRIER.get(),
+                    ResourceLocation.fromNamespaceAndPath(ModRealisticTrafficControl.MODID, "dye"),
+                    (stack, level, entity, seed) -> ConcreteBarrierBlockItem.getDye(stack) / 15.0F);
         });
     }
 
@@ -88,19 +95,46 @@ public final class RTCClient {
     }
 
     @SubscribeEvent
+    public static void onRegisterAdditionalModels(ModelEvent.RegisterAdditional event) {
+        CrossingLampClientModels.registerAdditional(event);
+        WigWagClientModels.registerAdditional(event);
+    }
+
+    @SubscribeEvent
     public static void onModifyBakingResult(ModelEvent.ModifyBakingResult event) {
         Map<ModelResourceLocation, BakedModel> models = event.getModels();
         List<ModelResourceLocation> toWrap = new ArrayList<>();
         for (ModelResourceLocation loc : models.keySet()) {
-            String key = loc.toString();
-            if (key.startsWith(ModRealisticTrafficControl.MODID + ":")
-                    && (key.contains("rotation=") || key.contains("block/traffic_light"))) {
-                toWrap.add(loc);
+            if (!shouldWrapRotatedModel(loc)) {
+                continue;
             }
+            toWrap.add(loc);
         }
         for (ModelResourceLocation loc : toWrap) {
             models.put(loc, new RotatedBlockModelWrapper(models.get(loc)));
         }
+    }
+
+    /** Wrap block models that read {@link com.gamearoosdevelopment.realistictrafficcontrol.blocks.RTCProperties#ROTATION} at bake time. */
+    private static boolean shouldWrapRotatedModel(ModelResourceLocation loc) {
+        if (!loc.id().getNamespace().equals(ModRealisticTrafficControl.MODID)) {
+            return false;
+        }
+        String variant = loc.getVariant();
+        // Standalone models are rendered and rotated by their BER. Actual lamp
+        // blockstates contain both "rotation=" and "state=", and must be wrapped.
+        if (variant.contains("inventory") || variant.contains("standalone")) {
+            return false;
+        }
+        if (variant.contains("rotation=")) {
+            return true;
+        }
+        String path = loc.id().getPath();
+        // Multipart blockstate model locations use the block registry path, not "block/<model>".
+        return path.startsWith("traffic_light") || path.startsWith("street_light")
+                || path.startsWith("crossing_gate") || path.startsWith("wig_wag")
+                || path.equals("ped_crossing_lamps") || path.equals("crossing_gate_lamps")
+                || path.equals("overhead_lamps");
     }
 
     private RTCClient() {

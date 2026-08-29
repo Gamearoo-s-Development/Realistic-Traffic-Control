@@ -36,7 +36,8 @@ public abstract class BaseTrafficLightRenderer {
         poseStack.scale(1f / 16f, 1f / 16f, 1f / 16f);
         poseStack.translate(8, 8, 8);
         poseStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees(
-                -RTCRotation.degreesForStep(state.getValue(com.gamearoosdevelopment.realistictrafficcontrol.blocks.RTCProperties.ROTATION))));
+                RTCRotation.placementRotationDegrees(
+                        state.getValue(com.gamearoosdevelopment.realistictrafficcontrol.blocks.RTCProperties.ROTATION))));
         poseStack.translate(-8, -8, -8);
         poseStack.translate(0, 0, getBulbZLocation());
 
@@ -96,6 +97,11 @@ public abstract class BaseTrafficLightRenderer {
             poseStack.translate(x, y, 0);
 
             ResourceLocation texture = renderBlack ? BLACK : textureForBulb(entity.getBulbTypeBySlot(bulbSlot));
+            if (!renderBlack && texture.equals(BLACK)) {
+                // No bulb configured in this slot — skip colored pass (black backing still drawn).
+                poseStack.popPose();
+                return lastTexture;
+            }
             drawQuad(poseStack, bufferSource, texture, packedLight, packedOverlay);
 
             poseStack.popPose();
@@ -105,7 +111,7 @@ public abstract class BaseTrafficLightRenderer {
 
     private static void drawQuad(PoseStack poseStack, MultiBufferSource bufferSource, ResourceLocation texture,
             int packedLight, int packedOverlay) {
-        VertexConsumer consumer = bufferSource.getBuffer(RenderType.entityCutout(texture));
+        VertexConsumer consumer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(texture));
         PoseStack.Pose pose = poseStack.last();
 
         addVertex(consumer, pose, 5.6f, 0f, 2f, 1f, 1f, packedLight, packedOverlay);
@@ -125,6 +131,9 @@ public abstract class BaseTrafficLightRenderer {
     }
 
     private static ResourceLocation textureForBulb(EnumTrafficLightBulbTypes bulbType) {
+        if (bulbType == null) {
+            return BLACK;
+        }
         String path = switch (bulbType) {
             case Green -> "textures/block/green.png";
             case GreenDownArrow -> "textures/block/green_down.png";

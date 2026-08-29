@@ -2,7 +2,8 @@ package com.gamearoosdevelopment.realistictrafficcontrol.network;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficControl;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.ApproachMovementSettings;
-import com.gamearoosdevelopment.realistictrafficcontrol.util.IdleBulbState;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.FyaMode;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.IdleBulbMode;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -18,19 +19,25 @@ public record SetApproachMovementPayload(
         boolean straightEnabled,
         boolean leftEnabled,
         boolean rightEnabled,
+        boolean sharedTurns,
         byte straightIdle,
         byte leftIdle,
-        byte rightIdle) implements CustomPacketPayload {
+        byte rightIdle,
+        byte leftFya,
+        byte rightFya) implements CustomPacketPayload {
 
     public SetApproachMovementPayload(BlockPos pos, Direction facing, ApproachMovementSettings settings) {
         this(pos,
-                (byte) facing.ordinal(),
+                (byte) facing.get2DDataValue(),
                 settings.straightEnabled,
                 settings.leftEnabled,
                 settings.rightEnabled,
+                settings.sharedTurns,
                 (byte) settings.straightIdle.ordinal(),
                 (byte) settings.leftIdle.ordinal(),
-                (byte) settings.rightIdle.ordinal());
+                (byte) settings.rightIdle.ordinal(),
+                (byte) settings.leftFya.ordinal(),
+                (byte) settings.rightFya.ordinal());
     }
 
     public static final Type<SetApproachMovementPayload> TYPE = new Type<>(
@@ -45,6 +52,9 @@ public record SetApproachMovementPayload(
                     buf.readBoolean(),
                     buf.readBoolean(),
                     buf.readBoolean(),
+                    buf.readBoolean(),
+                    buf.readByte(),
+                    buf.readByte(),
                     buf.readByte(),
                     buf.readByte(),
                     buf.readByte());
@@ -57,14 +67,17 @@ public record SetApproachMovementPayload(
             buf.writeBoolean(payload.straightEnabled);
             buf.writeBoolean(payload.leftEnabled);
             buf.writeBoolean(payload.rightEnabled);
+            buf.writeBoolean(payload.sharedTurns);
             buf.writeByte(payload.straightIdle);
             buf.writeByte(payload.leftIdle);
             buf.writeByte(payload.rightIdle);
+            buf.writeByte(payload.leftFya);
+            buf.writeByte(payload.rightFya);
         }
     };
 
     public Direction facing() {
-        return Direction.values()[facingIndex & 0xFF];
+        return Direction.from2DDataValue(facingIndex & 0x3);
     }
 
     public ApproachMovementSettings toSettings() {
@@ -72,9 +85,12 @@ public record SetApproachMovementPayload(
         settings.straightEnabled = straightEnabled;
         settings.leftEnabled = leftEnabled;
         settings.rightEnabled = rightEnabled;
-        settings.straightIdle = IdleBulbState.fromOrdinal(straightIdle);
-        settings.leftIdle = IdleBulbState.fromOrdinal(leftIdle);
-        settings.rightIdle = IdleBulbState.fromOrdinal(rightIdle);
+        settings.sharedTurns = sharedTurns;
+        settings.straightIdle = IdleBulbMode.fromLegacyOrdinal(straightIdle & 0xFF, true);
+        settings.leftIdle = IdleBulbMode.fromLegacyOrdinal(leftIdle & 0xFF, false);
+        settings.rightIdle = IdleBulbMode.fromLegacyOrdinal(rightIdle & 0xFF, false);
+        settings.leftFya = FyaMode.fromOrdinal(leftFya);
+        settings.rightFya = FyaMode.fromOrdinal(rightFya);
         return settings;
     }
 

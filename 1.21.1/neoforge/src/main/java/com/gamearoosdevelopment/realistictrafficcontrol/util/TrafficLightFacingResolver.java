@@ -18,22 +18,7 @@ public final class TrafficLightFacingResolver {
     }
 
     public static boolean isFacing(TrafficLightBlockEntity tl, Direction approach) {
-        if (tl == null || approach == null || tl.getLevel() == null) {
-            return false;
-        }
-
-        Direction configured = tl.getConfiguredApproachFacing();
-        if (configured != null) {
-            return configured == approach;
-        }
-
-        BlockState state = tl.getLevel().getBlockState(tl.getBlockPos());
-        if (!(state.getBlock() instanceof BlockBaseTrafficLight)) {
-            return false;
-        }
-
-        int rotation = state.getValue(RTCProperties.ROTATION);
-        return CustomAngleCalculator.isRotationFacing(rotation, approach);
+        return approach != null && tl != null && resolveApproachFacing(tl) == approach;
     }
 
     public static Direction resolveApproachFacing(TrafficLightBlockEntity tl) {
@@ -59,5 +44,18 @@ public final class TrafficLightFacingResolver {
         }
 
         return CustomAngleCalculator.rotationToFacing(rotation);
+    }
+
+    public static Direction getOppositeApproach(Direction approach) {
+        return approach == null ? Direction.NORTH : approach.getOpposite();
+    }
+
+    public static Direction getClockwiseApproach(Direction approach) {
+        return approach == null ? Direction.EAST : approach.getClockWise();
+    }
+
+    /** Left phase that serves a right-only approach's protected right. */
+    public static Direction getCoupledLeftApproachForRightOnly(Direction rightOnlyApproach) {
+        return rightOnlyApproach == null ? Direction.NORTH : rightOnlyApproach.getCounterClockWise();
     }
 }

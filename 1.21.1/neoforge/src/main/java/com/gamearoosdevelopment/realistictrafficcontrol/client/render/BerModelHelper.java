@@ -19,18 +19,38 @@ import java.util.List;
 public final class BerModelHelper {
 
     public static BakedModel standaloneModel(ResourceLocation modelLocation) {
-        return Minecraft.getInstance().getModelManager()
-                .getModel(ModelResourceLocation.standalone(modelLocation));
+        return bakedModel(ModelResourceLocation.standalone(modelLocation));
+    }
+
+    public static BakedModel bakedModel(ModelResourceLocation location) {
+        return Minecraft.getInstance().getModelManager().getModel(location);
     }
 
     public static void renderModel(PoseStack poseStack, BakedModel model, BlockState state,
             net.minecraft.client.renderer.MultiBufferSource buffer, int packedLight, int packedOverlay) {
-        VertexConsumer consumer = buffer.getBuffer(RenderType.solid());
-        for (Direction direction : Direction.values()) {
-            renderQuads(poseStack, consumer, model.getQuads(state, direction, RandomSource.create()), packedLight,
-                    packedOverlay);
+        if (model == null || model == Minecraft.getInstance().getModelManager().getMissingModel()) {
+            return;
         }
-        renderQuads(poseStack, consumer, model.getQuads(state, null, RandomSource.create()), packedLight, packedOverlay);
+        RandomSource random = RandomSource.create();
+        if (state == null) {
+            renderQuadsForLayer(poseStack, model, state, buffer, RenderType.solid(), random, packedLight,
+                    packedOverlay);
+            return;
+        }
+        for (RenderType renderType : model.getRenderTypes(state, random,
+                net.neoforged.neoforge.client.model.data.ModelData.EMPTY)) {
+            renderQuadsForLayer(poseStack, model, state, buffer, renderType, random, packedLight, packedOverlay);
+        }
+    }
+
+    private static void renderQuadsForLayer(PoseStack poseStack, BakedModel model, BlockState state,
+            net.minecraft.client.renderer.MultiBufferSource buffer, RenderType renderType, RandomSource random,
+            int packedLight, int packedOverlay) {
+        VertexConsumer consumer = buffer.getBuffer(renderType);
+        for (Direction direction : Direction.values()) {
+            renderQuads(poseStack, consumer, model.getQuads(state, direction, random), packedLight, packedOverlay);
+        }
+        renderQuads(poseStack, consumer, model.getQuads(state, null, random), packedLight, packedOverlay);
     }
 
     private static void renderQuads(PoseStack poseStack, VertexConsumer consumer, List<BakedQuad> quads,

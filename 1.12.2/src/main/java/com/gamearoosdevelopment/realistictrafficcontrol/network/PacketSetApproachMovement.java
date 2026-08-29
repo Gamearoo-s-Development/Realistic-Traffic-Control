@@ -2,7 +2,8 @@ package com.gamearoosdevelopment.realistictrafficcontrol.network;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLightControlBoxTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.ApproachMovementSettings;
-import com.gamearoosdevelopment.realistictrafficcontrol.util.IdleBulbState;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.FyaMode;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.IdleBulbMode;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.server.MinecraftServer;
@@ -20,21 +21,28 @@ public class PacketSetApproachMovement implements IMessage {
 	private boolean straightEnabled;
 	private boolean leftEnabled;
 	private boolean rightEnabled;
+	private boolean sharedTurns;
 	private byte straightIdle;
 	private byte leftIdle;
 	private byte rightIdle;
+	private byte leftFya;
+	private byte rightFya;
 
 	public PacketSetApproachMovement() {}
 
 	public PacketSetApproachMovement(BlockPos pos, EnumFacing facing, ApproachMovementSettings settings) {
 		this.pos = pos;
-		this.facingOrdinal = (byte) facing.ordinal();
+		// Horizontal index only (N=0,S=1,W=2,E=3) — approach settings are per cardinal direction.
+		this.facingOrdinal = (byte) facing.getHorizontalIndex();
 		this.straightEnabled = settings.straightEnabled;
 		this.leftEnabled = settings.leftEnabled;
 		this.rightEnabled = settings.rightEnabled;
+		this.sharedTurns = settings.sharedTurns;
 		this.straightIdle = (byte) settings.straightIdle.ordinal();
 		this.leftIdle = (byte) settings.leftIdle.ordinal();
 		this.rightIdle = (byte) settings.rightIdle.ordinal();
+		this.leftFya = (byte) settings.leftFya.ordinal();
+		this.rightFya = (byte) settings.rightFya.ordinal();
 	}
 
 	@Override
@@ -47,6 +55,9 @@ public class PacketSetApproachMovement implements IMessage {
 		buf.writeByte(straightIdle);
 		buf.writeByte(leftIdle);
 		buf.writeByte(rightIdle);
+		buf.writeByte(leftFya);
+		buf.writeByte(rightFya);
+		buf.writeBoolean(sharedTurns);
 	}
 
 	@Override
@@ -59,6 +70,18 @@ public class PacketSetApproachMovement implements IMessage {
 		straightIdle = buf.readByte();
 		leftIdle = buf.readByte();
 		rightIdle = buf.readByte();
+		if (buf.isReadable()) {
+			leftFya = buf.readByte();
+			rightFya = buf.readByte();
+		} else {
+			leftFya = (byte) FyaMode.ALWAYS.ordinal();
+			rightFya = (byte) FyaMode.ALWAYS.ordinal();
+		}
+		if (buf.isReadable()) {
+			sharedTurns = buf.readBoolean();
+		} else {
+			sharedTurns = false;
+		}
 	}
 
 	public static class Handler implements IMessageHandler<PacketSetApproachMovement, IMessage> {
@@ -73,14 +96,17 @@ public class PacketSetApproachMovement implements IMessage {
 				}
 
 				TrafficLightControlBoxTileEntity box = (TrafficLightControlBoxTileEntity) te;
-				EnumFacing facing = EnumFacing.getFront((int) msg.facingOrdinal);
+				EnumFacing facing = EnumFacing.getHorizontal(msg.facingOrdinal & 0x3);
 				ApproachMovementSettings settings = new ApproachMovementSettings();
 				settings.straightEnabled = msg.straightEnabled;
 				settings.leftEnabled = msg.leftEnabled;
 				settings.rightEnabled = msg.rightEnabled;
-				settings.straightIdle = IdleBulbState.fromOrdinal(msg.straightIdle);
-				settings.leftIdle = IdleBulbState.fromOrdinal(msg.leftIdle);
-				settings.rightIdle = IdleBulbState.fromOrdinal(msg.rightIdle);
+				settings.sharedTurns = msg.sharedTurns;
+				settings.straightIdle = IdleBulbMode.fromLegacyOrdinal(msg.straightIdle & 0xFF, true);
+				settings.leftIdle = IdleBulbMode.fromLegacyOrdinal(msg.leftIdle & 0xFF, false);
+				settings.rightIdle = IdleBulbMode.fromLegacyOrdinal(msg.rightIdle & 0xFF, false);
+				settings.leftFya = FyaMode.fromOrdinal(msg.leftFya);
+				settings.rightFya = FyaMode.fromOrdinal(msg.rightFya);
 				box.setMovementSettings(facing, settings);
 				box.markDirty();
 				world.notifyBlockUpdate(box.getPos(), world.getBlockState(box.getPos()), world.getBlockState(box.getPos()), 3);

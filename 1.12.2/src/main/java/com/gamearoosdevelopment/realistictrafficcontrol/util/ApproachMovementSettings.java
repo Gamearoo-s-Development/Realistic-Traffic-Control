@@ -6,18 +6,24 @@ public class ApproachMovementSettings {
 	public boolean straightEnabled = true;
 	public boolean leftEnabled = true;
 	public boolean rightEnabled = true;
-	public IdleBulbState straightIdle = IdleBulbState.RED;
-	public IdleBulbState leftIdle = IdleBulbState.RED;
-	public IdleBulbState rightIdle = IdleBulbState.RED;
+	public boolean sharedTurns = false;
+	public IdleBulbMode straightIdle = IdleBulbMode.SOLID_RED;
+	public IdleBulbMode leftIdle = IdleBulbMode.ARROW_RED;
+	public IdleBulbMode rightIdle = IdleBulbMode.ARROW_RED;
+	public FyaMode leftFya = FyaMode.ALWAYS;
+	public FyaMode rightFya = FyaMode.ALWAYS;
 
 	public NBTTagCompound writeToNBT() {
 		NBTTagCompound tag = new NBTTagCompound();
 		tag.setBoolean("straightEnabled", straightEnabled);
 		tag.setBoolean("leftEnabled", leftEnabled);
 		tag.setBoolean("rightEnabled", rightEnabled);
+		tag.setBoolean("sharedTurns", sharedTurns);
 		tag.setInteger("straightIdle", straightIdle.ordinal());
 		tag.setInteger("leftIdle", leftIdle.ordinal());
 		tag.setInteger("rightIdle", rightIdle.ordinal());
+		tag.setInteger("leftFya", leftFya.ordinal());
+		tag.setInteger("rightFya", rightFya.ordinal());
 		return tag;
 	}
 
@@ -34,14 +40,23 @@ public class ApproachMovementSettings {
 		if (tag.hasKey("rightEnabled")) {
 			rightEnabled = tag.getBoolean("rightEnabled");
 		}
+		if (tag.hasKey("sharedTurns")) {
+			sharedTurns = tag.getBoolean("sharedTurns");
+		}
 		if (tag.hasKey("straightIdle")) {
-			straightIdle = IdleBulbState.fromOrdinal(tag.getInteger("straightIdle"));
+			straightIdle = IdleBulbMode.fromLegacyOrdinal(tag.getInteger("straightIdle"), true);
 		}
 		if (tag.hasKey("leftIdle")) {
-			leftIdle = IdleBulbState.fromOrdinal(tag.getInteger("leftIdle"));
+			leftIdle = IdleBulbMode.fromLegacyOrdinal(tag.getInteger("leftIdle"), false);
 		}
 		if (tag.hasKey("rightIdle")) {
-			rightIdle = IdleBulbState.fromOrdinal(tag.getInteger("rightIdle"));
+			rightIdle = IdleBulbMode.fromLegacyOrdinal(tag.getInteger("rightIdle"), false);
+		}
+		if (tag.hasKey("leftFya")) {
+			leftFya = FyaMode.fromOrdinal(tag.getInteger("leftFya"));
+		}
+		if (tag.hasKey("rightFya")) {
+			rightFya = FyaMode.fromOrdinal(tag.getInteger("rightFya"));
 		}
 	}
 
@@ -50,9 +65,12 @@ public class ApproachMovementSettings {
 		copy.straightEnabled = straightEnabled;
 		copy.leftEnabled = leftEnabled;
 		copy.rightEnabled = rightEnabled;
+		copy.sharedTurns = sharedTurns;
 		copy.straightIdle = straightIdle;
 		copy.leftIdle = leftIdle;
 		copy.rightIdle = rightIdle;
+		copy.leftFya = leftFya;
+		copy.rightFya = rightFya;
 		return copy;
 	}
 }

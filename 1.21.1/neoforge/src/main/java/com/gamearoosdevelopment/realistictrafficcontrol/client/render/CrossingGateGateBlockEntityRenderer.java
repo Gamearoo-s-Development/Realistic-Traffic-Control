@@ -44,9 +44,8 @@ public class CrossingGateGateBlockEntityRenderer implements BlockEntityRenderer<
         poseStack.translate(3, 2, 0);
         poseStack.mulPose(Axis.ZP.rotationDegrees(te.getGateRotation()));
 
-        VertexConsumer consumer = buffer.getBuffer(RenderType.entitySolid(GENERIC));
-        renderWeightVertices(poseStack, consumer, packedLight);
-        renderGateVertices(poseStack, consumer, packedLight, te.getCrossingGateLength());
+        renderWeightVertices(poseStack, buffer, packedLight);
+        renderGateVertices(poseStack, buffer, packedLight, te.getCrossingGateLength());
 
         if (te.getGateLightCount() == GateLightCount.OneLight
                 || te.getCrossingGateLength() - te.getLightStartOffset() >= 2) {
@@ -56,7 +55,7 @@ public class CrossingGateGateBlockEntityRenderer implements BlockEntityRenderer<
         poseStack.popPose();
     }
 
-    private void renderWeightVertices(PoseStack poseStack, VertexConsumer consumer, int packedLight) {
+    private void renderWeightVertices(PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
         TextureInfoCollection collection = new TextureInfoCollection(
                 new TextureInfo(GENERIC, 0, 0, 1, 1),
                 new TextureInfo(GENERIC, 0, 0, 8, 1),
@@ -64,8 +63,7 @@ public class CrossingGateGateBlockEntityRenderer implements BlockEntityRenderer<
                 new TextureInfo(GENERIC, 0, 0, 8, 1),
                 new TextureInfo(GENERIC, 0, 0, 8, 1),
                 new TextureInfo(GENERIC, 0, 0, 8, 1));
-        new Box(-7.5, -9.5, 4, 1, 2, -8, collection).render(poseStack, consumer, packedLight, rl -> {
-        });
+        new Box(-7.5, -9.5, 4, 1, 2, -8, collection).render(poseStack, buffer, packedLight);
 
         collection = new TextureInfoCollection(
                 new TextureInfo(GENERIC, 3, 4, 8, 5),
@@ -74,10 +72,8 @@ public class CrossingGateGateBlockEntityRenderer implements BlockEntityRenderer<
                 new TextureInfo(GENERIC, 4, 4, 5, 5),
                 new TextureInfo(GENERIC, 4, 4, 5, 9),
                 new TextureInfo(GENERIC, 4, 4, 5, 9));
-        new Box(-6.5, -9.5, 4, 7, 2, -1, collection).render(poseStack, consumer, packedLight, rl -> {
-        });
-        new Box(-6.5, -9.5, -3, 7, 2, -1, collection).render(poseStack, consumer, packedLight, rl -> {
-        });
+        new Box(-6.5, -9.5, 4, 7, 2, -1, collection).render(poseStack, buffer, packedLight);
+        new Box(-6.5, -9.5, -3, 7, 2, -1, collection).render(poseStack, buffer, packedLight);
 
         collection = new TextureInfoCollection(
                 new TextureInfo(GENERIC, 5, 9, 12, 12),
@@ -86,21 +82,15 @@ public class CrossingGateGateBlockEntityRenderer implements BlockEntityRenderer<
                 new TextureInfo(GENERIC, 2, 7, 9, 8),
                 new TextureInfo(GENERIC, 5, 6, 6, 9),
                 new TextureInfo(GENERIC, 2, 3, 3, 6));
-        new Box(-2.5, -7.5, 4, 3, 8.5, -1, collection).render(poseStack, consumer, packedLight, rl -> {
-        });
-        new Box(-2.5, -7.5, -3, 3, 8.5, -1, collection).render(poseStack, consumer, packedLight, rl -> {
-        });
-        new Box(0.5, -2, 4, 3, 3, -1, collection).render(poseStack, consumer, packedLight, rl -> {
-        });
-        new Box(0.5, -2, -3, 3, 3, -1, collection).render(poseStack, consumer, packedLight, rl -> {
-        });
-        new Box(3.5, -3.5, 4, 10, 6, -1, collection).render(poseStack, consumer, packedLight, rl -> {
-        });
-        new Box(3.5, -3.5, -3, 10, 6, -1, collection).render(poseStack, consumer, packedLight, rl -> {
-        });
+        new Box(-2.5, -7.5, 4, 3, 8.5, -1, collection).render(poseStack, buffer, packedLight);
+        new Box(-2.5, -7.5, -3, 3, 8.5, -1, collection).render(poseStack, buffer, packedLight);
+        new Box(0.5, -2, 4, 3, 3, -1, collection).render(poseStack, buffer, packedLight);
+        new Box(0.5, -2, -3, 3, 3, -1, collection).render(poseStack, buffer, packedLight);
+        new Box(3.5, -3.5, 4, 10, 6, -1, collection).render(poseStack, buffer, packedLight);
+        new Box(3.5, -3.5, -3, 10, 6, -1, collection).render(poseStack, buffer, packedLight);
     }
 
-    private void renderGateVertices(PoseStack poseStack, VertexConsumer consumer, int packedLight,
+    private void renderGateVertices(PoseStack poseStack, MultiBufferSource buffer, int packedLight,
             float crossingGateLength) {
         TextureInfoCollection collection = new TextureInfoCollection(
                 new TextureInfo(GATE, 0, 0, 16, 0.7),
@@ -110,14 +100,14 @@ public class CrossingGateGateBlockEntityRenderer implements BlockEntityRenderer<
                 new TextureInfo(GATE, 0, 2, 3, 4),
                 new TextureInfo(GATE, 0, 2, 3, 4));
         new Box(-(crossingGateLength * 16) - 13, -9.5, 0.5, (crossingGateLength * 16) + 5.5, 2, -1, collection)
-                .render(poseStack, consumer, packedLight, rl -> {
-                });
+                .render(poseStack, buffer, packedLight);
     }
 
     private void renderGateLights(PoseStack poseStack, MultiBufferSource buffer, int packedLight, int packedOverlay,
             CrossingGateGateBlockEntity te) {
         BakedModel modelOff = BerModelHelper.standaloneModel(LIGHT_MODEL);
-        BakedModel modelOn = BerModelHelper.standaloneModel(LIGHT_MODEL);
+        BakedModel modelOn = BerModelHelper.standaloneModel(
+                ResourceLocation.fromNamespaceAndPath(ModRealisticTrafficControl.MODID, "block/crossing_gate_light_on"));
         float crossingGateLength = te.getCrossingGateLength();
         CrossingLampState flashState = te.getFlashState();
         float lightStartOffset = te.getLightStartOffset();
@@ -130,7 +120,7 @@ public class CrossingGateGateBlockEntityRenderer implements BlockEntityRenderer<
             poseStack.pushPose();
             poseStack.scale(16, 16, 16);
             BerModelHelper.renderModel(poseStack,
-                    flashState == CrossingLampState.Flash2 ? modelOn : modelOff, null, buffer, packedLight,
+                    flashState == CrossingLampState.Flash2 ? modelOn : modelOff, te.getBlockState(), buffer, packedLight,
                     OverlayTexture.NO_OVERLAY);
             poseStack.popPose();
         }
@@ -140,7 +130,7 @@ public class CrossingGateGateBlockEntityRenderer implements BlockEntityRenderer<
             poseStack.pushPose();
             poseStack.scale(16, 16, 16);
             BerModelHelper.renderModel(poseStack,
-                    flashState == CrossingLampState.Flash1 ? modelOn : modelOff, null, buffer, packedLight,
+                    flashState == CrossingLampState.Flash1 ? modelOn : modelOff, te.getBlockState(), buffer, packedLight,
                     OverlayTexture.NO_OVERLAY);
             poseStack.popPose();
         }
@@ -149,7 +139,7 @@ public class CrossingGateGateBlockEntityRenderer implements BlockEntityRenderer<
         poseStack.pushPose();
         poseStack.scale(16, 16, 16);
         BerModelHelper.renderModel(poseStack,
-                flashState == CrossingLampState.Off ? modelOff : modelOn, null, buffer, packedLight,
+                flashState == CrossingLampState.Off ? modelOff : modelOn, te.getBlockState(), buffer, packedLight,
                 OverlayTexture.NO_OVERLAY);
         poseStack.popPose();
         poseStack.popPose();

@@ -22,9 +22,9 @@ public class TrafficLightFrameContainer extends BaseTrafficLightFrameContainer {
 	protected List<FrameSlotInfo> buildSlotInfo() {
 		return ImmutableList
 				.<FrameSlotInfo>builder()
-				.add(new FrameSlotInfo(EnumCheckboxOrientation.RIGHT, 0, 79, 13))
-				.add(new FrameSlotInfo(EnumCheckboxOrientation.RIGHT, 1, 79, 44))
-				.add(new FrameSlotInfo(EnumCheckboxOrientation.RIGHT, 2, 79, 76))
+				.add(new FrameSlotInfo(EnumCheckboxOrientation.LEFT, 0, 79, 13))
+				.add(new FrameSlotInfo(EnumCheckboxOrientation.LEFT, 1, 79, 44))
+				.add(new FrameSlotInfo(EnumCheckboxOrientation.LEFT, 2, 79, 76))
 				.build();
 	}
 

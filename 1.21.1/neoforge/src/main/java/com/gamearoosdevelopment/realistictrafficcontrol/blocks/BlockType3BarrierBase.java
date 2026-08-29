@@ -79,7 +79,8 @@ public abstract class BlockType3BarrierBase extends Block implements EntityBlock
         Direction right = currentFacing.getClockWise();
         BlockPos rightPos = pos.relative(right);
         BlockState rightState = level.getBlockState(rightPos);
-        if (rightState.getBlock() == getBlockInstance() && rightState.getValue(FACING) == currentFacing) {
+        if (rightState.getBlock() instanceof BlockType3BarrierBase
+                && rightState.getValue(FACING) == currentFacing) {
             double thisTopY = level.getBlockState(pos.below()).getShape(level, pos.below()).max(Direction.Axis.Y);
             double neighborTopY = level.getBlockState(rightPos.below()).getShape(level, rightPos.below())
                     .max(Direction.Axis.Y);
@@ -91,7 +92,8 @@ public abstract class BlockType3BarrierBase extends Block implements EntityBlock
         Direction left = currentFacing.getCounterClockWise();
         BlockPos leftPos = pos.relative(left);
         BlockState leftState = level.getBlockState(leftPos);
-        if (leftState.getBlock() == getBlockInstance() && leftState.getValue(FACING) == currentFacing) {
+        if (leftState.getBlock() instanceof BlockType3BarrierBase
+                && leftState.getValue(FACING) == currentFacing) {
             double thisTopY = level.getBlockState(pos.below()).getShape(level, pos.below()).max(Direction.Axis.Y);
             double neighborTopY = level.getBlockState(leftPos.below()).getShape(level, leftPos.below())
                     .max(Direction.Axis.Y);
@@ -111,6 +113,36 @@ public abstract class BlockType3BarrierBase extends Block implements EntityBlock
             case WEST, EAST -> RTCShapes.blockBox(7, 0, 0, 9, 23, 16);
             default -> super.getShape(state, level, pos, context);
         };
+    }
+
+    @Override
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos,
+            boolean isMoving) {
+        super.neighborChanged(state, level, pos, block, fromPos, isMoving);
+        if (!level.isClientSide) {
+            refreshBarrierChainState(level, pos);
+        }
+    }
+
+    @Override
+    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
+        super.onPlace(state, level, pos, oldState, isMoving);
+        if (level.isClientSide) {
+            return;
+        }
+        refreshBarrierChainState(level, pos);
+    }
+
+    private static void refreshBarrierChainState(Level level, BlockPos origin) {
+        for (BlockPos pos : BlockPos.betweenClosed(origin.offset(-1, 0, -1), origin.offset(1, 0, 1))) {
+            BlockState state = level.getBlockState(pos);
+            if (state.getBlock() instanceof BlockType3BarrierBase base) {
+                BlockState actual = base.computeActualState(state, level, pos);
+                if (actual != state) {
+                    level.setBlock(pos, actual, Block.UPDATE_ALL);
+                }
+            }
+        }
     }
 
     @Override
