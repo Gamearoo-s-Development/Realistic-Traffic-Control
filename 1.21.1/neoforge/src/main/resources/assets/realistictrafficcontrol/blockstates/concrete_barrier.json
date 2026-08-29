@@ -1,0 +1,228 @@
+{
+  "variants": {
+    "facing=north,dye=0": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_0",
+      "y": 90
+    },
+    "facing=north,dye=1": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_1",
+      "y": 90
+    },
+    "facing=north,dye=2": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_2",
+      "y": 90
+    },
+    "facing=north,dye=3": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_3",
+      "y": 90
+    },
+    "facing=north,dye=4": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_4",
+      "y": 90
+    },
+    "facing=north,dye=5": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_5",
+      "y": 90
+    },
+    "facing=north,dye=6": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_6",
+      "y": 90
+    },
+    "facing=north,dye=7": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_7",
+      "y": 90
+    },
+    "facing=north,dye=8": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_8",
+      "y": 90
+    },
+    "facing=north,dye=9": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_9",
+      "y": 90
+    },
+    "facing=north,dye=10": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_10",
+      "y": 90
+    },
+    "facing=north,dye=11": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_11",
+      "y": 90
+    },
+    "facing=north,dye=12": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_12",
+      "y": 90
+    },
+    "facing=north,dye=13": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_13",
+      "y": 90
+    },
+    "facing=north,dye=14": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_14",
+      "y": 90
+    },
+    "facing=north,dye=15": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_15",
+      "y": 90
+    },
+    "facing=south,dye=0": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_0",
+      "y": 90
+    },
+    "facing=south,dye=1": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_1",
+      "y": 90
+    },
+    "facing=south,dye=2": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_2",
+      "y": 90
+    },
+    "facing=south,dye=3": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_3",
+      "y": 90
+    },
+    "facing=south,dye=4": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_4",
+      "y": 90
+    },
+    "facing=south,dye=5": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_5",
+      "y": 90
+    },
+    "facing=south,dye=6": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_6",
+      "y": 90
+    },
+    "facing=south,dye=7": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_7",
+      "y": 90
+    },
+    "facing=south,dye=8": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_8",
+      "y": 90
+    },
+    "facing=south,dye=9": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_9",
+      "y": 90
+    },
+    "facing=south,dye=10": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_10",
+      "y": 90
+    },
+    "facing=south,dye=11": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_11",
+      "y": 90
+    },
+    "facing=south,dye=12": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_12",
+      "y": 90
+    },
+    "facing=south,dye=13": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_13",
+      "y": 90
+    },
+    "facing=south,dye=14": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_14",
+      "y": 90
+    },
+    "facing=south,dye=15": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_15",
+      "y": 90
+    },
+    "facing=west,dye=0": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_0"
+    },
+    "facing=west,dye=1": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_1"
+    },
+    "facing=west,dye=2": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_2"
+    },
+    "facing=west,dye=3": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_3"
+    },
+    "facing=west,dye=4": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_4"
+    },
+    "facing=west,dye=5": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_5"
+    },
+    "facing=west,dye=6": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_6"
+    },
+    "facing=west,dye=7": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_7"
+    },
+    "facing=west,dye=8": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_8"
+    },
+    "facing=west,dye=9": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_9"
+    },
+    "facing=west,dye=10": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_10"
+    },
+    "facing=west,dye=11": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_11"
+    },
+    "facing=west,dye=12": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_12"
+    },
+    "facing=west,dye=13": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_13"
+    },
+    "facing=west,dye=14": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_14"
+    },
+    "facing=west,dye=15": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_15"
+    },
+    "facing=east,dye=0": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_0"
+    },
+    "facing=east,dye=1": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_1"
+    },
+    "facing=east,dye=2": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_2"
+    },
+    "facing=east,dye=3": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_3"
+    },
+    "facing=east,dye=4": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_4"
+    },
+    "facing=east,dye=5": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_5"
+    },
+    "facing=east,dye=6": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_6"
+    },
+    "facing=east,dye=7": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_7"
+    },
+    "facing=east,dye=8": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_8"
+    },
+    "facing=east,dye=9": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_9"
+    },
+    "facing=east,dye=10": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_10"
+    },
+    "facing=east,dye=11": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_11"
+    },
+    "facing=east,dye=12": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_12"
+    },
+    "facing=east,dye=13": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_13"
+    },
+    "facing=east,dye=14": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_14"
+    },
+    "facing=east,dye=15": {
+      "model": "realistictrafficcontrol:block/concrete_barrier_dye_15"
+    }
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "variants": {
+    "rotation=0,active=false": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=0,active=true": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=1,active=false": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=1,active=true": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=2,active=false": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=2,active=true": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=3,active=false": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=3,active=true": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=4,active=false": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=4,active=true": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=5,active=false": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=5,active=true": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=6,active=false": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=6,active=true": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=7,active=false": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=7,active=true": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=8,active=false": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=8,active=true": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=9,active=false": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=9,active=true": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=10,active=false": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=10,active=true": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=11,active=false": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=11,active=true": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=12,active=false": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=12,active=true": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=13,active=false": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=13,active=true": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=14,active=false": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=14,active=true": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=15,active=false": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    },
+    "rotation=15,active=true": {
+      "model": "realistictrafficcontrol:block/vertical_wig_wag"
+    }
+  }
+}

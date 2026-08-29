@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LR ",
+    "   ",
+    "   "
+  ],
+  "key": {
+    "R": {
+      "item": "minecraft:shears"
+    },
+    "L": {
+      "item": "realistictrafficcontrol:traffic_light_bulb",
+      "components": {
+        "realistictrafficcontrol:bulb_type": 2
+      }
+    }
+  },
+  "result": {
+    "id": "realistictrafficcontrol:traffic_light_bulb",
+    "count": 1,
+    "components": {
+      "realistictrafficcontrol:bulb_type": 15
+    }
+  }
+}

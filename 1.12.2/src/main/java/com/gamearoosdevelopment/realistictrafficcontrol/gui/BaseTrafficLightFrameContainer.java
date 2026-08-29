@@ -83,8 +83,22 @@ public abstract class BaseTrafficLightFrameContainer extends Container {
 	protected abstract List<FrameSlotInfo> buildSlotInfo();
 	
 	protected abstract int getYSize();
+
+	public int getPlayerInventoryTopY() {
+		return 119 + (getYSize() - 200);
+	}
 	
 	public ItemStack getFrameStack() { return frameStack; }
+
+	public void refreshFrameStackFromPlayer(EntityPlayer player) {
+		if (player == null) {
+			return;
+		}
+		ItemStack held = player.inventory.getCurrentItem();
+		if (!held.isEmpty() && held.getItem() == getValidFrameItem()) {
+			frameStack = held;
+		}
+	}
 
 	public List<FrameSlotInfo> getFrameSlotInfos() { return frameSlotInfos; }
 	

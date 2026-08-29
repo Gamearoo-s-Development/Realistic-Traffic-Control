@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "YYL",
+    "  L",
+    "   "
+  ],
+  "key": {
+    "Y": {
+      "item": "minecraft:yellow_dye"
+    },
+    "L": {
+      "item": "minecraft:redstone_lamp"
+    }
+  },
+  "result": {
+    "id": "realistictrafficcontrol:traffic_light_bulb",
+    "count": 1,
+    "components": {
+      "realistictrafficcontrol:bulb_type": 4
+    }
+  }
+}

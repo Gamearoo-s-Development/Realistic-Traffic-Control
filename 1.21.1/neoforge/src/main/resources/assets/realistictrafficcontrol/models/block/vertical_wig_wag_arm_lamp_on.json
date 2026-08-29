@@ -1,0 +1,6 @@
+{
+  "parent": "realistictrafficcontrol:block/vertical_wig_wag_arm",
+  "textures": {
+    "lamp": "realistictrafficcontrol:block/red"
+  }
+}

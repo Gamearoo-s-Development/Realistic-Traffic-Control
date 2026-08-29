@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "realistictrafficcontrol:block/shunt_border" },
+    "facing=east": { "model": "realistictrafficcontrol:block/shunt_border", "y": 90 },
+    "facing=south": { "model": "realistictrafficcontrol:block/shunt_border", "y": 180 },
+    "facing=west": { "model": "realistictrafficcontrol:block/shunt_border", "y": 270 }
+  }
+}

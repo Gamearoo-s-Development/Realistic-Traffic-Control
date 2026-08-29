@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " T ",
+    " C ",
+    "   "
+  ],
+  "key": {
+    "T": {
+      "item": "realistictrafficcontrol:traffic_light_card",
+      "components": {
+        "realistictrafficcontrol:card_tier": 1
+      }
+    },
+    "C": {
+      "item": "opencomputers:component"
+    }
+  },
+  "result": {
+    "id": "realistictrafficcontrol:traffic_light_card",
+    "count": 1,
+    "components": {
+      "realistictrafficcontrol:card_tier": 2
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "realistictrafficcontrol:block/traffic_sensor_right" },
+    "facing=east": { "model": "realistictrafficcontrol:block/traffic_sensor_right", "y": 90 },
+    "facing=south": { "model": "realistictrafficcontrol:block/traffic_sensor_right", "y": 180 },
+    "facing=west": { "model": "realistictrafficcontrol:block/traffic_sensor_right", "y": 270 }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "rotation=0": { "model": "realistictrafficcontrol:block/safetran_type_3" },
+    "rotation=1": { "model": "realistictrafficcontrol:block/safetran_type_3" },
+    "rotation=2": { "model": "realistictrafficcontrol:block/safetran_type_3" },
+    "rotation=3": { "model": "realistictrafficcontrol:block/safetran_type_3" },
+    "rotation=4": { "model": "realistictrafficcontrol:block/safetran_type_3" },
+    "rotation=5": { "model": "realistictrafficcontrol:block/safetran_type_3" },
+    "rotation=6": { "model": "realistictrafficcontrol:block/safetran_type_3" },
+    "rotation=7": { "model": "realistictrafficcontrol:block/safetran_type_3" },
+    "rotation=8": { "model": "realistictrafficcontrol:block/safetran_type_3" },
+    "rotation=9": { "model": "realistictrafficcontrol:block/safetran_type_3" },
+    "rotation=10": { "model": "realistictrafficcontrol:block/safetran_type_3" },
+    "rotation=11": { "model": "realistictrafficcontrol:block/safetran_type_3" },
+    "rotation=12": { "model": "realistictrafficcontrol:block/safetran_type_3" },
+    "rotation=13": { "model": "realistictrafficcontrol:block/safetran_type_3" },
+    "rotation=14": { "model": "realistictrafficcontrol:block/safetran_type_3" },
+    "rotation=15": { "model": "realistictrafficcontrol:block/safetran_type_3" }
+  }
+}

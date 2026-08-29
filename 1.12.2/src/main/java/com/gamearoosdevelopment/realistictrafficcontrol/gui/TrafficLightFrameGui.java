@@ -8,7 +8,7 @@ public class TrafficLightFrameGui extends BaseTrafficLightFrameGui {
 	public TrafficLightFrameGui(InventoryPlayer inventory, ItemStack frameStack) {
 		super(new TrafficLightFrameContainer(inventory, frameStack));
 		
-		xSize = 174;
+		xSize = 180;
 		ySize = 200;
 	}
 

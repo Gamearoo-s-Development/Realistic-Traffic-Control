@@ -1,0 +1,6 @@
+{
+  "parent": "realistictrafficcontrol:block/crossing_gate_lamps_se_lamp",
+  "textures": {
+    "leftlamp": "realistictrafficcontrol:block/red"
+  }
+}

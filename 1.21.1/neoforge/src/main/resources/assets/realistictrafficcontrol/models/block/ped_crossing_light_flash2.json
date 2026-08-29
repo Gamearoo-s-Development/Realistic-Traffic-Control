@@ -1,0 +1,7 @@
+{
+  "parent": "realistictrafficcontrol:block/ped_crossing_light",
+  "textures": {
+    "leftlamp": "realistictrafficcontrol:block/lamp_off",
+    "rightlamp": "realistictrafficcontrol:block/red"
+  }
+}

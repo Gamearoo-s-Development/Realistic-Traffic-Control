@@ -1,0 +1,18 @@
+{
+  "multipart": [
+    { "when": { "facing": "east" }, "apply": { "model": "realistictrafficcontrol:block/traffic_rail" } },
+    { "when": { "facing": "south" }, "apply": { "model": "realistictrafficcontrol:block/traffic_rail", "y": 90 } },
+    { "when": { "facing": "west" }, "apply": { "model": "realistictrafficcontrol:block/traffic_rail", "y": 180 } },
+    { "when": { "facing": "north" }, "apply": { "model": "realistictrafficcontrol:block/traffic_rail", "y": 270 } },
+
+    { "when": { "facing": "east", "isfurthestright": "false" }, "apply": { "model": "realistictrafficcontrol:block/traffic_rail_right" } },
+    { "when": { "facing": "south", "isfurthestright": "false" }, "apply": { "model": "realistictrafficcontrol:block/traffic_rail_right", "y": 90 } },
+    { "when": { "facing": "west", "isfurthestright": "false" }, "apply": { "model": "realistictrafficcontrol:block/traffic_rail_right", "y": 180 } },
+    { "when": { "facing": "north", "isfurthestright": "false" }, "apply": { "model": "realistictrafficcontrol:block/traffic_rail_right", "y": 270 } },
+
+    { "when": { "facing": "east", "isfurthestleft": "false" }, "apply": { "model": "realistictrafficcontrol:block/traffic_rail_left" } },
+    { "when": { "facing": "south", "isfurthestleft": "false" }, "apply": { "model": "realistictrafficcontrol:block/traffic_rail_left", "y": 90 } },
+    { "when": { "facing": "west", "isfurthestleft": "false" }, "apply": { "model": "realistictrafficcontrol:block/traffic_rail_left", "y": 180 } },
+    { "when": { "facing": "north", "isfurthestleft": "false" }, "apply": { "model": "realistictrafficcontrol:block/traffic_rail_left", "y": 270 } }
+  ]
+}

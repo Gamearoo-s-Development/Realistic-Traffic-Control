@@ -40,7 +40,7 @@ public class ItemTrafficLight5Frame extends BaseItemTrafficLightFrame {
 
 	@Override
 	public void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
-		addFrameIdentityTooltip(tooltip);
+		addFrameIdentityTooltip(stack, tooltip);
 		IItemHandler handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
 		ItemStack subStack = handler.getStackInSlot(0);
 		if (subStack != ItemStack.EMPTY)

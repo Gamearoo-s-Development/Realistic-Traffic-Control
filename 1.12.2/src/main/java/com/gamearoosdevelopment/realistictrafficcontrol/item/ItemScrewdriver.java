@@ -8,6 +8,7 @@ import com.gamearoosdevelopment.realistictrafficcontrol.Config;
 import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficControl;
 import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketHandler;
 import com.gamearoosdevelopment.realistictrafficcontrol.network.ServerSideSoundPacket;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.BaseTrafficLightTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.IHasRotationProperty;
 
 import net.minecraft.block.Block;
@@ -59,6 +60,15 @@ public class ItemScrewdriver extends Item
             Block block = state.getBlock();
             if (block.getRegistryName().getResourceDomain().equalsIgnoreCase(ModRealisticTrafficControl.MODID))
             {
+            	if (player.isSneaking() && world.getTileEntity(pos) instanceof BaseTrafficLightTileEntity)
+            	{
+            		((BaseTrafficLightTileEntity) world.getTileEntity(pos)).cycleConfiguredApproachFacing();
+            		if (!player.isCreative()) {
+            			player.getHeldItem(hand).damageItem(1, player);
+            		}
+            		return EnumActionResult.SUCCESS;
+            	}
+
 	            if (block.hasTileEntity(state) && world.getTileEntity(pos) instanceof IHasRotationProperty)
 	            {
             		IHasRotationProperty hasRotationProperty = (IHasRotationProperty)world.getTileEntity(pos);

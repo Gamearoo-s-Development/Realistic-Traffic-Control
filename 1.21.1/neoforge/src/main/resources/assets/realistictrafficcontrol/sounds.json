@@ -1,0 +1,13 @@
+{
+  "gate": { "category": "blocks", "sounds": ["realistictrafficcontrol:gate"] },
+  "safetran_type_3": { "category": "blocks", "sounds": ["realistictrafficcontrol:safetran_type_3"] },
+  "safetran_mechanical": { "category": "blocks", "sounds": ["realistictrafficcontrol:safetran_mechanical"] },
+  "wch": { "category": "blocks", "sounds": ["realistictrafficcontrol:wch"] },
+  "ped_button": { "category": "blocks", "sounds": ["realistictrafficcontrol:ped_button"] },
+  "wigwag": { "category": "blocks", "sounds": ["realistictrafficcontrol:wigwag"] },
+  "wch_mechanical_bell": { "category": "blocks", "sounds": ["realistictrafficcontrol:wch_mechanical_bell"] },
+  "screwdriver": { "category": "blocks", "sounds": ["realistictrafficcontrol:screwdriver"] },
+  "teardrop_bell": { "category": "blocks", "sounds": ["realistictrafficcontrol:teardrop_bell"] },
+  "safetran_type_1": { "category": "blocks", "sounds": ["realistictrafficcontrol:safetran_type_1"] },
+  "wayside_horn": { "category": "blocks", "sounds": ["realistictrafficcontrol:wayside_horn"] }
+}

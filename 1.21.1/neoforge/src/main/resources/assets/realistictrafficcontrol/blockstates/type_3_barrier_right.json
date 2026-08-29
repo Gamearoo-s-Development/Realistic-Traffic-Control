@@ -1,0 +1,117 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "realistictrafficcontrol:block/type_3_barrier_bars_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "isfurthestleft": true
+      },
+      "apply": {
+        "model": "realistictrafficcontrol:block/type_3_barrier_stand_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "isfurthestright": true
+      },
+      "apply": {
+        "model": "realistictrafficcontrol:block/type_3_barrier_stand_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "realistictrafficcontrol:block/type_3_barrier_bars_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "isfurthestleft": true
+      },
+      "apply": {
+        "model": "realistictrafficcontrol:block/type_3_barrier_stand_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "isfurthestright": true
+      },
+      "apply": {
+        "model": "realistictrafficcontrol:block/type_3_barrier_stand_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "realistictrafficcontrol:block/type_3_barrier_bars_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "isfurthestleft": true
+      },
+      "apply": {
+        "model": "realistictrafficcontrol:block/type_3_barrier_stand_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "isfurthestright": true
+      },
+      "apply": {
+        "model": "realistictrafficcontrol:block/type_3_barrier_stand_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "realistictrafficcontrol:block/type_3_barrier_bars_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "isfurthestleft": true
+      },
+      "apply": {
+        "model": "realistictrafficcontrol:block/type_3_barrier_stand_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "isfurthestright": true
+      },
+      "apply": {
+        "model": "realistictrafficcontrol:block/type_3_barrier_stand_right",
+        "y": 270
+      }
+    }
+  ]
+}

@@ -20,6 +20,10 @@ public class Config {
 	
 	
 	public static int parallelScans = 1;
+	public static int islandTimeout = 20;
+	public static int borderTimeout = 150;
+	public static int borderTick = 10;
+	public static int crossingBellStopAfterSeconds = 0;
 	public static int tooltipCharWrapLength = 256;
 	public static String[] sensorClasses = new String[] 
 			{
@@ -82,10 +86,11 @@ public class Config {
 		
 		cfg.addCustomCategoryComment(CATEGORY_OC, "Open Computer Stuff");
 		
-		
-		
-		
-		
+		islandTimeout = cfg.getInt("islandTimeout", CATEGORY_GENERAL, islandTimeout, 1, 100, "How far (in blocks) should each island shunt scan for the next island shunt?");
+		borderTimeout = cfg.getInt("borderTimeout", CATEGORY_GENERAL, borderTimeout, 1, 2000, "How far (in blocks) should border shunts scan for the next island shunt?");
+		borderTick = cfg.getInt("borderTick", CATEGORY_GENERAL, borderTick, 1, 2000, "How far (in blocks) should border shunts scan per tick?");
+		parallelScans = cfg.getInt("parallelScans", CATEGORY_GENERAL, parallelScans, 1, 20, "How many crossing relay boxes should be scanned per tick?");
+		crossingBellStopAfterSeconds = cfg.getInt("crossingBellStopAfterSeconds", CATEGORY_GENERAL, crossingBellStopAfterSeconds, 0, 3600, "Default bell stop time (seconds) for crossing relays. 0 = bells stay on until the crossing clears.");
 		
 		sensorClasses = cfg.getStringList("sensorClasses", CATEGORY_TRAFFIC_LIGHT, sensorClasses, "What entity classes will activate the traffic signal sensors?");
 		sensorScanHeight = cfg.getInt("sensorScanHeight", CATEGORY_TRAFFIC_LIGHT, sensorScanHeight, 0, 10, "How far up (in blocks) should traffic signal sensors scan for entities? [Min = 0, Max = 10, Default = 5]");

@@ -1,0 +1,14 @@
+package com.gamearoosdevelopment.realistictrafficcontrol.blocks;
+
+import net.minecraft.world.level.block.state.BlockBehaviour;
+
+public class BlockCrossingRelayTopSE extends RelayBlockBase {
+    public BlockCrossingRelayTopSE(BlockBehaviour.Properties properties) {
+        super(properties);
+    }
+
+    @Override
+    protected String registryName() {
+        return "crossing_relay_top_se";
+    }
+}

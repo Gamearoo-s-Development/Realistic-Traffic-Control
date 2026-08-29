@@ -38,5 +38,20 @@
     { 
     	"category": "block",
     	"sounds": [ "realistictrafficcontrol:wig_wag" ]
+    },
+    "teardrop_bell":
+    {
+        "category": "block",
+        "sounds": [ "realistictrafficcontrol:teardrop_bell" ]
+    },
+    "safetran_type_1":
+    {
+        "category": "block",
+        "sounds": [ "realistictrafficcontrol:safetran_type_1" ]
+    },
+    "wayside_horn":
+    {
+        "category": "block",
+        "sounds": [ "realistictrafficcontrol:wayside_horn" ]
     }
 }

@@ -44,6 +44,15 @@ tile.realistictrafficcontrol.traffic_sensor_straight.name=(RTC) Traffic Sensor (
 tile.realistictrafficcontrol.redstone_sensor.name=(RTC) Traffic Sensor (Redstone)
 tile.realistictrafficcontrol.pedestrian_button.name=(RTC) Pedestrian Button
 tile.realistictrafficcontrol.traffic_sensor_right.name=(RTC) Traffic Sensor (Right)
+tile.realistictrafficcontrol.vertical_wig_wag.name=(RTC) Upper Quadrant Wig Wag
+tile.realistictrafficcontrol.wch_mechanical_bell.name=(RTC) WCH Mechanical Bell
+tile.realistictrafficcontrol.pole_base.name=(RTC) Pole Base
+tile.realistictrafficcontrol.quiet_zone_signal.name=(RTC) Quiet Zone Signal
+tile.realistictrafficcontrol.ped_crossing_lamps.name=(RTC) Pedestrian Crossing Lamps
+tile.realistictrafficcontrol.gate_guard.name=(RTC) Crossing Gate Wind Guard
+tile.realistictrafficcontrol.teardrop_bell.name=(RTC) U.S.& S. Co. Teardrop Bell
+tile.realistictrafficcontrol.safetran_type_1.name=(RTC) SafeTran Type 1 Electronic Bell
+tile.realistictrafficcontrol.wayside_horn.name=(RTC) Wayside Horn
 
 #items
 item.realistictrafficcontrol.crossing_relay_box.name=(RTC) Crossing Gate Relay
@@ -78,6 +87,7 @@ itemGroup.oc_tab=(RTC) Open Computer Cards
 itemGroup.cones_tab=(RTC) Cones
 itemGroup.b_tab=(RTC) Barriers
 itemGroup.sensor_tab=(RTC) Sensors
+itemGroup.crossing_tab=(RTC) Railroad Crossings
 
 
 tile.realistictrafficcontrol.street_sign.name=(RTC) Street Sign

@@ -1,0 +1,52 @@
+{
+  "variants": {
+    "rotation=0": {
+      "model": "realistictrafficcontrol:block/street_light_double"
+    },
+    "rotation=1": {
+      "model": "realistictrafficcontrol:block/street_light_double"
+    },
+    "rotation=2": {
+      "model": "realistictrafficcontrol:block/street_light_double"
+    },
+    "rotation=3": {
+      "model": "realistictrafficcontrol:block/street_light_double"
+    },
+    "rotation=4": {
+      "model": "realistictrafficcontrol:block/street_light_double"
+    },
+    "rotation=5": {
+      "model": "realistictrafficcontrol:block/street_light_double"
+    },
+    "rotation=6": {
+      "model": "realistictrafficcontrol:block/street_light_double"
+    },
+    "rotation=7": {
+      "model": "realistictrafficcontrol:block/street_light_double"
+    },
+    "rotation=8": {
+      "model": "realistictrafficcontrol:block/street_light_double"
+    },
+    "rotation=9": {
+      "model": "realistictrafficcontrol:block/street_light_double"
+    },
+    "rotation=10": {
+      "model": "realistictrafficcontrol:block/street_light_double"
+    },
+    "rotation=11": {
+      "model": "realistictrafficcontrol:block/street_light_double"
+    },
+    "rotation=12": {
+      "model": "realistictrafficcontrol:block/street_light_double"
+    },
+    "rotation=13": {
+      "model": "realistictrafficcontrol:block/street_light_double"
+    },
+    "rotation=14": {
+      "model": "realistictrafficcontrol:block/street_light_double"
+    },
+    "rotation=15": {
+      "model": "realistictrafficcontrol:block/street_light_double"
+    }
+  }
+}

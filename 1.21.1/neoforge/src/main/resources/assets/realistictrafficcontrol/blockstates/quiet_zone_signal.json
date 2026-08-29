@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "rotation=0": { "model": "realistictrafficcontrol:block/quiet_zone_signal" },
+    "rotation=1": { "model": "realistictrafficcontrol:block/quiet_zone_signal" },
+    "rotation=2": { "model": "realistictrafficcontrol:block/quiet_zone_signal" },
+    "rotation=3": { "model": "realistictrafficcontrol:block/quiet_zone_signal" },
+    "rotation=4": { "model": "realistictrafficcontrol:block/quiet_zone_signal" },
+    "rotation=5": { "model": "realistictrafficcontrol:block/quiet_zone_signal" },
+    "rotation=6": { "model": "realistictrafficcontrol:block/quiet_zone_signal" },
+    "rotation=7": { "model": "realistictrafficcontrol:block/quiet_zone_signal" },
+    "rotation=8": { "model": "realistictrafficcontrol:block/quiet_zone_signal" },
+    "rotation=9": { "model": "realistictrafficcontrol:block/quiet_zone_signal" },
+    "rotation=10": { "model": "realistictrafficcontrol:block/quiet_zone_signal" },
+    "rotation=11": { "model": "realistictrafficcontrol:block/quiet_zone_signal" },
+    "rotation=12": { "model": "realistictrafficcontrol:block/quiet_zone_signal" },
+    "rotation=13": { "model": "realistictrafficcontrol:block/quiet_zone_signal" },
+    "rotation=14": { "model": "realistictrafficcontrol:block/quiet_zone_signal" },
+    "rotation=15": { "model": "realistictrafficcontrol:block/quiet_zone_signal" }
+  }
+}

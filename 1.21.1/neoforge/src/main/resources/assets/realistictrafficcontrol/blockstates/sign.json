@@ -1,0 +1,32 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "realistictrafficcontrol:block/sign"
+      }
+    },
+    {
+      "when": {
+        "ishalfheight": "false"
+      },
+      "apply": {
+        "model": "realistictrafficcontrol:block/sign_upper"
+      }
+    },
+    {
+      "when": {
+        "validhorizontalbar": "true"
+      },
+      "apply": [
+        {
+          "model": "realistictrafficcontrol:block/crossing_gate_pole_ext",
+          "y": 270
+        },
+        {
+          "model": "realistictrafficcontrol:block/crossing_gate_pole_ext",
+          "y": 90
+        }
+      ]
+    }
+  ]
+}

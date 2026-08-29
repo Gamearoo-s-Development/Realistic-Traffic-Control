@@ -1,0 +1,12 @@
+{
+	"parent": "block/cube",
+	"textures": {
+		"down": "realistictrafficcontrol:block/traffic_sensor_side",
+		"up": "realistictrafficcontrol:block/output_block_comparator_hint_face_error",
+		"north": "realistictrafficcontrol:block/traffic_sensor_side",
+		"east": "realistictrafficcontrol:block/traffic_sensor_side",
+		"south": "realistictrafficcontrol:block/traffic_sensor_side",
+		"west": "realistictrafficcontrol:block/traffic_sensor_side",
+		"particle": "realistictrafficcontrol:block/output_block_comparator_hint_face_error"
+	}
+}

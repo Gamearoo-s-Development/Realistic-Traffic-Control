@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LRR",
+    "   ",
+    "   "
+  ],
+  "key": {
+    "R": {
+      "item": "minecraft:red_dye"
+    },
+    "L": {
+      "item": "realistictrafficcontrol:traffic_light_bulb",
+      "components": {
+        "realistictrafficcontrol:bulb_type": 3
+      }
+    }
+  },
+  "result": {
+    "id": "realistictrafficcontrol:traffic_light_bulb",
+    "count": 1,
+    "components": {
+      "realistictrafficcontrol:bulb_type": 12
+    }
+  }
+}

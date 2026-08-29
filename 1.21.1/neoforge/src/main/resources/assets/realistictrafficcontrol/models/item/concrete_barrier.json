@@ -1,0 +1,95 @@
+{
+  "parent": "realistictrafficcontrol:block/concrete_barrier",
+  "overrides": [
+    {
+      "predicate": {
+        "realistictrafficcontrol:dye": 0.06666666666666667
+      },
+      "model": "realistictrafficcontrol:item/concrete_barrier_dye_1"
+    },
+    {
+      "predicate": {
+        "realistictrafficcontrol:dye": 0.13333333333333333
+      },
+      "model": "realistictrafficcontrol:item/concrete_barrier_dye_2"
+    },
+    {
+      "predicate": {
+        "realistictrafficcontrol:dye": 0.2
+      },
+      "model": "realistictrafficcontrol:item/concrete_barrier_dye_3"
+    },
+    {
+      "predicate": {
+        "realistictrafficcontrol:dye": 0.26666666666666666
+      },
+      "model": "realistictrafficcontrol:item/concrete_barrier_dye_4"
+    },
+    {
+      "predicate": {
+        "realistictrafficcontrol:dye": 0.3333333333333333
+      },
+      "model": "realistictrafficcontrol:item/concrete_barrier_dye_5"
+    },
+    {
+      "predicate": {
+        "realistictrafficcontrol:dye": 0.4
+      },
+      "model": "realistictrafficcontrol:item/concrete_barrier_dye_6"
+    },
+    {
+      "predicate": {
+        "realistictrafficcontrol:dye": 0.4666666666666667
+      },
+      "model": "realistictrafficcontrol:item/concrete_barrier_dye_7"
+    },
+    {
+      "predicate": {
+        "realistictrafficcontrol:dye": 0.5333333333333333
+      },
+      "model": "realistictrafficcontrol:item/concrete_barrier_dye_8"
+    },
+    {
+      "predicate": {
+        "realistictrafficcontrol:dye": 0.6
+      },
+      "model": "realistictrafficcontrol:item/concrete_barrier_dye_9"
+    },
+    {
+      "predicate": {
+        "realistictrafficcontrol:dye": 0.6666666666666666
+      },
+      "model": "realistictrafficcontrol:item/concrete_barrier_dye_10"
+    },
+    {
+      "predicate": {
+        "realistictrafficcontrol:dye": 0.7333333333333333
+      },
+      "model": "realistictrafficcontrol:item/concrete_barrier_dye_11"
+    },
+    {
+      "predicate": {
+        "realistictrafficcontrol:dye": 0.8
+      },
+      "model": "realistictrafficcontrol:item/concrete_barrier_dye_12"
+    },
+    {
+      "predicate": {
+        "realistictrafficcontrol:dye": 0.8666666666666667
+      },
+      "model": "realistictrafficcontrol:item/concrete_barrier_dye_13"
+    },
+    {
+      "predicate": {
+        "realistictrafficcontrol:dye": 0.9333333333333333
+      },
+      "model": "realistictrafficcontrol:item/concrete_barrier_dye_14"
+    },
+    {
+      "predicate": {
+        "realistictrafficcontrol:dye": 1.0
+      },
+      "model": "realistictrafficcontrol:item/concrete_barrier_dye_15"
+    }
+  ]
+}

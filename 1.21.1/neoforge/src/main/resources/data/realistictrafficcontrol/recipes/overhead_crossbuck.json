@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "realistictrafficcontrol:overhead"
+    },
+    {
+      "item": "realistictrafficcontrol:crossing_gate_crossbuck"
+    }
+  ],
+  "result": {
+    "id": "realistictrafficcontrol:overhead_crossbuck",
+    "count": 1
+  }
+}

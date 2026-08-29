@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "realistictrafficcontrol:wch_bell"
+    }
+  ],
+  "result": {
+    "id": "realistictrafficcontrol:wch_mechanical_bell",
+    "count": 1
+  }
+}

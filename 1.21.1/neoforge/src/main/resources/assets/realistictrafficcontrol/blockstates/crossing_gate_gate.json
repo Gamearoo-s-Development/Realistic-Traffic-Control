@@ -1,0 +1,52 @@
+{
+  "variants": {
+    "rotation=0": {
+      "model": "realistictrafficcontrol:block/crossing_gate_gate"
+    },
+    "rotation=1": {
+      "model": "realistictrafficcontrol:block/crossing_gate_gate"
+    },
+    "rotation=2": {
+      "model": "realistictrafficcontrol:block/crossing_gate_gate"
+    },
+    "rotation=3": {
+      "model": "realistictrafficcontrol:block/crossing_gate_gate"
+    },
+    "rotation=4": {
+      "model": "realistictrafficcontrol:block/crossing_gate_gate"
+    },
+    "rotation=5": {
+      "model": "realistictrafficcontrol:block/crossing_gate_gate"
+    },
+    "rotation=6": {
+      "model": "realistictrafficcontrol:block/crossing_gate_gate"
+    },
+    "rotation=7": {
+      "model": "realistictrafficcontrol:block/crossing_gate_gate"
+    },
+    "rotation=8": {
+      "model": "realistictrafficcontrol:block/crossing_gate_gate"
+    },
+    "rotation=9": {
+      "model": "realistictrafficcontrol:block/crossing_gate_gate"
+    },
+    "rotation=10": {
+      "model": "realistictrafficcontrol:block/crossing_gate_gate"
+    },
+    "rotation=11": {
+      "model": "realistictrafficcontrol:block/crossing_gate_gate"
+    },
+    "rotation=12": {
+      "model": "realistictrafficcontrol:block/crossing_gate_gate"
+    },
+    "rotation=13": {
+      "model": "realistictrafficcontrol:block/crossing_gate_gate"
+    },
+    "rotation=14": {
+      "model": "realistictrafficcontrol:block/crossing_gate_gate"
+    },
+    "rotation=15": {
+      "model": "realistictrafficcontrol:block/crossing_gate_gate"
+    }
+  }
+}

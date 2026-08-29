@@ -17,7 +17,13 @@ import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficSenso
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficSensorRight;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficSensorStraight;
 import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficControl;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.ApproachMovementBulbHelper;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.ApproachMovementPhaseHelper;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.ApproachMovementSettings;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.CustomAngleCalculator;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.FyaMode;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.LeftTurnBulbHelper;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.TrafficLightFacingResolver;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.EnumTrafficLightBulbTypes;
 import com.google.common.collect.ImmutableList;
 
@@ -78,9 +84,43 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 	private boolean splitDirectionsEnabled = false;
 	private boolean splitNorthSouthEnabled = true;
 	private boolean splitWestEastEnabled = true;
-	
+	private final EnumMap<EnumFacing, ApproachMovementSettings> approachMovementSettings = new EnumMap<>(EnumFacing.class);
 
-	
+	public TrafficLightControlBoxTileEntity() {
+		for (EnumFacing facing : new EnumFacing[] { EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.EAST, EnumFacing.WEST }) {
+			approachMovementSettings.put(facing, new ApproachMovementSettings());
+		}
+	}
+
+	public ApproachMovementSettings getMovementSettings(EnumFacing facing) {
+		ApproachMovementSettings settings = approachMovementSettings.get(facing);
+		if (settings == null) {
+			settings = new ApproachMovementSettings();
+			approachMovementSettings.put(facing, settings);
+		}
+		return settings;
+	}
+
+	public void setMovementSettings(EnumFacing facing, ApproachMovementSettings settings) {
+		approachMovementSettings.put(facing, settings == null ? new ApproachMovementSettings() : settings.copy());
+		this.fyaNightOnlyEnabled = isFyaNightOnlyEnabled();
+		markDirty();
+	}
+
+	private void writeMovementSettingsToNBT(NBTTagCompound compound) {
+		for (EnumFacing facing : new EnumFacing[] { EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.EAST, EnumFacing.WEST }) {
+			compound.setTag("movement" + facing.getName2(), getMovementSettings(facing).writeToNBT());
+		}
+	}
+
+	private void readMovementSettingsFromNBT(NBTTagCompound compound) {
+		for (EnumFacing facing : new EnumFacing[] { EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.EAST, EnumFacing.WEST }) {
+			String key = "movement" + facing.getName2();
+			if (compound.hasKey(key)) {
+				getMovementSettings(facing).readFromNBT(compound.getCompoundTag(key));
+			}
+		}
+	}
 	public void setNightFlashEnabled(boolean enabled) {
 	    this.nightFlashEnabled = enabled;
 	    markDirty(); // Ensure the tile is saved
@@ -134,12 +174,40 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 	}
 
 	public void setFyaNightOnlyEnabled(boolean enabled) {
+		FyaMode mode = enabled ? FyaMode.NIGHT_ONLY : FyaMode.ALWAYS;
+		for (EnumFacing facing : new EnumFacing[] { EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.EAST, EnumFacing.WEST }) {
+			ApproachMovementSettings settings = getMovementSettings(facing);
+			settings.leftFya = mode;
+			settings.rightFya = mode;
+		}
 		this.fyaNightOnlyEnabled = enabled;
 		markDirty();
 	}
 
 	public boolean isFyaNightOnlyEnabled() {
-		return fyaNightOnlyEnabled;
+		for (EnumFacing facing : new EnumFacing[] { EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.EAST, EnumFacing.WEST }) {
+			ApproachMovementSettings settings = getMovementSettings(facing);
+			if (settings.leftFya != FyaMode.NIGHT_ONLY || settings.rightFya != FyaMode.NIGHT_ONLY) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private void migrateLegacyFyaSettings(NBTTagCompound compound) {
+		if (compound == null || !compound.hasKey("FyaNightOnlyEnabled")) {
+			return;
+		}
+		FyaMode legacyMode = compound.getBoolean("FyaNightOnlyEnabled") ? FyaMode.NIGHT_ONLY : FyaMode.ALWAYS;
+		for (EnumFacing facing : new EnumFacing[] { EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.EAST, EnumFacing.WEST }) {
+			String key = "movement" + facing.getName2();
+			boolean hasPerApproachFya = compound.hasKey(key) && compound.getCompoundTag(key).hasKey("leftFya");
+			if (!hasPerApproachFya) {
+				ApproachMovementSettings settings = getMovementSettings(facing);
+				settings.leftFya = legacyMode;
+				settings.rightFya = legacyMode;
+			}
+		}
 	}
 
 	public boolean isSplitEnabledForRow(RightOfWays rightOfWay) {
@@ -155,6 +223,73 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 
 	public List<BlockPos> getWestEastLights() {
 		return westEastLights;
+	}
+
+	public List<BlockPos> getAllTrafficLightPositions() {
+		java.util.LinkedHashSet<BlockPos> positions = new java.util.LinkedHashSet<>();
+		positions.addAll(northSouthLights);
+		positions.addAll(westEastLights);
+		return new ArrayList<>(positions);
+	}
+
+	@Nullable
+	public BaseTrafficLightTileEntity getTrafficLightAt(BlockPos pos) {
+		if (world == null) {
+			return null;
+		}
+		TileEntity te = world.getTileEntity(pos);
+		return te instanceof BaseTrafficLightTileEntity ? (BaseTrafficLightTileEntity) te : null;
+	}
+
+	public List<BaseTrafficLightTileEntity> getTrafficLightsForApproaches(EnumFacing... approaches) {
+		java.util.Set<EnumFacing> allowed = java.util.EnumSet.noneOf(EnumFacing.class);
+		java.util.Collections.addAll(allowed, approaches);
+		return getAllTrafficLightPositions()
+				.stream()
+				.map(this::getTrafficLightAt)
+				.filter(Objects::nonNull)
+				.filter(tl -> allowed.contains(TrafficLightFacingResolver.resolveApproachFacing(tl)))
+				.collect(Collectors.toList());
+	}
+
+	public static boolean isNorthSouthApproach(EnumFacing approach) {
+		return approach == EnumFacing.NORTH || approach == EnumFacing.SOUTH;
+	}
+
+	public static EnumFacing resolveTrafficLightApproach(BaseTrafficLightTileEntity light, int rotation) {
+		return TrafficLightFacingResolver.resolveApproachFacing(light);
+	}
+
+	public void reconcileTrafficLightPairing(BlockPos pos) {
+		if (world == null || (!northSouthLights.contains(pos) && !westEastLights.contains(pos))) {
+			return;
+		}
+		BaseTrafficLightTileEntity light = getTrafficLightAt(pos);
+		if (light == null) {
+			return;
+		}
+		EnumFacing approach = TrafficLightFacingResolver.resolveApproachFacing(light);
+		northSouthLights.remove(pos);
+		westEastLights.remove(pos);
+		if (isNorthSouthApproach(approach)) {
+			if (!northSouthLights.contains(pos)) {
+				northSouthLights.add(pos);
+			}
+		} else if (!westEastLights.contains(pos)) {
+			westEastLights.add(pos);
+		}
+		markDirty();
+	}
+
+	public static void notifyApproachFacingChanged(World world, BlockPos lightPos) {
+		if (world == null) {
+			return;
+		}
+		for (TileEntity te : world.loadedTileEntityList) {
+			if (te instanceof TrafficLightControlBoxTileEntity) {
+				((TrafficLightControlBoxTileEntity) te).reconcileTrafficLightPairing(lightPos);
+			}
+		}
 	}
 	
 	
@@ -194,7 +329,8 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		compound.setBoolean("splitDirectionsEnabled", splitDirectionsEnabled);
 		compound.setBoolean("splitNorthSouthEnabled", splitNorthSouthEnabled);
 		compound.setBoolean("splitWestEastEnabled", splitWestEastEnabled);
-		compound.setBoolean("FyaNightOnlyEnabled", fyaNightOnlyEnabled);
+		compound.setBoolean("FyaNightOnlyEnabled", isFyaNightOnlyEnabled());
+		writeMovementSettingsToNBT(compound);
 
 		
 		    compound.setInteger("TicksInCurrentStage", ticksInCurrentStage);
@@ -265,6 +401,12 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
+
+		westEastLights.clear();
+		northSouthLights.clear();
+		sensors.clear();
+		northSouthPedButtons.clear();
+		westEastPedButtons.clear();
 		
 		int counter = 0;
 		while(compound.hasKey("westEast" + counter))
@@ -309,6 +451,9 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		if (compound.hasKey("FyaNightOnlyEnabled")) {
 			fyaNightOnlyEnabled = compound.getBoolean("FyaNightOnlyEnabled");
 		}
+		readMovementSettingsFromNBT(compound);
+		migrateLegacyFyaSettings(compound);
+		fyaNightOnlyEnabled = isFyaNightOnlyEnabled();
 
 		
 	 
@@ -368,12 +513,13 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		compound.setBoolean("splitDirectionsEnabled", splitDirectionsEnabled);
 		compound.setBoolean("splitNorthSouthEnabled", splitNorthSouthEnabled);
 		compound.setBoolean("splitWestEastEnabled", splitWestEastEnabled);
-		compound.setBoolean("FyaNightOnlyEnabled", fyaNightOnlyEnabled);
+		compound.setBoolean("FyaNightOnlyEnabled", isFyaNightOnlyEnabled());
 		compound.setBoolean("isAutoMode", !sensors.isEmpty() || !northSouthPedButtons.isEmpty() || !westEastPedButtons.isEmpty());
 		compound.setBoolean("hasNorth", hasNorth);
 		compound.setBoolean("hasSouth", hasSouth);
 		compound.setBoolean("hasEast", hasEast);
 		compound.setBoolean("hasWest", hasWest);
+		writeMovementSettingsToNBT(compound);
 
 		getAutomator().setSyncData(compound);
 		
@@ -415,6 +561,8 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		if (tag.hasKey("FyaNightOnlyEnabled")) {
 			fyaNightOnlyEnabled = tag.getBoolean("FyaNightOnlyEnabled");
 		}
+		readMovementSettingsFromNBT(tag);
+		fyaNightOnlyEnabled = isFyaNightOnlyEnabled();
 		getAutomator().readSyncData(tag);
 	}
 	
@@ -687,6 +835,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		compound.setBoolean("hasSouth", hasSouth);
 		compound.setBoolean("hasEast", hasEast);
 		compound.setBoolean("hasWest", hasWest);
+		writeMovementSettingsToNBT(compound);
 		getAutomator().setSyncData(compound);
 		
 		return compound;
@@ -704,6 +853,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		if (compound.hasKey("hasSouth")) this.hasSouth = compound.getBoolean("hasSouth");
 		if (compound.hasKey("hasEast")) this.hasEast = compound.getBoolean("hasEast");
 		if (compound.hasKey("hasWest")) this.hasWest = compound.getBoolean("hasWest");
+		readMovementSettingsFromNBT(compound);
 		markDirty();
 		world.notifyBlockUpdate(getPos(), world.getBlockState(getPos()), world.getBlockState(getPos()), 3);
 	}
@@ -959,6 +1109,8 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		private RightOfWays pendingSplitSwapRow = null;
 		private EnumFacing pendingSplitSwapDirection = null;
 		private final EnumFacing[] splitOrder = new EnumFacing[] { EnumFacing.NORTH, EnumFacing.EAST, EnumFacing.SOUTH, EnumFacing.WEST };
+		private boolean dir1RightAfterLeft = false;
+		private boolean dir2RightAfterLeft = false;
 		
 		private double greenMinimumNS = 0;
 		private double greenMinimumEW = 0;
@@ -1028,15 +1180,17 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 			EnumFacing preferred = getAndAdvancePreferredSplitDirection(row);
 			EnumFacing other = getOtherRowDirection(row, preferred);
 
-			// Respect enabled approaches.
-			if (!isSplitDirectionEnabled(preferred) && isSplitDirectionEnabled(other)) {
-				preferred = other;
-				other = getOtherRowDirection(row, preferred);
+			// Respect enabled approaches with at least one movement configured.
+			if (!isApproachServicable(preferred)) {
+				if (isApproachServicable(other)) {
+					return other;
+				}
+				return isApproachEnabled(preferred) ? preferred : other;
 			}
 
 			// Prefer demand on the preferred approach; otherwise use the other if it has demand.
-			final boolean preferredDemand = isSplitDirectionEnabled(preferred) && hasAnyDemandForFacing(preferred);
-			final boolean otherDemand = isSplitDirectionEnabled(other) && hasAnyDemandForFacing(other);
+			final boolean preferredDemand = isApproachServicable(preferred) && hasAnyDemandForFacing(preferred);
+			final boolean otherDemand = isApproachServicable(other) && hasAnyDemandForFacing(other);
 			if (!preferredDemand && otherDemand) {
 				return other;
 			}
@@ -1069,20 +1223,20 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 
 		private EnumFacing getNextSplitDirection(EnumFacing current) {
 			final int start = splitIndex(current);
-			// First pass: pick next enabled direction with demand.
+			// First pass: pick next servicable direction with demand.
 			for (int step = 1; step <= splitOrder.length; step++) {
 				EnumFacing candidate = splitOrder[(start + step) % splitOrder.length];
-				if (!isSplitDirectionEnabled(candidate)) {
+				if (!isApproachServicable(candidate)) {
 					continue;
 				}
 				if (hasAnyDemandForFacing(candidate)) {
 					return candidate;
 				}
 			}
-			// Second pass: if no demand anywhere, just rotate to next enabled.
+			// Second pass: if no demand anywhere, just rotate to next servicable.
 			for (int step = 1; step <= splitOrder.length; step++) {
 				EnumFacing candidate = splitOrder[(start + step) % splitOrder.length];
-				if (isSplitDirectionEnabled(candidate)) {
+				if (isApproachServicable(candidate)) {
 					return candidate;
 				}
 			}
@@ -1101,6 +1255,23 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 			return isSplitDirectionEnabled(facing);
 		}
 
+		private boolean isApproachServicable(EnumFacing facing) {
+			if (!isApproachEnabled(facing) || !hasAnyMovementEnabled(facing)) {
+				return false;
+			}
+			// Right-only approaches are served during the coupled perpendicular left phase when available.
+			return !isRightOnlyCoupledToPerpendicularLeft(facing);
+		}
+
+		private boolean isRightOnlyCoupledToPerpendicularLeft(EnumFacing facing) {
+			ApproachMovementSettings settings = TrafficLightControlBoxTileEntity.this.getMovementSettings(facing);
+			if (!ApproachMovementPhaseHelper.isRightOnly(settings)) {
+				return false;
+			}
+			EnumFacing coupledLeft = TrafficLightFacingResolver.getCoupledLeftApproachForRightOnly(facing);
+			return isApproachEnabled(coupledLeft) && isLeftMovementEnabled(coupledLeft);
+		}
+
 		private boolean hasAnyDemandForRow(RightOfWays row) {
 			final EnumFacing dir1 = getRowDir1(row);
 			final EnumFacing dir2 = getRowDir2(row);
@@ -1117,12 +1288,12 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 			final EnumFacing dir2 = getRowDir2(row);
 
 			EnumFacing normalized = (current == dir1 || current == dir2) ? current : dir1;
-			if (!isApproachEnabled(normalized)) {
-				normalized = isApproachEnabled(dir1) ? dir1 : dir2;
+			if (!isApproachServicable(normalized)) {
+				normalized = isApproachServicable(dir1) ? dir1 : dir2;
 			}
 
-			final boolean demand1 = isApproachEnabled(dir1) && hasAnyDemandForFacing(dir1);
-			final boolean demand2 = isApproachEnabled(dir2) && hasAnyDemandForFacing(dir2);
+			final boolean demand1 = isApproachServicable(dir1) && hasAnyDemandForFacing(dir1);
+			final boolean demand2 = isApproachServicable(dir2) && hasAnyDemandForFacing(dir2);
 
 			if (demand1 && !demand2) {
 				return dir1;
@@ -1272,7 +1443,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 
 		    // If FYA is configured to be night-only, don't hard cut to red when day starts.
 		    // Instead, run a short solid-yellow transition before holding red.
-		    if (fyaNightOnlyEnabled && lastInNightFlash && !inNightFlash) {
+		    if (anyFyaNightOnlyConfigured() && lastInNightFlash && !inNightFlash) {
 		    	final double yellowSeconds = (lastRightOfWay == RightOfWays.NorthSouth) ? getYellowTimeNS() : getYellowTimeEW();
 		    	final int yellowTicks = (int) Math.max(10, Math.min(200, Math.round(yellowSeconds * 20.0)));
 		    	fyaDayTransitionTicksRemaining = yellowTicks;
@@ -1482,6 +1653,134 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 				result.Direction2Sensor = true;
 				result.Direction2SensorLeft = false;
 			}
+
+			applyMovementSensorRules(dir1, result, true);
+			applyMovementSensorRules(dir2, result, false);
+			applyRightOnlySensorClear(dir1, dir2, result);
+			applyCoupledRightOnlyLeftDemand(row, result);
+		}
+
+		private void applyRightOnlySensorClear(EnumFacing dir1, EnumFacing dir2, SensorCheckResult result) {
+			ApproachMovementSettings settings1 = TrafficLightControlBoxTileEntity.this.getMovementSettings(dir1);
+			ApproachMovementSettings settings2 = TrafficLightControlBoxTileEntity.this.getMovementSettings(dir2);
+
+			if (ApproachMovementPhaseHelper.isRightOnly(settings1)) {
+				result.Direction1SensorRight = false;
+			}
+			if (ApproachMovementPhaseHelper.isRightOnly(settings2)) {
+				result.Direction2SensorRight = false;
+			}
+		}
+
+		/** Right-only demand is served during the coupled perpendicular left (E right -> N left). */
+		private void applyCoupledRightOnlyLeftDemand(RightOfWays row, SensorCheckResult result) {
+			final EnumFacing dir1 = getRowDir1(row);
+			final EnumFacing dir2 = getRowDir2(row);
+
+			for (EnumFacing facing : new EnumFacing[] { EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.EAST, EnumFacing.WEST }) {
+				if (!isApproachEnabled(facing)) {
+					continue;
+				}
+				ApproachMovementSettings settings = TrafficLightControlBoxTileEntity.this.getMovementSettings(facing);
+				if (!ApproachMovementPhaseHelper.isRightOnly(settings)) {
+					continue;
+				}
+				if (!hasRightSensorDemandForFacing(facing)) {
+					continue;
+				}
+
+				EnumFacing coupledLeft = TrafficLightFacingResolver.getCoupledLeftApproachForRightOnly(facing);
+				if (!isApproachEnabled(coupledLeft) || !isLeftMovementEnabled(coupledLeft)) {
+					continue;
+				}
+				if (coupledLeft == dir1) {
+					result.Direction1SensorLeft = true;
+				} else if (coupledLeft == dir2) {
+					result.Direction2SensorLeft = true;
+				}
+			}
+		}
+
+		private boolean hasRightSensorDemandForFacing(EnumFacing facing) {
+			if (!isApproachEnabled(facing)) {
+				return false;
+			}
+			for (BlockPos sensePos : sensors) {
+				IBlockState senseState = world.getBlockState(sensePos);
+				if (!(senseState.getBlock() instanceof BlockTrafficSensorRight)) {
+					continue;
+				}
+				EnumFacing sensorFacing = getSensorFacing(senseState);
+				if (sensorFacing != facing) {
+					continue;
+				}
+				if (isSensorTrippedAt(sensePos)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		private Stages getLeftTurnStageForApproach(EnumFacing leftApproach, RightOfWays row) {
+			final EnumFacing dir1 = getRowDir1(row);
+			final EnumFacing dir2 = getRowDir2(row);
+			if (leftApproach == dir1) {
+				return Stages.Direction1LeftTurnArrow;
+			}
+			if (leftApproach == dir2) {
+				return Stages.Direction2LeftTurnArrow;
+			}
+			return null;
+		}
+
+		private Stages tryCoupledLeftForRightOnly(EnumFacing rightOnlyApproach, RightOfWays row, double arrowMinNS, double arrowMinEW) {
+			EnumFacing coupledLeft = TrafficLightFacingResolver.getCoupledLeftApproachForRightOnly(rightOnlyApproach);
+			if (!isLeftMovementEnabled(coupledLeft)) {
+				return null;
+			}
+			Stages leftStage = getLeftTurnStageForApproach(coupledLeft, row);
+			if (leftStage == null) {
+				return null;
+			}
+			setNextUpdate(coupledLeft == getRowDir1(row) ? arrowMinNS : arrowMinEW);
+			return leftStage;
+		}
+
+		private void applyMovementSensorRules(EnumFacing facing, SensorCheckResult result, boolean isDir1) {
+			if (!hasAnyMovementEnabled(facing)) {
+				if (isDir1) {
+					result.Direction1Sensor = false;
+					result.Direction1SensorLeft = false;
+					result.Direction1SensorRight = false;
+				} else {
+					result.Direction2Sensor = false;
+					result.Direction2SensorLeft = false;
+					result.Direction2SensorRight = false;
+				}
+				return;
+			}
+			ApproachMovementSettings settings = TrafficLightControlBoxTileEntity.this.getMovementSettings(facing);
+			if (!settings.straightEnabled) {
+				if (isDir1) {
+					result.Direction1Sensor = false;
+				} else {
+					result.Direction2Sensor = false;
+				}
+			}
+			if (!settings.leftEnabled) {
+				if (isDir1) {
+					result.Direction1SensorLeft = false;
+				} else {
+					result.Direction2SensorLeft = false;
+				}
+			}
+			if (!settings.rightEnabled) {
+				if (isDir1) {
+					result.Direction1SensorRight = false;
+				} else {
+					result.Direction2SensorRight = false;
+				}
+			}
 		}
 
 		
@@ -1541,8 +1840,6 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 
 			//System.out.print("AUTO:" + Automator.this.stageStartTime);
 			
-			List<BlockPos> trafficLightPosForRightOfWay;
-			List<BlockPos> trafficLightPosOpposingRightOfWay;
 			List<BaseTrafficLightTileEntity> trafficLightsForRightOfWay;
 			List<BaseTrafficLightTileEntity> trafficLightsOpposingRightOfWay;
 			EnumFacing direction1;
@@ -1550,49 +1847,19 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 			
 			if (lastRightOfWay == RightOfWays.NorthSouth )
 			{
-				trafficLightPosForRightOfWay = northSouthLights;
-				trafficLightPosOpposingRightOfWay = westEastLights;
+				trafficLightsForRightOfWay = TrafficLightControlBoxTileEntity.this.getTrafficLightsForApproaches(EnumFacing.NORTH, EnumFacing.SOUTH);
+				trafficLightsOpposingRightOfWay = TrafficLightControlBoxTileEntity.this.getTrafficLightsForApproaches(EnumFacing.EAST, EnumFacing.WEST);
 				
 				direction1 = EnumFacing.NORTH;
 				direction2 = EnumFacing.SOUTH;
 			}
 			 else {
-				trafficLightPosForRightOfWay = westEastLights;
-				trafficLightPosOpposingRightOfWay = northSouthLights;
+				trafficLightsForRightOfWay = TrafficLightControlBoxTileEntity.this.getTrafficLightsForApproaches(EnumFacing.EAST, EnumFacing.WEST);
+				trafficLightsOpposingRightOfWay = TrafficLightControlBoxTileEntity.this.getTrafficLightsForApproaches(EnumFacing.NORTH, EnumFacing.SOUTH);
 				
 				direction1 = EnumFacing.EAST;
 				direction2 = EnumFacing.WEST;
 			}
-			
-			trafficLightsForRightOfWay = trafficLightPosForRightOfWay
-					.stream()
-					.map(p ->
-					{
-						TileEntity te = world.getTileEntity(p);
-						if (te instanceof BaseTrafficLightTileEntity)
-						{
-							return (BaseTrafficLightTileEntity)te;
-						}
-						
-						return null;
-					})
-					.filter(Objects::nonNull)
-					.collect(Collectors.toList());
-			
-			trafficLightsOpposingRightOfWay = trafficLightPosOpposingRightOfWay
-					.stream()
-					.map(p ->
-					{
-						TileEntity te = world.getTileEntity(p);
-						if (te instanceof BaseTrafficLightTileEntity)
-						{
-							return (BaseTrafficLightTileEntity)te;
-						}
-						
-						return null;
-					})
-					.filter(Objects::nonNull)
-					.collect(Collectors.toList());
 			
 			EnumFacing direction1cw = direction1.rotateY();
 			EnumFacing direction2cw = direction2.rotateY();
@@ -1642,68 +1909,45 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					
 					break;
 				case Direction1RightTurnArrow:
-				case Direction1LeftTurnArrow:					
+				case Direction1LeftTurnArrow:
 					trafficLightsForRightOfWay
 						.stream()
 						.forEach(tl -> {
-							IBlockState tlBs = world.getBlockState(tl.getPos());
-							if (CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction1.getOpposite()))
-							{
-								tl.powerOff();
-								tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
-								tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
-								tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
-								
-								tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
-								tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
-								tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
-								
-								tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
-								tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
-								tl.setActive(EnumTrafficLightBulbTypes.NoRightTurn, true, false);
-								tl.setActive(EnumTrafficLightBulbTypes.NoLeftTurn, true, false);
-								
+							final EnumFacing approach = TrafficLightFacingResolver.resolveApproachFacing(tl);
+							final boolean servingCoupledRightOnly = isRightOnlyCoupledToPerpendicularLeft(approach);
+							if (approach != direction1) {
+								ApproachMovementBulbHelper.forceAllRed(tl);
 								return;
 							}
-							
-							if (!CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction1))
-							{
+							if ((stage == Stages.Direction1LeftTurnArrow && !isLeftMovementEnabled(direction1))
+									|| (stage == Stages.Direction1RightTurnArrow && !isRightMovementEnabled(direction1))
+									|| servingCoupledRightOnly) {
+								ApproachMovementBulbHelper.forceAllRed(tl);
 								return;
 							}
-							
+
 							tl.powerOff();
 							tl.setActive(EnumTrafficLightBulbTypes.GreenArrowLeft, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.GreenArrowUTurn, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.GreenArrowLeft2, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.GreenArrowUTurn2, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.Green, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.StraightGreen, true, false);
+							if (isStraightMovementEnabled(direction1)) {
+								tl.setActive(EnumTrafficLightBulbTypes.Green, true, false);
+								tl.setActive(EnumTrafficLightBulbTypes.StraightGreen, true, false);
+							}
 							tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight2, true, false);
 						});
-					
+
 					trafficLightsOpposingRightOfWay
 					.stream()
 					.forEach(tl -> {
-						IBlockState tlBs = world.getBlockState(tl.getPos());
-						if (!CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction1cw))
-						{
-							tl.powerOff();
-							tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.NoRightTurn, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
-							
-							tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.NoLeftTurn, true, false);
+						final EnumFacing approach = TrafficLightFacingResolver.resolveApproachFacing(tl);
+						if (approach != direction1cw) {
+							ApproachMovementBulbHelper.forceAllRed(tl);
 							return;
 						}
-						
+
 						tl.powerOff();
 						tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
@@ -1721,91 +1965,60 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					trafficLightsForRightOfWay
 					.stream()
 					.forEach(tl -> {
-						IBlockState tlBs = world.getBlockState(tl.getPos());
-						if (CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction2.getOpposite()))
-						{
+						final EnumFacing approach = TrafficLightFacingResolver.resolveApproachFacing(tl);
+						final boolean servingCoupledRightOnly = isRightOnlyCoupledToPerpendicularLeft(approach);
+						if (approach == direction1) {
+							final ApproachMovementSettings crossSettings = TrafficLightControlBoxTileEntity.this.getMovementSettings(direction1);
 							tl.powerOff();
-							tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
-							final boolean allowFyaNow = !TrafficLightControlBoxTileEntity.this.fyaNightOnlyEnabled || TrafficLightControlBoxTileEntity.this.inNightFlash;
-							final boolean isFyaDayTransition = TrafficLightControlBoxTileEntity.this.fyaNightOnlyEnabled
-									&& !TrafficLightControlBoxTileEntity.this.inNightFlash
-									&& TrafficLightControlBoxTileEntity.this.fyaDayTransitionTicksRemaining > 0;
-									if (allowFyaNow) {
-											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, true);
-											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, true);
-											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft2, true, true);
-											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn2, true, true);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
-										} else if (isFyaDayTransition) {
-											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, false);
-											
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
-										} else {
-											// Outside night (when FYA Night Only is enabled), keep turn arrows red.
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
-										}
+							if (crossSettings.straightEnabled) {
+								tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
+								tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
+								tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
+							}
+							applyLeftFyaYellow(tl, approach, true);
+							if (!allowFyaFlashFor(approach, false) && !isFyaDayTransitionFor(approach, false)) {
+								tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
+								tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
+							}
 							tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
-							
-							tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
-							
 							tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.NoLeftTurn, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.NoRightTurn, true, false);
-							
 							return;
 						}
-						
-						if (!CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction2))
-						{
+						if (approach != direction2) {
+							ApproachMovementBulbHelper.forceAllRed(tl);
 							return;
 						}
-						
+						if ((stage == Stages.Direction2LeftTurnArrow && !isLeftMovementEnabled(direction2))
+								|| (stage == Stages.Direction2RightTurnArrow && !isRightMovementEnabled(direction2))
+								|| servingCoupledRightOnly) {
+							ApproachMovementBulbHelper.forceAllRed(tl);
+							return;
+						}
+
 						tl.powerOff();
 						tl.setActive(EnumTrafficLightBulbTypes.GreenArrowLeft, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.GreenArrowUTurn, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.GreenArrowLeft2, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.GreenArrowUTurn2, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.Green, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.StraightGreen, true, false);
+						if (isStraightMovementEnabled(direction2)) {
+							tl.setActive(EnumTrafficLightBulbTypes.Green, true, false);
+							tl.setActive(EnumTrafficLightBulbTypes.StraightGreen, true, false);
+						}
 						tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight2, true, false);
 					});
-					
+
 					trafficLightsOpposingRightOfWay
 					.stream()
 					.forEach(tl -> {
-						IBlockState tlBs = world.getBlockState(tl.getPos());						
-						if (!CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction2cw))
-						{
-							tl.powerOff();
-							tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.NoRightTurn, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
-							
-							tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.NoLeftTurn, true, false);
-							
+						final EnumFacing approach = TrafficLightFacingResolver.resolveApproachFacing(tl);
+						if (approach != direction2cw) {
+							ApproachMovementBulbHelper.forceAllRed(tl);
 							return;
 						}
-						
+
 						tl.powerOff();
 						tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
@@ -1823,6 +2036,14 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					.stream()
 					.forEach(tl ->
 					{
+						final EnumFacing approach = TrafficLightFacingResolver.resolveApproachFacing(tl);
+						final boolean serveLeft = (approach == direction1 && isLeftMovementEnabled(direction1))
+								|| (approach == direction2 && isLeftMovementEnabled(direction2));
+						if (!serveLeft) {
+							ApproachMovementBulbHelper.forceAllRed(tl);
+							return;
+						}
+
 						tl.powerOff();
 						tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
@@ -1857,39 +2078,19 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						.stream()
 						.forEach(tl -> {
 							IBlockState tlBs = world.getBlockState(tl.getPos());
-							if (CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction1.getOpposite()))
+							if (TrafficLightFacingResolver.isFacing(tl, direction1.getOpposite()))
 							{
 								
 								tl.powerOff();
 								tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
 								tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
 								tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
-								final boolean allowFyaNow = !TrafficLightControlBoxTileEntity.this.fyaNightOnlyEnabled || TrafficLightControlBoxTileEntity.this.inNightFlash;
-							final boolean isFyaDayTransition = TrafficLightControlBoxTileEntity.this.fyaNightOnlyEnabled
-									&& !TrafficLightControlBoxTileEntity.this.inNightFlash
-									&& TrafficLightControlBoxTileEntity.this.fyaDayTransitionTicksRemaining > 0;
-									if (allowFyaNow) {
-											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, true);
-											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, true);
-											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft2, true, true);
-											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn2, true, true);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
-										} else if (isFyaDayTransition) {
-											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, false);
-											
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
-										} else {
-											// Outside night (when FYA Night Only is enabled), keep turn arrows red.
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
-										}
+								final EnumFacing approach = TrafficLightFacingResolver.resolveApproachFacing(tl);
+								applyLeftFyaYellow(tl, approach, true);
+								if (!allowFyaFlashFor(approach, false) && !isFyaDayTransitionFor(approach, false)) {
+									tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
+									tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
+								}
 								tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
 								tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
 								tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
@@ -1904,8 +2105,9 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 							
 							
 							
-							if (!CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction1))
+							if (!TrafficLightFacingResolver.isFacing(tl, direction1))
 							{
+								ApproachMovementBulbHelper.forceAllRed(tl);
 								return;
 							}
 							
@@ -1929,7 +2131,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					.forEach(tl -> {
 						IBlockState tlBs = world.getBlockState(tl.getPos());
 						
-						if (CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction1cw.getOpposite()))
+						if (TrafficLightFacingResolver.isFacing(tl, direction1cw.getOpposite()))
 						{
 							tl.powerOff();
 							tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
@@ -1944,8 +2146,9 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 							tl.setActive(EnumTrafficLightBulbTypes.NoLeftTurn, true, false);
 						}
 						
-						if (!CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction1cw))
+						if (!TrafficLightFacingResolver.isFacing(tl, direction1cw))
 						{
+							ApproachMovementBulbHelper.forceAllRed(tl);
 							return;
 						}
 						
@@ -1967,39 +2170,19 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					.stream()
 					.forEach(tl -> {
 						IBlockState tlBs = world.getBlockState(tl.getPos());
-						if (CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction2.getOpposite()))
+						if (TrafficLightFacingResolver.isFacing(tl, direction2.getOpposite()))
 						{
 							
 							tl.powerOff();
 							tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
-							final boolean allowFyaNow = !TrafficLightControlBoxTileEntity.this.fyaNightOnlyEnabled || TrafficLightControlBoxTileEntity.this.inNightFlash;
-							final boolean isFyaDayTransition = TrafficLightControlBoxTileEntity.this.fyaNightOnlyEnabled
-									&& !TrafficLightControlBoxTileEntity.this.inNightFlash
-									&& TrafficLightControlBoxTileEntity.this.fyaDayTransitionTicksRemaining > 0;
-									if (allowFyaNow) {
-											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, true);
-											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, true);
-											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft2, true, true);
-											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn2, true, true);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
-										} else if (isFyaDayTransition) {
-											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, false);
-											
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
-										} else {
-											// Outside night (when FYA Night Only is enabled), keep turn arrows red.
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
-										}
+							final EnumFacing approach = TrafficLightFacingResolver.resolveApproachFacing(tl);
+							applyLeftFyaYellow(tl, approach, true);
+							if (!allowFyaFlashFor(approach, false) && !isFyaDayTransitionFor(approach, false)) {
+								tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
+								tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
+							}
 							tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
@@ -2010,8 +2193,9 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 							tl.setActive(EnumTrafficLightBulbTypes.NoRightTurn, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.NoLeftTurn, true, false);
 						}
-						if (!CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction2))
+						if (!TrafficLightFacingResolver.isFacing(tl, direction2))
 						{
+							ApproachMovementBulbHelper.forceAllRed(tl);
 							return;
 						}
 						
@@ -2034,7 +2218,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					.stream()
 					.forEach(tl -> {
 						IBlockState tlBs = world.getBlockState(tl.getPos());
-						if (CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction2cw.getOpposite()))
+						if (TrafficLightFacingResolver.isFacing(tl, direction2cw.getOpposite()))
 						{
 							tl.powerOff();
 							tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
@@ -2050,8 +2234,9 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						}
 						
 						
-						if (!CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction2cw))
+						if (!TrafficLightFacingResolver.isFacing(tl, direction2cw))
 						{
+							ApproachMovementBulbHelper.forceAllRed(tl);
 							return;
 						}
 						
@@ -2112,7 +2297,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					.stream()
 					.forEach(tl -> {
 						IBlockState tlBs = world.getBlockState(tl.getPos());
-						if (!CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction1))
+						if (!TrafficLightFacingResolver.isFacing(tl, direction1))
 						{
 							return;
 						}
@@ -2134,8 +2319,9 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					.stream()
 					.forEach(tl -> {
 						IBlockState tlBs = world.getBlockState(tl.getPos());
-						if (!CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction1cw))
+						if (!TrafficLightFacingResolver.isFacing(tl, direction1cw))
 						{
+							ApproachMovementBulbHelper.forceAllRed(tl);
 							return;
 						}
 						
@@ -2157,8 +2343,9 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					.stream()
 					.forEach(tl -> {
 						IBlockState tlBs = world.getBlockState(tl.getPos());
-						if (!CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction2))
+						if (!TrafficLightFacingResolver.isFacing(tl, direction2))
 						{
+							ApproachMovementBulbHelper.forceAllRed(tl);
 							return;
 						}
 						
@@ -2179,8 +2366,9 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					.stream()
 					.forEach(tl -> {
 						IBlockState tlBs = world.getBlockState(tl.getPos());
-						if (!CustomAngleCalculator.isRotationFacing(tlBs.getValue(BlockBaseTrafficLight.ROTATION), direction2cw))
+						if (!TrafficLightFacingResolver.isFacing(tl, direction2cw))
 						{
+							ApproachMovementBulbHelper.forceAllRed(tl);
 							return;
 						}
 						
@@ -2200,66 +2388,70 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 				case Yellow:
 					final boolean splitYellow = TrafficLightControlBoxTileEntity.this.isSplitEnabledForRow(lastRightOfWay);
 					final EnumFacing splitYellowDir = activeSplitDirection;
-					final boolean allowFyaNowYellow = !TrafficLightControlBoxTileEntity.this.fyaNightOnlyEnabled || TrafficLightControlBoxTileEntity.this.inNightFlash;
-					final boolean isFyaDayTransitionYellow = TrafficLightControlBoxTileEntity.this.fyaNightOnlyEnabled
-							&& !TrafficLightControlBoxTileEntity.this.inNightFlash
-							&& TrafficLightControlBoxTileEntity.this.fyaDayTransitionTicksRemaining > 0;
 					trafficLightsForRightOfWay
 					.stream()
 					.forEach(tl ->
 					{
 						tl.powerOff();
-						final IBlockState tlBs = world.getBlockState(tl.getPos());
-						final int rotation = tlBs.getValue(BlockBaseTrafficLight.ROTATION);
-						final boolean facesDir1 = CustomAngleCalculator.isRotationFacing(rotation, direction1);
-						final boolean facesDir2 = CustomAngleCalculator.isRotationFacing(rotation, direction2);
+						final EnumFacing approach = TrafficLightFacingResolver.resolveApproachFacing(tl);
 						if (splitYellow) {
-							final boolean allowYellow = (facesDir1 && splitYellowDir == direction1) || (facesDir2 && splitYellowDir == direction2);
+							final boolean allowYellow = approach == splitYellowDir;
 							if (!allowYellow) {
-								tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
-								tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
-								tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
-								tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
-								tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
-								tl.setActive(EnumTrafficLightBulbTypes.NoRightTurn, true, false);
-								tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
-								tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
-								tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
-								tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
-									tl.setActive(EnumTrafficLightBulbTypes.NoLeftTurn, true, false);
+								ApproachMovementBulbHelper.forceAllRed(tl);
 								return;
 							}
 						}
 
+						final ApproachMovementSettings yellowSettings = TrafficLightControlBoxTileEntity.this.getMovementSettings(approach);
 						final boolean oppositeApproachDisabled = !splitYellow
-								&& ((facesDir1 && !isApproachEnabled(direction2)) || (facesDir2 && !isApproachEnabled(direction1)));
-						final boolean showYellowTurnArrows = oppositeApproachDisabled || allowFyaNowYellow || isFyaDayTransitionYellow;
-						if (showYellowTurnArrows) {
-							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft2, false, false);
-							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft3, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight3, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn2, false, false);
-							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight2, false, false);
+								&& !isApproachEnabled(TrafficLightFacingResolver.getOppositeApproach(approach));
+						// Shared turns only for THIS approach; also T-intersection / active split approach.
+						final boolean shareTurnsWithStraight = isSharedTurnsFor(approach)
+								|| oppositeApproachDisabled
+								|| (splitYellow && approach == splitYellowDir);
+						final boolean leftFyaActive = !shareTurnsWithStraight
+								&& (allowFyaFlashFor(approach, true) || isFyaDayTransitionFor(approach, true));
+						final boolean rightFyaActive = !shareTurnsWithStraight
+								&& (allowFyaFlashFor(approach, false) || isFyaDayTransitionFor(approach, false));
+						if (shareTurnsWithStraight) {
+							ApproachMovementBulbHelper.applySharedTurnYellows(tl);
+						} else if (leftFyaActive) {
+							if (yellowSettings.leftEnabled) {
+								LeftTurnBulbHelper.setYellow(tl, false);
+								tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft3, true, false);
+							}
 						} else {
 							tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
-							tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
+						}
+						if (!shareTurnsWithStraight) {
+							if (rightFyaActive) {
+								if (yellowSettings.rightEnabled) {
+									tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight3, true, false);
+									tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight, true, false);
+									tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight2, false, false);
+								}
+							} else {
+								tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
+								tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
+							}
 						}
 
-						tl.setActive(EnumTrafficLightBulbTypes.Yellow, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.StraightYellow, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.NoRightTurn, true, false);
+						if (yellowSettings.straightEnabled) {
+							tl.setActive(EnumTrafficLightBulbTypes.Yellow, true, false);
+							tl.setActive(EnumTrafficLightBulbTypes.StraightYellow, true, false);
+						}
+						if (!shareTurnsWithStraight) {
+							tl.setActive(EnumTrafficLightBulbTypes.NoRightTurn, true, false);
+						}
 					});
 					
 					trafficLightsOpposingRightOfWay
 					.stream()
 					.forEach(tl -> {
+						final EnumFacing approach = TrafficLightFacingResolver.resolveApproachFacing(tl);
 						final EnumFacing opposingRightTurnFacing;
 						if (splitYellowDir == direction1) {
 							opposingRightTurnFacing = direction1cw;
@@ -2269,10 +2461,9 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 							opposingRightTurnFacing = null;
 						}
 						final boolean allowOpposingRightTurnYellow;
-						if ((allowFyaNowYellow || isFyaDayTransitionYellow) && splitYellow && opposingRightTurnFacing != null) {
-							final IBlockState tlBs = world.getBlockState(tl.getPos());
-							final int rotation = tlBs.getValue(BlockBaseTrafficLight.ROTATION);
-							allowOpposingRightTurnYellow = CustomAngleCalculator.isRotationFacing(rotation, opposingRightTurnFacing);
+						if (splitYellow && opposingRightTurnFacing != null) {
+							allowOpposingRightTurnYellow = approach == opposingRightTurnFacing
+									&& (allowFyaFlashFor(opposingRightTurnFacing, false) || isFyaDayTransitionFor(opposingRightTurnFacing, false));
 						} else {
 							allowOpposingRightTurnYellow = false;
 						}
@@ -2307,88 +2498,67 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						.stream()
 						.forEach(tl ->
 						{
-							final IBlockState tlBs = world.getBlockState(tl.getPos());
-							final int rotation = tlBs.getValue(BlockBaseTrafficLight.ROTATION);
-							final boolean facesDir1 = CustomAngleCalculator.isRotationFacing(rotation, direction1);
-							final boolean facesDir2 = CustomAngleCalculator.isRotationFacing(rotation, direction2);
-							final boolean allowGreen = !split || (facesDir1 && splitDir == direction1) || (facesDir2 && splitDir == direction2);
-							final boolean oppositeApproachDisabled = !split && ((facesDir1 && !isApproachEnabled(direction2)) || (facesDir2 && !isApproachEnabled(direction1)));
-							final boolean allowFyaNow = !TrafficLightControlBoxTileEntity.this.fyaNightOnlyEnabled || TrafficLightControlBoxTileEntity.this.inNightFlash;
-							final boolean isFyaDayTransition = TrafficLightControlBoxTileEntity.this.fyaNightOnlyEnabled
-									&& !TrafficLightControlBoxTileEntity.this.inNightFlash
-									&& TrafficLightControlBoxTileEntity.this.fyaDayTransitionTicksRemaining > 0;
-								
+							final EnumFacing approach = TrafficLightFacingResolver.resolveApproachFacing(tl);
+							final boolean allowGreen = (!split || approach == splitDir)
+									&& !isRightOnlyCoupledToPerpendicularLeft(approach);
+							final boolean oppositeApproachDisabled = !split
+									&& !isApproachEnabled(TrafficLightFacingResolver.getOppositeApproach(approach));
+							final ApproachMovementSettings movementSettings = TrafficLightControlBoxTileEntity.this.getMovementSettings(approach);
+							// Shared turns only for THIS approach; also T-intersection / active split approach.
+							final boolean shareTurnsWithStraight = isSharedTurnsFor(approach)
+									|| oppositeApproachDisabled
+									|| (split && approach == splitDir);
+							final boolean leftFyaActive = !shareTurnsWithStraight
+									&& (allowFyaFlashFor(approach, true) || isFyaDayTransitionFor(approach, true));
+							final boolean rightFyaActive = !shareTurnsWithStraight
+									&& (allowFyaFlashFor(approach, false) || isFyaDayTransitionFor(approach, false));
 
 							tl.powerOff();
 							if (allowGreen)
 							{
-								if (!split) {
-									// If the opposing approach is disabled (T-intersection style), don't use flashing permissive arrows.
-									// Give this approach solid green turn arrows instead.
-									if (oppositeApproachDisabled) {
-										tl.setActive(EnumTrafficLightBulbTypes.GreenArrowLeft, true, false);
-										tl.setActive(EnumTrafficLightBulbTypes.GreenArrowUTurn, true, false);
-										tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight, true, false);
-										tl.setActive(EnumTrafficLightBulbTypes.GreenArrowLeft2, true, false);
-										tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, false, false);
-										tl.setActive(EnumTrafficLightBulbTypes.GreenArrowUTurn2, true, false);
-										tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight2, true, false);
-									} else {
-										if (allowFyaNow) {
-											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, true);
-											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, true);
-											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft2, true, true);
-											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn2, true, true);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
-										} else if (isFyaDayTransition) {
-											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, false);
-											
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
-										} else {
-											// Outside night (when FYA Night Only is enabled), keep turn arrows red.
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
-											tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
-										}
+								if (shareTurnsWithStraight) {
+									// Left + U-turn + right arrows with straight (T / ramp / shared / split).
+									ApproachMovementBulbHelper.applySharedTurnGreens(tl);
+								} else if (!split) {
+									applyLeftFyaPermissive(tl, approach);
+									if (!leftFyaActive && !rightFyaActive) {
+										tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
+										tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
 									}
 								}
 								// Only show red turn arrows when permissive/protected indications are not being shown.
-								if (split || oppositeApproachDisabled || allowFyaNow || isFyaDayTransition) {
+								if (shareTurnsWithStraight || leftFyaActive) {
 									// leave off
 								} else {
 									tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
 									tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
 								}
-								tl.setActive(EnumTrafficLightBulbTypes.Green, true, false);
-								if (split) {
-									tl.setActive(EnumTrafficLightBulbTypes.GreenArrowLeft, true, false);
-									tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight, true, false);
-									tl.setActive(EnumTrafficLightBulbTypes.GreenArrowLeft2, true, false);
-									tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight2, true, false);
+								if (movementSettings.straightEnabled) {
+									tl.setActive(EnumTrafficLightBulbTypes.Green, true, false);
+									tl.setActive(EnumTrafficLightBulbTypes.StraightGreen, true, false);
+									tl.setActive(EnumTrafficLightBulbTypes.GreenDownArrow, true, false);
 								}
-								tl.setActive(EnumTrafficLightBulbTypes.GreenArrowLeft2, true, false);
-								tl.setActive(EnumTrafficLightBulbTypes.GreenArrowUTurn2, true, false);
-								tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight2, true, false);
-								tl.setActive(EnumTrafficLightBulbTypes.StraightGreen, true, false);
-							if (split || oppositeApproachDisabled || allowFyaNow || isFyaDayTransition) {
-									// leave off while permissive/protected indications may be shown
+								// Re-assert shared turn arrows after straight so nothing else can leave them dark.
+								if (shareTurnsWithStraight) {
+									ApproachMovementBulbHelper.applySharedTurnGreens(tl);
+								} else if (!split) {
+									if (movementSettings.leftEnabled) {
+										tl.setActive(EnumTrafficLightBulbTypes.GreenArrowLeft2, true, false);
+										tl.setActive(EnumTrafficLightBulbTypes.GreenArrowUTurn2, true, false);
+									}
+									if (movementSettings.rightEnabled) {
+										tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight2, true, false);
+									}
+								}
+								if (shareTurnsWithStraight || rightFyaActive) {
+									// leave off while shared/permissive indications may be shown
 								} else {
 									tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
 								}
-								if (!oppositeApproachDisabled) {
-								if (allowFyaNow) {
-									tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight2, true, true);
-								} else if (isFyaDayTransition) {
-									tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight2, true, false);
+								if (!shareTurnsWithStraight) {
+									applyRightFyaPermissive(tl, approach);
+									tl.setActive(EnumTrafficLightBulbTypes.NoRightTurn, true, false);
 								}
-								}
-								tl.setActive(EnumTrafficLightBulbTypes.NoRightTurn, true, false);
 							
 							if (stage == Stages.GreenCross)
 							{
@@ -2405,10 +2575,12 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 								// In split mode, keep the non-active approach red.
 								final boolean allowRightTurnOnOtherApproach = split
 										&& lastRightOfWay == RightOfWays.EastWest
-										&& ((facesDir1 && splitDir == direction2) || (facesDir2 && splitDir == direction1));
-								tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
-								tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
-								tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
+										&& approach == TrafficLightFacingResolver.getClockwiseApproach(splitDir);
+								if (movementSettings.straightEnabled) {
+									tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
+									tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
+									tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
+								}
 								if (allowRightTurnOnOtherApproach) {
 									
 								} else {
@@ -2440,17 +2612,20 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 
 						final boolean allowOpposingRightTurn;
 						if (split && opposingRightTurnFacing != null) {
-							final IBlockState tlBs = world.getBlockState(tl.getPos());
-							final int rotation = tlBs.getValue(BlockBaseTrafficLight.ROTATION);
-							allowOpposingRightTurn = CustomAngleCalculator.isRotationFacing(rotation, opposingRightTurnFacing);
+							final EnumFacing opposingApproach = TrafficLightFacingResolver.resolveApproachFacing(tl);
+							allowOpposingRightTurn = opposingApproach == opposingRightTurnFacing;
 						} else {
 							allowOpposingRightTurn = false;
 						}
 
 						tl.powerOff();
-						tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
+						final ApproachMovementSettings opposingSettings = TrafficLightControlBoxTileEntity.this
+								.getMovementSettings(TrafficLightFacingResolver.resolveApproachFacing(tl));
+						if (opposingSettings.straightEnabled) {
+							tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
+							tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
+							tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
+						}
 						if (allowOpposingRightTurn) {
 							tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight2, true, false);
@@ -2536,23 +2711,166 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 			// If an approach is disabled (ex: hasNorth=false), it must stay red regardless of stage.
 			forceDisabledApproachesRed(trafficLightsForRightOfWay);
 			forceDisabledApproachesRed(trafficLightsOpposingRightOfWay);
+			applyMovementConfigToLights(trafficLightsForRightOfWay);
+			applyMovementConfigToLights(trafficLightsOpposingRightOfWay);
 
 			return stage;
 		}
 
+		private void applyMovementConfigToLights(List<BaseTrafficLightTileEntity> lights) {
+			for (BaseTrafficLightTileEntity tl : lights) {
+				EnumFacing facing = TrafficLightFacingResolver.resolveApproachFacing(tl);
+				if (!isSplitDirectionEnabled(facing) || !hasAnyMovementEnabled(facing)) {
+					continue;
+				}
+				ApproachMovementSettings settings = TrafficLightControlBoxTileEntity.this.getMovementSettings(facing);
+				ApproachMovementBulbHelper.applyOverrides(tl, settings);
+			}
+		}
+
+		private boolean hasAnyMovementEnabled(EnumFacing facing) {
+			return ApproachMovementPhaseHelper.hasAnyMovementEnabled(
+					TrafficLightControlBoxTileEntity.this.getMovementSettings(facing));
+		}
+
+		private boolean shouldServeRightAfterLeft(EnumFacing facing, RightOfWays row) {
+			double arrowMinimum = row == RightOfWays.NorthSouth ? arrowMinimumNS : arrowMinimumEW;
+			return ApproachMovementPhaseHelper.shouldServeRightAfterLeft(
+					TrafficLightControlBoxTileEntity.this.getMovementSettings(facing), arrowMinimum);
+		}
+
+		private FyaMode getFyaMode(EnumFacing approach, boolean left) {
+			if (approach == null) {
+				return FyaMode.OFF;
+			}
+			ApproachMovementSettings settings = TrafficLightControlBoxTileEntity.this.getMovementSettings(approach);
+			return left ? settings.leftFya : settings.rightFya;
+		}
+
+		private boolean allowFyaFlashFor(EnumFacing approach, boolean left) {
+			FyaMode mode = getFyaMode(approach, left);
+			if (mode == FyaMode.OFF) {
+				return false;
+			}
+			if (mode == FyaMode.ALWAYS) {
+				return true;
+			}
+			return inNightFlash;
+		}
+
+		private boolean isFyaDayTransitionFor(EnumFacing approach, boolean left) {
+			FyaMode mode = getFyaMode(approach, left);
+			return mode == FyaMode.NIGHT_ONLY && !inNightFlash && fyaDayTransitionTicksRemaining > 0;
+		}
+
+		private boolean anyFyaNightOnlyConfigured() {
+			for (EnumFacing facing : new EnumFacing[] { EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.EAST, EnumFacing.WEST }) {
+				ApproachMovementSettings settings = TrafficLightControlBoxTileEntity.this.getMovementSettings(facing);
+				if (settings.leftFya == FyaMode.NIGHT_ONLY || settings.rightFya == FyaMode.NIGHT_ONLY) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		private void applyLeftFyaPermissive(BaseTrafficLightTileEntity tl, EnumFacing approach) {
+			if (allowFyaFlashFor(approach, true)) {
+				tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, true);
+				tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, true);
+				tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft2, true, true);
+				tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn2, true, true);
+				tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
+				tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
+			} else if (isFyaDayTransitionFor(approach, true)) {
+				tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, false);
+				tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, false);
+				tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
+				tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
+			} else {
+				tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
+				tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
+				tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
+				tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
+			}
+		}
+
+		private void applyRightFyaPermissive(BaseTrafficLightTileEntity tl, EnumFacing approach) {
+			if (allowFyaFlashFor(approach, false)) {
+				tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight, true, true);
+				tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight2, true, true);
+			} else if (isFyaDayTransitionFor(approach, false)) {
+				tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight, true, false);
+				tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight2, true, false);
+			} else {
+				tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
+				tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
+			}
+		}
+
+		private void applyLeftFyaYellow(BaseTrafficLightTileEntity tl, EnumFacing approach, boolean flash) {
+			if (allowFyaFlashFor(approach, true)) {
+				tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, flash);
+				tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, flash);
+				tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft2, true, flash);
+				tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn2, true, flash);
+			} else if (isFyaDayTransitionFor(approach, true)) {
+				tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft, true, false);
+				tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn, true, false);
+				tl.setActive(EnumTrafficLightBulbTypes.YellowArrowLeft2, true, false);
+				tl.setActive(EnumTrafficLightBulbTypes.YellowArrowUTurn2, true, false);
+			} else {
+				tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
+				tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
+				tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
+				tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn2, true, false);
+			}
+		}
+
+		private boolean isSharedTurnsFor(EnumFacing approach) {
+			if (approach == null) {
+				return false;
+			}
+			return TrafficLightControlBoxTileEntity.this.getMovementSettings(approach).sharedTurns;
+		}
+
+		private boolean isStraightMovementEnabled(EnumFacing facing) {
+			return TrafficLightControlBoxTileEntity.this.getMovementSettings(facing).straightEnabled;
+		}
+
+		private boolean isLeftMovementEnabled(EnumFacing facing) {
+			ApproachMovementSettings s = TrafficLightControlBoxTileEntity.this.getMovementSettings(facing);
+			// Shared turns is per-approach: only this facing skips its own protected left phase.
+			return s.leftEnabled && !s.sharedTurns;
+		}
+
+		private boolean isRightMovementEnabled(EnumFacing facing) {
+			ApproachMovementSettings s = TrafficLightControlBoxTileEntity.this.getMovementSettings(facing);
+			return s.rightEnabled && !s.sharedTurns;
+		}
+
 		private void forceDisabledApproachesRed(List<BaseTrafficLightTileEntity> lights) {
 			for (BaseTrafficLightTileEntity tl : lights) {
-				IBlockState tlBs = world.getBlockState(tl.getPos());
-				int rotation = tlBs.getValue(BlockBaseTrafficLight.ROTATION);
+				EnumFacing approach = TrafficLightFacingResolver.resolveApproachFacing(tl);
 				boolean disabled = false;
-				if (CustomAngleCalculator.isRotationFacing(rotation, EnumFacing.NORTH)) {
-					disabled = !TrafficLightControlBoxTileEntity.this.hasNorth;
-				} else if (CustomAngleCalculator.isRotationFacing(rotation, EnumFacing.SOUTH)) {
-					disabled = !TrafficLightControlBoxTileEntity.this.hasSouth;
-				} else if (CustomAngleCalculator.isRotationFacing(rotation, EnumFacing.EAST)) {
-					disabled = !TrafficLightControlBoxTileEntity.this.hasEast;
-				} else if (CustomAngleCalculator.isRotationFacing(rotation, EnumFacing.WEST)) {
-					disabled = !TrafficLightControlBoxTileEntity.this.hasWest;
+				switch (approach) {
+					case NORTH:
+						disabled = !TrafficLightControlBoxTileEntity.this.hasNorth;
+						break;
+					case SOUTH:
+						disabled = !TrafficLightControlBoxTileEntity.this.hasSouth;
+						break;
+					case EAST:
+						disabled = !TrafficLightControlBoxTileEntity.this.hasEast;
+						break;
+					case WEST:
+						disabled = !TrafficLightControlBoxTileEntity.this.hasWest;
+						break;
+					default:
+						break;
+				}
+
+				if (!disabled) {
+					disabled = !hasAnyMovementEnabled(approach);
 				}
 
 				if (!disabled) {
@@ -2717,6 +3035,9 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		private boolean hasAnyDemandForFacing(EnumFacing facing)
 		{
 			if (!isSplitDirectionEnabled(facing)) {
+				return false;
+			}
+			if (!hasAnyMovementEnabled(facing)) {
 				return false;
 			}
 
@@ -2932,39 +3253,84 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		    		return Stages.HawkFlashRed;
 
 		        case Red:
+		        	dir1RightAfterLeft = false;
+		        	dir2RightAfterLeft = false;
+		        	if (!isApproachServicable(rowDir1) && !isApproachServicable(rowDir2)) {
+		        		ticksInStage = 0;
+		        		this.stageStartTime = world.getTotalWorldTime();
+		        		setNextUpdate(redTime);
+		        		forcedNextRightOfWay = currentRightOfWay.getNext();
+		        		return Stages.Red;
+		        	}
 		        	if (splitForRow) {
+		        		if (!isApproachServicable(activeSplitDirection)) {
+		        			EnumFacing otherDir = activeSplitDirection == rowDir1 ? rowDir2 : rowDir1;
+		        			if (isApproachServicable(otherDir)) {
+		        				activeSplitDirection = otherDir;
+		        			} else {
+		        				ticksInStage = 0;
+		        				this.stageStartTime = world.getTotalWorldTime();
+		        				setNextUpdate(redTime);
+		        				forcedNextRightOfWay = currentRightOfWay.getNext();
+		        				return Stages.Red;
+		        			}
+		        		}
 		        		// In split mode, skip protected arrow sequencing and just serve the active approach.
 		        		return pedCheckedGreen(currentRightOfWay);
 		        	}
-		            if (sensorResult.Direction1SensorRight) {
-		                this.stageStartTime = world.getTotalWorldTime();
-		                ticksInStage = 0;
-		                setNextUpdate(getAutomator().getRightArrowTime());
-		                return Stages.Direction1RightTurnArrow;
-		            } else if (sensorResult.Direction2SensorRight) {
-		                this.stageStartTime = world.getTotalWorldTime();
-		                ticksInStage = 0;
-		                setNextUpdate(getAutomator().getRightArrowTime());
-		                return Stages.Direction2RightTurnArrow;
-		            } else if ((sensorResult.Direction1SensorLeft && sensorResult.Direction2SensorLeft) || (bothApproachesEnabled && arrowMinimum != 0)) {
+		            if (((sensorResult.Direction1SensorLeft && isLeftMovementEnabled(rowDir1))
+		            		&& (sensorResult.Direction2SensorLeft && isLeftMovementEnabled(rowDir2)))
+		            		|| (bothApproachesEnabled && arrowMinimum != 0
+		            				&& isLeftMovementEnabled(rowDir1) && isLeftMovementEnabled(rowDir2))) {
 		                ticksInStage = 0;
 		                this.stageStartTime = world.getTotalWorldTime();
 		                setNextUpdate(arrowMinimum);
 		                return Stages.BothTurnArrow;
-		            } else if (sensorResult.Direction1SensorLeft) {
+		            } else if (sensorResult.Direction1SensorLeft && isLeftMovementEnabled(rowDir1)) {
 		                ticksInStage = 0;
 		                this.stageStartTime = world.getTotalWorldTime();
 		                setNextUpdate(arrowMinNS);
 		                return Stages.Direction1LeftTurnArrow;
-		            } else if (sensorResult.Direction2SensorLeft) {
+		            } else if (sensorResult.Direction2SensorLeft && isLeftMovementEnabled(rowDir2)) {
 		                ticksInStage = 0;
 		                this.stageStartTime = world.getTotalWorldTime();
 		                setNextUpdate(arrowMinEW);
 		                return Stages.Direction2LeftTurnArrow;
+		            } else if (arrowMinimum != 0 && isLeftMovementEnabled(rowDir1)) {
+		                ticksInStage = 0;
+		                this.stageStartTime = world.getTotalWorldTime();
+		                setNextUpdate(arrowMinNS);
+		                return Stages.Direction1LeftTurnArrow;
+		            } else if (arrowMinimum != 0 && isLeftMovementEnabled(rowDir2)) {
+		                ticksInStage = 0;
+		                this.stageStartTime = world.getTotalWorldTime();
+		                setNextUpdate(arrowMinEW);
+		                return Stages.Direction2LeftTurnArrow;
+		            } else if (sensorResult.Direction1SensorRight && isRightMovementEnabled(rowDir1)
+		            		&& !ApproachMovementPhaseHelper.isRightOnly(TrafficLightControlBoxTileEntity.this.getMovementSettings(rowDir1))) {
+		                this.stageStartTime = world.getTotalWorldTime();
+		                ticksInStage = 0;
+		                setNextUpdate(getAutomator().getRightArrowTime());
+		                return Stages.Direction1RightTurnArrow;
+		            } else if (sensorResult.Direction2SensorRight && isRightMovementEnabled(rowDir2)
+		            		&& !ApproachMovementPhaseHelper.isRightOnly(TrafficLightControlBoxTileEntity.this.getMovementSettings(rowDir2))) {
+		                this.stageStartTime = world.getTotalWorldTime();
+		                ticksInStage = 0;
+		                setNextUpdate(getAutomator().getRightArrowTime());
+		                return Stages.Direction2RightTurnArrow;
 		            }
 		            return pedCheckedGreen(currentRightOfWay);
 
 		        case Direction1RightTurnArrow:
+		        	if (ApproachMovementPhaseHelper.isRightOnly(TrafficLightControlBoxTileEntity.this.getMovementSettings(rowDir1))) {
+		        		Stages coupled = tryCoupledLeftForRightOnly(rowDir1, currentRightOfWay, arrowMinNS, arrowMinEW);
+		        		if (coupled != null) {
+		        			ticksInStage = 0;
+		        			this.stageStartTime = world.getTotalWorldTime();
+		        			return coupled;
+		        		}
+		        		return pedCheckedGreen(currentRightOfWay);
+		        	}
 		        	if (arrowMinimum == 0 && ticksInStage >= (arrowMax * 20)) {
 		        	    ticksInStage = 0;
 		        	    this.stageStartTime = world.getTotalWorldTime();
@@ -2987,10 +3353,28 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		        case Direction1RightTurnArrowYellow:
 		            ticksInStage = 0;
 		            this.stageStartTime = world.getTotalWorldTime();
-		            setNextUpdate(sensorResult.Direction2SensorRight ? getAutomator().getRightArrowTime() : arrowMinEW);
+		            if (ApproachMovementPhaseHelper.isRightOnly(TrafficLightControlBoxTileEntity.this.getMovementSettings(rowDir2))) {
+		            	Stages coupled = tryCoupledLeftForRightOnly(rowDir2, currentRightOfWay, arrowMinNS, arrowMinEW);
+		            	if (coupled != null) {
+		            		return coupled;
+		            	}
+		            	return pedCheckedGreen(currentRightOfWay);
+		            }
+		            setNextUpdate(sensorResult.Direction2SensorRight
+		            		&& !ApproachMovementPhaseHelper.isRightOnly(TrafficLightControlBoxTileEntity.this.getMovementSettings(rowDir2))
+		            		? getAutomator().getRightArrowTime() : arrowMinEW);
 		            return Stages.Direction2LeftTurnArrow;
 
 		        case Direction2RightTurnArrow:
+		        	if (ApproachMovementPhaseHelper.isRightOnly(TrafficLightControlBoxTileEntity.this.getMovementSettings(rowDir2))) {
+		        		Stages coupled = tryCoupledLeftForRightOnly(rowDir2, currentRightOfWay, arrowMinNS, arrowMinEW);
+		        		if (coupled != null) {
+		        			ticksInStage = 0;
+		        			this.stageStartTime = world.getTotalWorldTime();
+		        			return coupled;
+		        		}
+		        		return pedCheckedGreen(currentRightOfWay);
+		        	}
 		        	if (arrowMinimum == 0 && ticksInStage >= (arrowMax * 20)) {
 		        	    ticksInStage = 0;
 		        	    this.stageStartTime = world.getTotalWorldTime();
@@ -3011,7 +3395,16 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		        case Direction2RightTurnArrowYellow:
 		            ticksInStage = 0;
 		            this.stageStartTime = world.getTotalWorldTime();
-		            setNextUpdate(sensorResult.Direction2SensorRight ? getAutomator().getRightArrowTime() : arrowMinNS);
+		            if (ApproachMovementPhaseHelper.isRightOnly(TrafficLightControlBoxTileEntity.this.getMovementSettings(rowDir1))) {
+		            	Stages coupled = tryCoupledLeftForRightOnly(rowDir1, currentRightOfWay, arrowMinNS, arrowMinEW);
+		            	if (coupled != null) {
+		            		return coupled;
+		            	}
+		            	return pedCheckedGreen(currentRightOfWay);
+		            }
+		            setNextUpdate(sensorResult.Direction1SensorRight
+		            		&& !ApproachMovementPhaseHelper.isRightOnly(TrafficLightControlBoxTileEntity.this.getMovementSettings(rowDir1))
+		            		? getAutomator().getRightArrowTime() : arrowMinNS);
 		            return Stages.Direction1LeftTurnArrow;
 
 		        case BothTurnArrow:
@@ -3041,6 +3434,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		        	    ticksInStage = 0;
 		        	    this.stageStartTime = world.getTotalWorldTime();
 		        	    setNextUpdate(yellowTime);
+		        	    dir1RightAfterLeft = shouldServeRightAfterLeft(rowDir1, currentRightOfWay);
 		        	    return Stages.Direction1LeftTurnArrowYellow;
 		        	}
 		        	// Normal end: minimum time met and timeExceeded is true
@@ -3048,6 +3442,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		        	    ticksInStage = 0;
 		        	    this.stageStartTime = world.getTotalWorldTime();
 		        	    setNextUpdate(yellowTime);
+		        	    dir1RightAfterLeft = shouldServeRightAfterLeft(rowDir1, currentRightOfWay);
 		        	    return Stages.Direction1LeftTurnArrowYellow;
 		        	}
 		            return Stages.Direction1LeftTurnArrow;
@@ -3056,6 +3451,12 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		        case Direction1LeftTurnArrowYellow:
 		            ticksInStage = 0;
 		            this.stageStartTime = world.getTotalWorldTime();
+		            if (dir1RightAfterLeft
+		            		&& !ApproachMovementPhaseHelper.isRightOnly(TrafficLightControlBoxTileEntity.this.getMovementSettings(rowDir1))) {
+		            	dir1RightAfterLeft = false;
+		            	setNextUpdate(getAutomator().getRightArrowTime());
+		            	return Stages.Direction1RightTurnArrow;
+		            }
 		            return pedCheckedGreen(currentRightOfWay);
 
 		        case Direction2LeftTurnArrow:
@@ -3063,6 +3464,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		        	    ticksInStage = 0;
 		        	    this.stageStartTime = world.getTotalWorldTime();
 		        	    setNextUpdate(yellowTime);
+		        	    dir2RightAfterLeft = shouldServeRightAfterLeft(rowDir2, currentRightOfWay);
 		        	    return Stages.Direction2LeftTurnArrowYellow;
 		        	}
 		        	// Normal end: minimum time met and timeExceeded is true
@@ -3078,6 +3480,12 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		        case Direction2LeftTurnArrowYellow:
 		            ticksInStage = 0;
 		            this.stageStartTime = world.getTotalWorldTime();
+		            if (dir2RightAfterLeft
+		            		&& !ApproachMovementPhaseHelper.isRightOnly(TrafficLightControlBoxTileEntity.this.getMovementSettings(rowDir2))) {
+		            	dir2RightAfterLeft = false;
+		            	setNextUpdate(getAutomator().getRightArrowTime());
+		            	return Stages.Direction2RightTurnArrow;
+		            }
 		            return pedCheckedGreen(currentRightOfWay);
 
 		        case Green:
@@ -3119,17 +3527,16 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		            	final boolean otherVehicleDemand = hasAnyDemandForFacing(otherDir);
 		            	final RightOfWays nextRow = currentRightOfWay.getNext();
 
-		            	final boolean timerMode = greenMinimum == 0;
-		            	final boolean minMet = (greenMinimum > 0) && ticksInStage >= (greenMinimum * 20);
+		            	final boolean timerMode = greenMinimum > 0;
+		            	final boolean minMet = timerMode && ticksInStage >= (greenMinimum * 20);
 		            	final boolean maxMet = ticksInStage >= (greenMax * 20);
-		            	// In timer mode (min==0), only change at max.
-		            	final boolean canChange = timerMode ? maxMet : minMet;
+		            	// Timer mode (min > 0): min gates changes. Sensor mode (min == 0): max gates changes.
+		            	final boolean canChange = timerMode ? minMet : maxMet;
 
 		            	// Schedule an in-row swap (E<->W or N<->S) with proper Yellow->Red first.
-		            	// - When greenMinimum==0, we still only swap if the other approach has demand.
-		            	//   (max still limits how long we hold green, but we don't "force" an empty approach.)
-		            	// - When greenMinimum>0, min gates any changes and we swap only if the other approach has demand.
-		            	if (!swappedWithinCurrentRow && canChange && isSplitDirectionEnabled(otherDir)) {
+		            	// - Sensor mode: only swap at max if the other approach has demand.
+		            	// - Timer mode: swap after min regardless of demand.
+		            	if (!swappedWithinCurrentRow && canChange && isApproachServicable(otherDir)) {
 		            		final boolean shouldSwap = timerMode || otherVehicleDemand;
 		            		if (shouldSwap) {
 		            			swappedWithinCurrentRow = true;
@@ -3166,7 +3573,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		            	// Only yield back to the other axis when this approach is finished per min/max rules.
 		            	if (swappedWithinCurrentRow) {
 		            		if (timerMode) {
-		            			if (maxMet) {
+		            			if ((minMet && !activeVehicleDemand) || maxMet) {
 		            				this.stageStartTime = world.getTotalWorldTime();
 		            				forcedNextRightOfWay = nextRow;
 		            				setNextUpdate(yellowTime);
@@ -3175,7 +3582,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		            			return Stages.Green;
 		            		}
 		            		// Sensor mode
-			            		if ((!activeVehicleDemand && minMet) || maxMet) {
+			            		if ((!activeVehicleDemand && maxMet) || maxMet) {
 		            			this.stageStartTime = world.getTotalWorldTime();
 		            			forcedNextRightOfWay = nextRow;
 		            			setNextUpdate(yellowTime);
@@ -3186,7 +3593,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 
 		            	// First approach in this row
 		            	if (timerMode) {
-		            		// Swap is handled above at max; if the other approach is disabled, just yield at max.
+		            		// Swap is handled above at min; if the other approach is disabled, just yield at max.
 		            		if (maxMet) {
 		            			this.stageStartTime = world.getTotalWorldTime();
 		            			forcedNextRightOfWay = nextRow;
@@ -3196,8 +3603,8 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		            		return Stages.Green;
 		            	}
 
-		            	// Sensor mode: yield when no demand after min, or at max.
-		            	if ((!activeVehicleDemand && minMet) || maxMet) {
+		            	// Sensor mode: yield when no demand at max, or at max.
+		            	if ((!activeVehicleDemand && maxMet) || maxMet) {
 		            		this.stageStartTime = world.getTotalWorldTime();
 		            		forcedNextRightOfWay = nextRow;
 		            		setNextUpdate(yellowTime);

@@ -1,0 +1,16 @@
+{
+  "multipart": [
+    {
+      "when": { "state": "off" },
+      "apply": { "model": "realistictrafficcontrol:block/crossing_gate_lamps_empty" }
+    },
+    {
+      "when": { "state": "flash1" },
+      "apply": { "model": "realistictrafficcontrol:block/crossing_gate_lamps_empty_flash1" }
+    },
+    {
+      "when": { "state": "flash2" },
+      "apply": { "model": "realistictrafficcontrol:block/crossing_gate_lamps_empty_flash2" }
+    }
+  ]
+}

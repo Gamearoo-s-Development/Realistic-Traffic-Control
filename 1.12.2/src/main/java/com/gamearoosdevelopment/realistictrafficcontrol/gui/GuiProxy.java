@@ -7,6 +7,10 @@ import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.SignTileEntit
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.StreetSignTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLightControlBoxTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.Type3BarrierTileEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.CrossingGateGateTileEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.CrossingLampsTileEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.RelayTileEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockLampBase;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
@@ -150,6 +154,29 @@ public class GuiProxy implements IGuiHandler {
 					return new GuiType3Barrier(type3Barrier);
 				}
 				break;
+			case GUI_IDs.CROSSING_GATE_GATE:
+				BlockPos crossingGatePos = new BlockPos(x, y, z);
+				TileEntity crossingGateTE = world.getTileEntity(crossingGatePos);
+				if (crossingGateTE instanceof CrossingGateGateTileEntity)
+				{
+					return new CrossingGateGateGui((CrossingGateGateTileEntity) crossingGateTE);
+				}
+				break;
+			case GUI_IDs.CROSSING_GATE_LAMPS:
+				BlockPos lampPos = new BlockPos(x, y, z);
+				if (world.getBlockState(lampPos).getBlock() instanceof BlockLampBase && world.getTileEntity(lampPos) instanceof CrossingLampsTileEntity)
+				{
+					return new CrossingLampsGui((CrossingLampsTileEntity) world.getTileEntity(lampPos), ((BlockLampBase) world.getBlockState(lampPos).getBlock()).getLampRegistryName());
+				}
+				break;
+			case GUI_IDs.CROSSING_RELAY_SETTINGS:
+				BlockPos relayPos = new BlockPos(x, y, z);
+				TileEntity relayTE = world.getTileEntity(relayPos);
+				if (relayTE instanceof RelayTileEntity)
+				{
+					return new CrossingRelaySettingsGui(world, relayPos);
+				}
+				break;
 			
 				
 			case GUI_IDs.STREET_SIGN:
@@ -255,6 +282,9 @@ public class GuiProxy implements IGuiHandler {
 		public static final int TRAFFIC_LIGHT_4_HOZ_FRAME = 15;
 		public static final int TRAFFIC_LIGHT_5_HOZ_FRAME = 16;
 		public static final int TRAFFIC_LIGHT_8_FRAME = 17;
+		public static final int CROSSING_GATE_GATE = 18;
+		public static final int CROSSING_GATE_LAMPS = 19;
+		public static final int CROSSING_RELAY_SETTINGS = 20;
 		
 	}
 }

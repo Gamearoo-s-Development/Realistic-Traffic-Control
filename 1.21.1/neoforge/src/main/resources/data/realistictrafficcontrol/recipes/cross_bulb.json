@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "G",
+    "L"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:iron_ingot"
+    },
+    "L": {
+      "item": "minecraft:redstone_lamp"
+    }
+  },
+  "result": {
+    "id": "realistictrafficcontrol:traffic_light_bulb",
+    "count": 1,
+    "components": {
+      "realistictrafficcontrol:bulb_type": 6
+    }
+  }
+}

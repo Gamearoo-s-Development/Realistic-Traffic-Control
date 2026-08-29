@@ -9,7 +9,7 @@ public class TrafficLight5HozFrameGui extends BaseTrafficLightFrameGui {
 	{
 		super(new TrafficLight5HozFrameContainer(inventory, frameStack));
 		
-		xSize = 174;
+		xSize = 200;
 		ySize = 263;
 	}
 	

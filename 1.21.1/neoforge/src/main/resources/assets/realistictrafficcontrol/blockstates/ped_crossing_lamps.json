@@ -1,0 +1,16 @@
+{
+  "multipart": [
+    {
+      "when": { "state": "off" },
+      "apply": { "model": "realistictrafficcontrol:block/ped_crossing_light" }
+    },
+    {
+      "when": { "state": "flash1" },
+      "apply": { "model": "realistictrafficcontrol:block/ped_crossing_light_flash1" }
+    },
+    {
+      "when": { "state": "flash2" },
+      "apply": { "model": "realistictrafficcontrol:block/ped_crossing_light_flash2" }
+    }
+  ]
+}

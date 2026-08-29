@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "   ",
+    " C ",
+    "CCC"
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:light_blue_concrete"
+    }
+  },
+  "result": {
+    "id": "realistictrafficcontrol:concrete_barrier",
+    "count": 6,
+    "components": {
+      "realistictrafficcontrol:barrier_dye": 3
+    }
+  }
+}

@@ -11,6 +11,7 @@ import com.gamearoosdevelopment.realistictrafficcontrol.signs.SignRepository;
 import com.gamearoosdevelopment.realistictrafficcontrol.Iinvatory.TabB;
 import com.gamearoosdevelopment.realistictrafficcontrol.Iinvatory.TabBulbs;
 import com.gamearoosdevelopment.realistictrafficcontrol.Iinvatory.TabCones;
+import com.gamearoosdevelopment.realistictrafficcontrol.Iinvatory.TabCrossing;
 import com.gamearoosdevelopment.realistictrafficcontrol.Iinvatory.TabFrames;
 import com.gamearoosdevelopment.realistictrafficcontrol.Iinvatory.TabOC;
 import com.gamearoosdevelopment.realistictrafficcontrol.Iinvatory.TabPoles;
@@ -34,7 +35,7 @@ import net.minecraftforge.fml.relauncher.Side;
 @Mod(modid = "realistictrafficcontrol", version = ModRealisticTrafficControl.VERSION, name = "Realistic Traffic Control", useMetadata = true,  guiFactory = "com.gamearoosdevelopment.realistictrafficcontrol.client.ModGuiFactory")
 public class ModRealisticTrafficControl {
 	public static final String MODID = "realistictrafficcontrol";
-	public static final String VERSION = "3.2.0";
+	public static final String VERSION = "4.0.6";
 	public static final String MODNAME = "Realistic Traffic Control";
 	public static boolean IR_INSTALLED = false;
 	public static boolean OC_INSTALLED = false;
@@ -49,6 +50,8 @@ public class ModRealisticTrafficControl {
 	public static final CreativeTabs CONES_TAB = new TabCones("cones_tab");
 	public static final CreativeTabs BARRIERS_TAB = new TabB("b_tab");
 	public static final CreativeTabs SENSORS_TAB = new TabSensor("sensor_tab");
+	public static final CreativeTabs CROSSING_TAB = new TabCrossing("crossing_tab");
+	public static final CreativeTabs CREATIVE_TAB = CROSSING_TAB;
 	public static final double MAX_RENDER_DISTANCE = 262144; // Optifine's max render distance is 32 chunks.  (32 x 16) ^ 2 = 262144
 
 	@SidedProxy(clientSide = "com.gamearoosdevelopment.realistictrafficcontrol.proxy.ClientProxy", serverSide = "com.gamearoosdevelopment.realistictrafficcontrol.proxy.ServerProxy")

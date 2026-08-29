@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "realistictrafficcontrol:block/shunt_island" },
+    "facing=east": { "model": "realistictrafficcontrol:block/shunt_island", "y": 90 },
+    "facing=south": { "model": "realistictrafficcontrol:block/shunt_island", "y": 180 },
+    "facing=west": { "model": "realistictrafficcontrol:block/shunt_island", "y": 270 }
+  }
+}
