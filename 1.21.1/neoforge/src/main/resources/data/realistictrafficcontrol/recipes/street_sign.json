@@ -1,27 +1,18 @@
 {
-    "type": "minecraft:crafting_shaped",
-    "pattern": [
-        "#",
-        "i"
-    ],
-    "key": {
-        "#": {
-            "item": "minecraft:sign"
-        },
-        "i": {
-            "item": "minecraft:iron_ingot"
-        }
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#",
+    "i"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:oak_sign"
     },
-    "result": {
-        
-        param($m)
-        $id = $m.Groups[1].Value
-        if ($id -like 'traffic_light_bulb*') {
-            '"id": "realistictrafficcontrol:traffic_light_bulb", "components": { "realistictrafficcontrol:bulb_type": 0 }'
-        } else {
-            '"id": "realistictrafficcontrol:' + $id + '"'
-        }
-    ,
-        "count": 1
+    "i": {
+      "item": "minecraft:iron_ingot"
     }
+  },
+  "result": {
+    "id": "realistictrafficcontrol:street_sign"
+  }
 }

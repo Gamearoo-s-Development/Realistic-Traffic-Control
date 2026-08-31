@@ -11,6 +11,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
 
 /** Port of 1.12.2 {@code StreetSignGui}. */
 public class StreetSignScreen extends AbstractContainerScreen<StreetSignMenu> {
@@ -22,6 +23,8 @@ public class StreetSignScreen extends AbstractContainerScreen<StreetSignMenu> {
 
     public StreetSignScreen(StreetSignMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
+        imageWidth = 1;
+        imageHeight = 1;
     }
 
     @Override
@@ -169,5 +172,9 @@ public class StreetSignScreen extends AbstractContainerScreen<StreetSignMenu> {
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+    }
+
+    @Override
+    protected void renderSlot(GuiGraphics graphics, Slot slot) {
     }
 }

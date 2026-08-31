@@ -14,6 +14,7 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
@@ -30,6 +31,9 @@ public class SignScreen extends AbstractContainerScreen<SignMenu> {
 
     public SignScreen(SignMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
+        // This is a full-screen editor, not a vanilla inventory panel.
+        imageWidth = 1;
+        imageHeight = 1;
     }
 
     @Override
@@ -41,8 +45,8 @@ public class SignScreen extends AbstractContainerScreen<SignMenu> {
         }
 
         int listX = width - 128;
-        imageList = new SignImageListWidget(listX, 18, 112, height - 68, this::onImageClicked);
-        addWidget(imageList);
+        imageList = addRenderableWidget(
+                new SignImageListWidget(listX, 18, 112, height - 68, this::onImageClicked));
 
         searchBox = new EditBox(font, listX, height - 40, 112, 20, Component.literal("Search"));
         searchBox.setHint(Component.literal("Search..."));
@@ -98,16 +102,17 @@ public class SignScreen extends AbstractContainerScreen<SignMenu> {
 
         if (currentSign.getNote() != null && !currentSign.getNote().isEmpty()) {
             graphics.drawWordWrap(font, Component.literal("Note: " + currentSign.getNote()),
-                    leftPanelHorizontalCenter - leftPanelWidth / 2, height - 35, leftPanelWidth, 0xFFFFFF);
+                    8, height - 35, Math.max(1, leftPanelWidth - 16), 0xFFFFFF);
         }
 
         int previewSize = Math.min(leftPanelWidth, height - 105);
         int previewX = leftPanelHorizontalCenter - previewSize / 2;
-        graphics.blit(currentSign.getFrontImageResourceLocation(), previewX, 53, 0, 0, previewSize, previewSize,
-                previewSize, previewSize);
+        // Sign-pack images are 16x16. Passing the scaled preview size as the
+        // source texture size sampled only a corner of the image, producing the
+        // mostly black/blank preview seen in the ported GUI.
+        graphics.blit(currentSign.getFrontImageResourceLocation(), previewX, 53, previewSize, previewSize,
+                0, 0, 16, 16, 16, 16);
         renderPreviewText(graphics, currentSign, previewX, 53, previewSize);
-        imageList.renderWidget(graphics, mouseX, mouseY, partialTick);
-        searchBox.render(graphics, mouseX, mouseY, partialTick);
     }
 
     private void renderPreviewText(GuiGraphics graphics, Sign currentSign, int previewX, int previewY, int previewSize) {
@@ -123,9 +128,38 @@ public class SignScreen extends AbstractContainerScreen<SignMenu> {
             graphics.pose().pushPose();
             graphics.pose().translate(textLine.getX() * font.lineHeight, textLine.getY() * font.lineHeight, 0);
             graphics.pose().scale((float) textLine.getXScale(), (float) textLine.getYScale(), 1);
+            if (textLine.getvAlign() == SignVerticalAlignment.Center) {
+                graphics.pose().translate(0, -font.lineHeight / 2F, 0);
+            } else if (textLine.getvAlign() == SignVerticalAlignment.Bottom) {
+                graphics.pose().translate(0, -font.lineHeight, 0);
+            }
+            double availableWidth = textLine.getScaleAdjustedWidth() * font.lineHeight;
+            if (textLine.gethAlign() == SignHorizontalAlignment.Center) {
+                graphics.pose().translate(-availableWidth / 2, 0, 0);
+            } else if (textLine.gethAlign() == SignHorizontalAlignment.Right) {
+                graphics.pose().translate(-availableWidth, 0, 0);
+            }
+            if (textEditMode) {
+                int highlight = currentTextLine == i ? 0x6600FF00 : 0x66FF0000;
+                graphics.fill(0, 0, (int) availableWidth, font.lineHeight, highlight);
+                graphics.pose().pushPose();
+                graphics.pose().scale(.5F, .5F, 1);
+                graphics.drawString(font, textLine.getLabel(), 0, -font.lineHeight,
+                        currentTextLine == i ? 0xFF00FF00 : 0xFFFF0000);
+                graphics.pose().popPose();
+            }
             String text = signEntity.getTextLine(i);
             if (text != null && !text.isEmpty()) {
-                graphics.drawString(font, text, 1, 1, textLine.getColor());
+                int textWidth = font.width(text);
+                float widthScale = (float) Math.min(1, availableWidth / textWidth);
+                graphics.pose().scale(widthScale, 1, 1);
+                int textX = 0;
+                if (textLine.gethAlign() == SignHorizontalAlignment.Center && widthScale == 1) {
+                    textX = (int) (availableWidth / 2) - textWidth / 2;
+                } else if (textLine.gethAlign() == SignHorizontalAlignment.Right) {
+                    textX = (int) availableWidth - textWidth;
+                }
+                graphics.drawString(font, text, textX + 1, 1, textLine.getColor());
             }
             graphics.pose().popPose();
         }
@@ -150,6 +184,15 @@ public class SignScreen extends AbstractContainerScreen<SignMenu> {
             if (keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_UP) {
                 int max = signEntity.getSign().getTextLines().size();
                 currentTextLine = currentTextLine <= 0 ? max - 1 : currentTextLine - 1;
+                return true;
+            }
+            if (keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_ENTER
+                    || keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_KP_ENTER) {
+                if (currentTextLine == signEntity.getSign().getTextLines().size() - 1) {
+                    toggleTextEditor();
+                } else {
+                    currentTextLine++;
+                }
                 return true;
             }
             if (keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE) {
@@ -201,5 +244,9 @@ public class SignScreen extends AbstractContainerScreen<SignMenu> {
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+    }
+
+    @Override
+    protected void renderSlot(GuiGraphics graphics, Slot slot) {
     }
 }

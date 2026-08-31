@@ -7,6 +7,7 @@ import com.gamearoosdevelopment.realistictrafficcontrol.menu.TrafficLightFrameMe
 import com.gamearoosdevelopment.realistictrafficcontrol.menu.SignMenu;
 import com.gamearoosdevelopment.realistictrafficcontrol.menu.StreetSignMenu;
 import com.gamearoosdevelopment.realistictrafficcontrol.menu.Type3BarrierMenu;
+import com.gamearoosdevelopment.realistictrafficcontrol.menu.DisplayMenu;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
@@ -47,6 +48,8 @@ public final class ModMenus {
 
     public static final DeferredHolder<MenuType<?>, MenuType<Type3BarrierMenu>> TYPE_3_BARRIER =
             MENUS.register("type_3_barrier", () -> IMenuTypeExtension.create(Type3BarrierMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<DisplayMenu>> DISPLAY =
+            MENUS.register("display", () -> IMenuTypeExtension.create(DisplayMenu::new));
 
     private ModMenus() {
     }

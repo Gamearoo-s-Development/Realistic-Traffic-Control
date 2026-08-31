@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.ShuntBlockBase;
+import com.gamearoosdevelopment.realistictrafficcontrol.compat.CreateCompat;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.ImmersiveRailroadingHelper;
 
 import net.minecraft.core.BlockPos;
@@ -43,6 +44,12 @@ public abstract class ShuntBaseBlockEntity extends BlockEntity {
             return false;
         }
         Vec3 origin = ImmersiveRailroadingHelper.findOrigin(worldPosition, level);
+        if (origin.y == -1) {
+            Vec3 createOrigin = CreateCompat.findTrackOrigin(worldPosition, level);
+            if (createOrigin != null) {
+                origin = createOrigin;
+            }
+        }
         trackOrigin = BlockPos.containing(origin);
         setChanged();
         return trackOrigin.getY() != -1;

@@ -7,10 +7,8 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 /**
  * NeoForge {@link ModConfigSpec} port of the 1.12.2 Forge {@code Configuration} based config.
  *
- * <p>OpenComputers-related options (card capacities / energy draw) are intentionally dropped for the
- * 1.21.1 build. All remaining values keep their original defaults and ranges. Static mirror fields
- * are refreshed from the spec whenever the config is (re)loaded, so the rest of the codebase can keep
- * reading plain static fields exactly like the 1.12.2 version did.
+ * <p>Static mirror fields are refreshed from the spec whenever the config is (re)loaded, so the rest
+ * of the codebase can keep reading plain static fields exactly like the 1.12.2 version did.
  */
 public final class Config {
 
@@ -38,6 +36,7 @@ public final class Config {
     private static final ModConfigSpec.IntValue TRAFFIC_LIGHT_CARD_T2_CAPACITY;
     private static final ModConfigSpec.IntValue TRAFFIC_LIGHT_CARD_T3_CAPACITY;
     private static final ModConfigSpec.DoubleValue CC_PERIPHERAL_ENERGY_COST;
+    private static final ModConfigSpec.DoubleValue TRAFFIC_LIGHT_CARD_DRAW_PER_BLOCK;
 
     // --- static mirrors (read across the codebase) ---
     public static int parallelScans = 1;
@@ -58,6 +57,7 @@ public final class Config {
     public static int trafficLightCardT2Capacity = 144;
     public static int trafficLightCardT3Capacity = 384;
     public static float ccPeripheralEnergyCost = 0.01F;
+    public static float trafficLightCardDrawPerBlock = 0.01F;
 
     public static float hawkFlashYellowSeconds = 15.0F;
     public static float hawkSolidYellowSeconds = 3.0F;
@@ -126,6 +126,9 @@ public final class Config {
         CC_PERIPHERAL_ENERGY_COST = builder
                 .comment("How much energy (simulated) does a CC peripheral method call consume?")
                 .defineInRange("ccPeripheralEnergyCost", 0.01, 0.0, Double.MAX_VALUE);
+        TRAFFIC_LIGHT_CARD_DRAW_PER_BLOCK = builder
+                .comment("How much OC energy the traffic-light card consumes times squared block distance.")
+                .defineInRange("trafficLightCardDrawPerBlock", 0.01, 0.0, Double.MAX_VALUE);
         builder.pop();
 
         SPEC = builder.build();
@@ -148,6 +151,7 @@ public final class Config {
         trafficLightCardT2Capacity = TRAFFIC_LIGHT_CARD_T2_CAPACITY.get();
         trafficLightCardT3Capacity = TRAFFIC_LIGHT_CARD_T3_CAPACITY.get();
         ccPeripheralEnergyCost = CC_PERIPHERAL_ENERGY_COST.get().floatValue();
+        trafficLightCardDrawPerBlock = TRAFFIC_LIGHT_CARD_DRAW_PER_BLOCK.get().floatValue();
         hawkFlashYellowSeconds = HAWK_FLASH_YELLOW_SECONDS.get().floatValue();
         hawkSolidYellowSeconds = HAWK_SOLID_YELLOW_SECONDS.get().floatValue();
         hawkDefaultSolidRedSeconds = HAWK_DEFAULT_SOLID_RED_SECONDS.get().floatValue();

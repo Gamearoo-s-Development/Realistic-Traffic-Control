@@ -28,6 +28,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 
 public class RendererWigWag extends TileEntitySpecialRenderer<WigWagTileEntity> {
+	private static final float RESIZED_FRAME_FORWARD_OFFSET = 1.0F / 16.0F;
 
 	ResourceLocation genericTexture = new ResourceLocation(ModRealisticTrafficControl.MODID + ":textures/blocks/generic.png");
 	ResourceLocation wigWagTexture = new ResourceLocation(ModRealisticTrafficControl.MODID + ":textures/blocks/wigwag.png");
@@ -61,7 +62,9 @@ public class RendererWigWag extends TileEntitySpecialRenderer<WigWagTileEntity> 
 				GlStateManager.rotate(state.getValue(BlockWigWag.ROTATION) * -22.5F, 0, 1, 0);
 				GlStateManager.translate(-0.5, -0.5, -0.5);
 				// Legacy TESR anchor vs center (old: translate(0.53,0.06,0.71) then (-0.5,0,-0.5) at 0┬░).
-				GlStateManager.translate(0.03F, 0.06F, 0.21F);
+				// The resized frame extends one model pixel farther forward. Keep the
+				// animated mount, arm, and lamp on the outside face of that frame.
+				GlStateManager.translate(0.03F, 0.06F, 0.21F + RESIZED_FRAME_FORWARD_OFFSET);
 
 				GlStateManager.translate(bcwc(-3.5), bcwc(16.5), bcwc(7.5));
 				GlStateManager.rotate(180F, 0, 0, 1);

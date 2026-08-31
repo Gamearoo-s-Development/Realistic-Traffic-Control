@@ -5,6 +5,7 @@
 		"1": "realistictrafficcontrol:blocks/wch_bell",
 		"2": "realistictrafficcontrol:blocks/wch_top",
 		"3": "realistictrafficcontrol:blocks/wch_plate",
+		"missing": "realistictrafficcontrol:blocks/wch_plate",
 		"particle": "realistictrafficcontrol:blocks/wch_base"
 	},
 	"elements": [

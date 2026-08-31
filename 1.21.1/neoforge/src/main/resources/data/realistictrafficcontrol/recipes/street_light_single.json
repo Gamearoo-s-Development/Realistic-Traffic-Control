@@ -1,50 +1,22 @@
-{ 
+{
   "type": "minecraft:crafting_shaped",
   "pattern": [
     " IR",
     " I ",
-    " E "  ],
+    " E "
+  ],
   "key": {
-	"R":
-	  {
-	    "item": "minecraft:redstone_lamp",
-	    "data": 0
-	  },
-  "I":
-	  {
-	  	
-        param($m)
-        $ore = $m.Groups[1].Value
-        if ($oreMap.ContainsKey($ore)) {
-            '"item": "' + $oreMap[$ore] + '"'
-        } else {
-            '"tag": "c:' + ($ore.ToLower() -replace 'ingot','') + '"'
-        }
-    
-	  },
-  "E":
-	  	{
-	  		
-        param($m)
-        $ore = $m.Groups[1].Value
-        if ($oreMap.ContainsKey($ore)) {
-            '"item": "' + $oreMap[$ore] + '"'
-        } else {
-            '"tag": "c:' + ($ore.ToLower() -replace 'ingot','') + '"'
-        }
-    
-	  	}
+    "R": {
+      "item": "minecraft:redstone_lamp"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "E": {
+      "item": "minecraft:redstone"
+    }
   },
   "result": {
-    
-        param($m)
-        $id = $m.Groups[1].Value
-        if ($id -like 'traffic_light_bulb*') {
-            '"id": "realistictrafficcontrol:traffic_light_bulb", "components": { "realistictrafficcontrol:bulb_type": 0 }'
-        } else {
-            '"id": "realistictrafficcontrol:' + $id + '"'
-        }
-    ,
-    "count": 1
+    "id": "realistictrafficcontrol:street_light_single"
   }
 }

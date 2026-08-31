@@ -171,8 +171,13 @@ key.entityclassrenderer.toggle=Toggle Entity Class Display
 key.hotreload.toggle=Hot Reload Sign Packs (F3 + Key)
 key.realistictrafficcontrol.category=Realistic Traffic Control
 
+tile.realistictrafficcontrol.digital_sign.name=(RTC) Digital Sign
+tile.realistictrafficcontrol.message_board.name=(RTC) Message Board
+tile.realistictrafficcontrol.digital_sign_controller.name=(RTC) Digital Sign Controller
+tile.realistictrafficcontrol.message_board_controller.name=(RTC) Message Board Controller
+
 #Tooltips
-relaistictrafficcontrol.tooltip.tuner=Use to link components to Crossing Gate Relays or Traffic Light Control Boxes.
+relaistictrafficcontrol.tooltip.tuner=Use to link components to Crossing Gate Relays, Traffic Light Control Boxes, Digital Sign Controllers, or Message Board Controllers.
 realistictrafficcontrol.tooltip.crossingrelay=Uses Shunts or Redstone to control crossing components.
 realistictrafficcontrol.tooltip.trafficbox=Uses Redstone or Traffic Sensors to control traffic signal components.
 realistictrafficcontrol.tooltip.cone=Can be worn as a hat.

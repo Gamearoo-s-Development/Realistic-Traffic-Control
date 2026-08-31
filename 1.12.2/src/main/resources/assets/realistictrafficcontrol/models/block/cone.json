@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"textures": {
 		"0": "realistictrafficcontrol:blocks/cone/cone",
-		"1": "realistictrafficcontrol:blocks/cone/coneBaseTop",
-		"2": "realistictrafficcontrol:blocks/cone/coneBaseBottom",
+		"1": "realistictrafficcontrol:blocks/cone/conebasetop",
+		"2": "realistictrafficcontrol:blocks/cone/conebasebottom",
 		"particle": "realistictrafficcontrol:blocks/cone/cone"
 	},
 	"elements": [

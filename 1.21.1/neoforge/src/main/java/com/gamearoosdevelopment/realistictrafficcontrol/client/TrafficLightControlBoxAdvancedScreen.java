@@ -12,6 +12,7 @@ import com.gamearoosdevelopment.realistictrafficcontrol.network.ToggleApproachEn
 import com.gamearoosdevelopment.realistictrafficcontrol.network.ToggleHawkBeaconPayload;
 import com.gamearoosdevelopment.realistictrafficcontrol.network.ToggleMainPayload;
 import com.gamearoosdevelopment.realistictrafficcontrol.network.ToggleNightFlashPayload;
+import com.gamearoosdevelopment.realistictrafficcontrol.network.TogglePowerOnFlashPayload;
 import com.gamearoosdevelopment.realistictrafficcontrol.network.ToggleSplitAxisPayload;
 import com.gamearoosdevelopment.realistictrafficcontrol.network.ToggleSplitDirectionsPayload;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLightControlBoxBlockEntity;
@@ -37,6 +38,7 @@ public class TrafficLightControlBoxAdvancedScreen extends AbstractContainerScree
     private static final int ID_LEFT = 21;
     private static final int ID_RIGHT = 22;
     private static final int ID_SHARED_TURNS = 23;
+    private static final int ID_NO_OPPOSING_RIGHT = 24;
     private static final int ID_STRAIGHT_IDLE = 30;
     private static final int ID_LEFT_IDLE = 31;
     private static final int ID_RIGHT_IDLE = 32;
@@ -54,6 +56,7 @@ public class TrafficLightControlBoxAdvancedScreen extends AbstractContainerScree
     private MovementToggle leftToggle;
     private MovementToggle rightToggle;
     private LabeledToggle sharedTurnsToggle;
+    private LabeledToggle noOpposingRightToggle;
     private IdleToggle straightIdleToggle;
     private IdleToggle leftIdleToggle;
     private IdleToggle rightIdleToggle;
@@ -96,7 +99,7 @@ public class TrafficLightControlBoxAdvancedScreen extends AbstractContainerScree
         int systemCol2X = cx + 150;
 
         addRenderableWidget(Button.builder(Component.literal("Back"), b -> minecraft.setScreen(parent))
-                .bounds(cx - 40, cy + 112, 80, 20).build());
+                .bounds(cx - 40, cy + 124, 80, 20).build());
 
         approachNorth = addTab(approachX, rowY, "N", Direction.NORTH);
         approachSouth = addTab(approachX, rowY + ROW_HEIGHT, "S", Direction.SOUTH);
@@ -109,6 +112,8 @@ public class TrafficLightControlBoxAdvancedScreen extends AbstractContainerScree
         leftToggle = addMovement(ID_LEFT, enabledX, rowY + ROW_HEIGHT, "Left", settings.leftEnabled);
         rightToggle = addMovement(ID_RIGHT, enabledX, rowY + ROW_HEIGHT * 2, "Right", settings.rightEnabled);
         sharedTurnsToggle = addSharedTurns(enabledX, rowY + ROW_HEIGHT * 3, settings.sharedTurns);
+        noOpposingRightToggle = addNoOpposingRight(enabledX, rowY + ROW_HEIGHT * 4,
+                settings.noOpposingRightWithLeft);
         straightIdleToggle = addIdle(ID_STRAIGHT_IDLE, idleX, rowY, "Straight", settings.straightIdle, true);
         leftIdleToggle = addIdle(ID_LEFT_IDLE, idleX, rowY + ROW_HEIGHT, "Left", settings.leftIdle, false);
         rightIdleToggle = addIdle(ID_RIGHT_IDLE, idleX, rowY + ROW_HEIGHT * 2, "Right", settings.rightIdle, false);
@@ -137,6 +142,9 @@ public class TrafficLightControlBoxAdvancedScreen extends AbstractContainerScree
         addSystemToggle(systemCol1X, rowY + ROW_HEIGHT * 5, box.isSplitWestEastEnabled(),
                 on -> new ToggleSplitAxisPayload(pos(), ToggleSplitAxisPayload.AXIS_EW, on),
                 box::setSplitWestEastEnabled, s -> s ? "Split EW: ON" : "Split EW: OFF");
+        addSystemToggle(systemCol1X, rowY + ROW_HEIGHT * 6, box.isPowerOnFlashEnabled(),
+                on -> new TogglePowerOnFlashPayload(pos(), on), box::setPowerOnFlashEnabled,
+                s -> s ? "Power-On Flash: ON" : "Power-On Flash: OFF");
 
         addApproachToggle(systemCol2X, rowY, Direction.NORTH, box.hasNorth);
         addApproachToggle(systemCol2X, rowY + ROW_HEIGHT, Direction.SOUTH, box.hasSouth);
@@ -189,6 +197,22 @@ public class TrafficLightControlBoxAdvancedScreen extends AbstractContainerScree
             }
             ApproachMovementSettings settings = box.getMovementSettings(selectedApproach);
             settings.sharedTurns = toggle.isToggled();
+            box.setMovementSettings(selectedApproach, settings);
+            syncMovement(settings);
+        });
+        return addRenderableWidget(toggle);
+    }
+
+    private LabeledToggle addNoOpposingRight(int x, int y, boolean initial) {
+        LabeledToggle toggle = new LabeledToggle(x, y, 25, 18, initial,
+                on -> on ? "No Opp R: ON" : "No Opp R: OFF");
+        toggle.setOnToggle(() -> {
+            TrafficLightControlBoxBlockEntity box = getBox();
+            if (box == null) {
+                return;
+            }
+            ApproachMovementSettings settings = box.getMovementSettings(selectedApproach);
+            settings.noOpposingRightWithLeft = toggle.isToggled();
             box.setMovementSettings(selectedApproach, settings);
             syncMovement(settings);
         });
@@ -300,6 +324,7 @@ public class TrafficLightControlBoxAdvancedScreen extends AbstractContainerScree
         leftToggle.setToggled(settings.leftEnabled);
         rightToggle.setToggled(settings.rightEnabled);
         sharedTurnsToggle.setToggled(settings.sharedTurns);
+        noOpposingRightToggle.setToggled(settings.noOpposingRightWithLeft);
         straightIdleToggle.setState(settings.straightIdle);
         leftIdleToggle.setState(settings.leftIdle);
         rightIdleToggle.setState(settings.rightIdle);
@@ -342,6 +367,12 @@ public class TrafficLightControlBoxAdvancedScreen extends AbstractContainerScree
                 cx, cy + 74, 0x888888);
         graphics.drawCenteredString(font, "Shared Turns: left + U-turn + right arrows with straight (this approach only)",
                 cx, cy + 86, 0x888888);
+        graphics.drawCenteredString(font,
+                "No Opp R: suppresses this approach's opposing right during its left phase",
+                cx, cy + 98, 0x888888);
+        graphics.drawCenteredString(font,
+                "Power-On Flash: hold the startup red/yellow flashing state until disabled",
+                cx, cy + 110, 0x888888);
     }
 
     @Override

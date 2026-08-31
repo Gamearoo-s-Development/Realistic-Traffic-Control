@@ -168,5 +168,9 @@ public class BlockSign extends Block implements EntityBlock {
             signTE.setID(Sign.DEFAULT_BLANK_SIGN);
             signTE.setChanged();
         }
+        BlockState actualState = computeActualState(level.getBlockState(pos), level, pos);
+        if (actualState != level.getBlockState(pos)) {
+            level.setBlock(pos, actualState, Block.UPDATE_ALL);
+        }
     }
 }

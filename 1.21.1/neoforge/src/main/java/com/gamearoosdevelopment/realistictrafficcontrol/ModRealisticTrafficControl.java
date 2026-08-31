@@ -25,14 +25,18 @@ public class ModRealisticTrafficControl {
     public static final double MAX_RENDER_DISTANCE = 262144;
 
     public static boolean IR_INSTALLED = false;
+    public static boolean CREATE_INSTALLED = false;
     public static boolean CC_INSTALLED = false;
+    public static boolean OC_INSTALLED = false;
 
     /** Sign pack repository (initialized on common setup). */
     public static SignRepository signRepo = new SignRepository();
 
     public ModRealisticTrafficControl(IEventBus modBus, ModContainer modContainer) {
         IR_INSTALLED = ModList.get().isLoaded("immersiverailroading");
+        CREATE_INSTALLED = ModList.get().isLoaded("create");
         CC_INSTALLED = ModList.get().isLoaded("computercraft");
+        OC_INSTALLED = ModList.get().isLoaded("opencomputers");
 
         ModBlocks.BLOCKS.register(modBus);
         ModItems.ITEMS.register(modBus);
@@ -51,7 +55,8 @@ public class ModRealisticTrafficControl {
         modBus.addListener(this::onConfigReload);
         modBus.addListener(this::onCommonSetup);
 
-        LOGGER.info("Realistic Traffic Control loading (IR={}, CC={})", IR_INSTALLED, CC_INSTALLED);
+        LOGGER.info("Realistic Traffic Control loading (IR={}, Create={}, CC={}, OC={})",
+                IR_INSTALLED, CREATE_INSTALLED, CC_INSTALLED, OC_INSTALLED);
     }
 
     private void onCommonSetup(FMLCommonSetupEvent event) {
@@ -59,6 +64,9 @@ public class ModRealisticTrafficControl {
             signRepo.init(str -> {}, steps -> {});
             if (CC_INSTALLED) {
                 com.gamearoosdevelopment.realistictrafficcontrol.cc.TrafficLightPeripheralProvider.register();
+            }
+            if (OC_INSTALLED) {
+                com.gamearoosdevelopment.realistictrafficcontrol.compat.OpenComputersCompat.register();
             }
         });
     }

@@ -38,6 +38,8 @@ public final class RTCNetworking {
 
         registrar.playToServer(ToggleNightFlashPayload.TYPE, ToggleNightFlashPayload.STREAM_CODEC,
                 RTCNetworking::handleToggleNightFlash);
+        registrar.playToServer(TogglePowerOnFlashPayload.TYPE, TogglePowerOnFlashPayload.STREAM_CODEC,
+                RTCNetworking::handleTogglePowerOnFlash);
         registrar.playToServer(ToggleMainPayload.TYPE, ToggleMainPayload.STREAM_CODEC,
                 RTCNetworking::handleToggleMain);
         registrar.playToServer(ToggleHawkBeaconPayload.TYPE, ToggleHawkBeaconPayload.STREAM_CODEC,
@@ -92,6 +94,11 @@ public final class RTCNetworking {
             box.setNightFlashEnabled(payload.enabled());
             box.getAutomator().reset();
         }));
+    }
+
+    private static void handleTogglePowerOnFlash(TogglePowerOnFlashPayload payload, IPayloadContext context) {
+        context.enqueueWork(() -> applyControlBoxToggle(payload.pos(), context,
+                box -> box.setPowerOnFlashEnabled(payload.enabled())));
     }
 
     private static void handleToggleMain(ToggleMainPayload payload, IPayloadContext context) {

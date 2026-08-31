@@ -1,38 +1,19 @@
-{ 
+{
   "type": "minecraft:crafting_shaped",
   "pattern": [
     " P ",
     " I ",
-    " I "  ],
+    " I "
+  ],
   "key": {
-  "I":
-	  {
-	  	
-        param($m)
-        $ore = $m.Groups[1].Value
-        if ($oreMap.ContainsKey($ore)) {
-            '"item": "' + $oreMap[$ore] + '"'
-        } else {
-            '"tag": "c:' + ($ore.ToLower() -replace 'ingot','') + '"'
-        }
-    
-	  },
-  "P":
-  	{
-  		"item": "minecraft:painting",
-  		"data": 0
-  	}
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "P": {
+      "item": "minecraft:painting"
+    }
   },
   "result": {
-    
-        param($m)
-        $id = $m.Groups[1].Value
-        if ($id -like 'traffic_light_bulb*') {
-            '"id": "realistictrafficcontrol:traffic_light_bulb", "components": { "realistictrafficcontrol:bulb_type": 0 }'
-        } else {
-            '"id": "realistictrafficcontrol:' + $id + '"'
-        }
-    ,
-    "count": 1
+    "id": "realistictrafficcontrol:sign"
   }
 }

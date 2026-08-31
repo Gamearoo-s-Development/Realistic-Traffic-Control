@@ -49,11 +49,15 @@ public class SignRepository {
             return;
         }
         try (InputStream jsonStream = getBaseJson()) {
+            if (jsonStream == null) {
+                throw new IllegalStateException("Bundled misc/signs.json is missing");
+            }
             JsonElement parser = JsonParser.parseReader(new InputStreamReader(jsonStream));
             processSignFile(parser.getAsJsonObject(), null, splashUpdate, maximumUpdate);
         } catch (Exception ex) {
             ModRealisticTrafficControl.LOGGER.error("Could not process base signpack.", ex);
         }
+        ensureFallbackSigns();
         signsInitialized = true;
     }
 
@@ -80,6 +84,22 @@ public class SignRepository {
             return;
         }
         processSignsArray(signsArrayObject.getAsJsonArray(), packID, splashUpdate, stepsUpdate);
+    }
+
+    void processExternalSignFile(JsonObject signsFile) throws Exception {
+        processSignFile(signsFile, null, str -> {}, steps -> {});
+        ensureFallbackSigns();
+    }
+
+    private void ensureFallbackSigns() {
+        ResourceLocation fallbackTexture = ResourceLocation.fromNamespaceAndPath(
+                ModRealisticTrafficControl.MODID, "textures/block/generic.png");
+        signsByID.computeIfAbsent(Sign.DEFAULT_ERROR_SIGN, id -> new Sign(
+                id, fallbackTexture, fallbackTexture, "Missing sign", -1, "misc",
+                "The requested sign texture is unavailable.", null, false, new ArrayList<>()));
+        signsByID.computeIfAbsent(Sign.DEFAULT_BLANK_SIGN, id -> new Sign(
+                id, fallbackTexture, fallbackTexture, "Blank sign", -1, "misc",
+                null, null, false, new ArrayList<>()));
     }
 
     private void processSignsArray(JsonArray signs, UUID packID, Consumer<String> splashUpdate, IntConsumer stepsUpdate) {
@@ -165,6 +185,11 @@ public class SignRepository {
         return signsByID.get(id);
     }
 
+    public Sign getFallbackSign() {
+        ensureFallbackSigns();
+        return signsByID.get(Sign.DEFAULT_ERROR_SIGN);
+    }
+
     public String getFriendlyTypeName(String unlocalizedName) {
         return friendlyTypesByName.get(unlocalizedName);
     }
@@ -181,6 +206,6 @@ public class SignRepository {
         if (FMLEnvironment.dist != Dist.CLIENT) {
             return;
         }
-        // Dynamic texture registration from signpack ZIPs is handled by SignClientEvents.
+        SignClientLoader.loadExternalPacks(this);
     }
 }

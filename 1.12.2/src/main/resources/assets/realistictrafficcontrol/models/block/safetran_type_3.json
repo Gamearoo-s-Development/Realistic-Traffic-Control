@@ -4,6 +4,7 @@
 		"0": "realistictrafficcontrol:blocks/generic",
 		"1": "realistictrafficcontrol:blocks/transparent",
 		"2": "realistictrafficcontrol:blocks/bell_cage",
+		"-1": "realistictrafficcontrol:blocks/transparent",
 		"particle": "realistictrafficcontrol:blocks/generic"
 	},
 	"elements": [

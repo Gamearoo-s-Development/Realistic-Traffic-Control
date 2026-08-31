@@ -13,6 +13,7 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
 
 /** Port of 1.12.2 {@code GuiType3Barrier}. */
 public class Type3BarrierScreen extends AbstractContainerScreen<Type3BarrierMenu> {
@@ -32,6 +33,8 @@ public class Type3BarrierScreen extends AbstractContainerScreen<Type3BarrierMenu
 
     public Type3BarrierScreen(Type3BarrierMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
+        imageWidth = 1;
+        imageHeight = 1;
     }
 
     @Override
@@ -81,7 +84,8 @@ public class Type3BarrierScreen extends AbstractContainerScreen<Type3BarrierMenu
                 && !barrierEntity.getThisSign().getTextLines().isEmpty();
         addRenderableWidget(textEditorButton);
 
-        imageList = new SignImageListWidget(width / 2 - 96, height / 2 - 100, 200, 200, sign -> {
+        imageList = addRenderableWidget(new SignImageListWidget(
+                width / 2 - 96, height / 2 - 100, 200, 200, sign -> {
             barrierEntity.setThisSignTypeLegacy(SignBlockEntity.getSignTypeNumber(sign.getType()));
             barrierEntity.setThisSignVariantLegacy(sign.getVariant());
             barrierEntity.setThisSignID(sign.getID());
@@ -89,9 +93,8 @@ public class Type3BarrierScreen extends AbstractContainerScreen<Type3BarrierMenu
             textEditorButton.active = !sign.getTextLines().isEmpty();
             imageListVisible = false;
             imageList.setVisible(false);
-        });
+        }));
         imageList.setVisible(false);
-        addWidget(imageList);
 
         imageListFilter = new EditBox(font, width / 2 - 96, height / 2 + 104, 200, 20, Component.literal("Filter"));
         addRenderableWidget(imageListFilter);
@@ -127,11 +130,8 @@ public class Type3BarrierScreen extends AbstractContainerScreen<Type3BarrierMenu
             if (sign != null) {
                 int x = width / 2 - 32;
                 int y = height / 2 - 32;
-                graphics.blit(sign.getFrontImageResourceLocation(), x, y, 0, 0, 64, 64, 64, 64);
+                graphics.blit(sign.getFrontImageResourceLocation(), x, y, 64, 64, 0, 0, 16, 16, 16, 16);
             }
-        }
-        if (imageListVisible) {
-            imageList.renderWidget(graphics, mouseX, mouseY, partialTick);
         }
     }
 
@@ -183,5 +183,9 @@ public class Type3BarrierScreen extends AbstractContainerScreen<Type3BarrierMenu
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+    }
+
+    @Override
+    protected void renderSlot(GuiGraphics graphics, Slot slot) {
     }
 }

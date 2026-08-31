@@ -25,7 +25,12 @@ public class SignBlockEntity extends BlockEntity {
     private boolean suppressHorizontalBar;
 
     public SignBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.SIGN.get(), pos, state);
+        this(ModBlockEntities.SIGN.get(), pos, state);
+    }
+
+    protected SignBlockEntity(net.minecraft.world.level.block.entity.BlockEntityType<?> type,
+            BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
     public boolean isHorizontalBarSuppressed() {
@@ -92,7 +97,7 @@ public class SignBlockEntity extends BlockEntity {
             sign = ModRealisticTrafficControl.signRepo.getSignByID(id);
         }
         if (sign == null) {
-            return ModRealisticTrafficControl.signRepo.getSignByID(Sign.DEFAULT_ERROR_SIGN);
+            return ModRealisticTrafficControl.signRepo.getFallbackSign();
         }
         return sign;
     }

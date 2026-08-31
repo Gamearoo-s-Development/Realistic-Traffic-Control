@@ -9,14 +9,14 @@
 		{
 			"name": "Crossbuck 1",
 			"from": [
-				-1.5,
+				-2.5,
 				6,
-				12
+				11
 			],
 			"to": [
-				17.5,
+				18.5,
 				9,
-				13
+				14
 			],
 			"rotation": {
 				"angle": -45,
@@ -87,14 +87,14 @@
 		{
 			"name": "Crossbuck 2",
 			"from": [
-				-1.5,
+				-2.5,
 				6,
-				12.1
+				11.1
 			],
 			"to": [
-				17.5,
+				18.5,
 				9,
-				13.1
+				14.1
 			],
 			"rotation": {
 				"angle": 45,
@@ -165,23 +165,23 @@
 		{
 			"name": "Right Crossbuck Support",
 			"from": [
-				9,
+				8,
 				7,
-				7
+				5
 			],
 			"to": [
-				10,
+				11,
 				8,
-				12
+				13
 			],
 			"rotation": {
-				"origin": [
-					8.0,
-					7.5,
-					12.50000000745058
-				],
+				"angle": 0,
 				"axis": "z",
-				"angle": 0.0
+				"origin": [
+					8,
+					7.5,
+					12.5
+				]
 			},
 			"faces": {
 				"north": {
@@ -243,23 +243,23 @@
 		{
 			"name": "Left Crossbuck Support",
 			"from": [
-				6,
+				5,
 				7,
-				7
+				5
 			],
 			"to": [
-				7,
 				8,
-				12
+				8,
+				13
 			],
 			"rotation": {
-				"origin": [
-					8.0,
-					7.5,
-					12.50000000745058
-				],
+				"angle": 0,
 				"axis": "z",
-				"angle": 0.0
+				"origin": [
+					8,
+					7.5,
+					12.5
+				]
 			},
 			"faces": {
 				"north": {
@@ -321,23 +321,23 @@
 		{
 			"name": "Pole",
 			"from": [
-				7,
+				6,
 				0,
-				7
+				6
 			],
 			"to": [
-				9,
+				10,
 				16,
-				9
+				10
 			],
 			"rotation": {
-				"origin": [
-					8.0,
-					8.0,
-					8.0
-				],
+				"angle": 0,
 				"axis": "z",
-				"angle": 0.0
+				"origin": [
+					8,
+					8,
+					8
+				]
 			},
 			"faces": {
 				"north": {
@@ -447,7 +447,7 @@
 		"firstperson_lefthand": {
 			"rotation": [
 				0,
-				225,
+				-135,
 				0
 			],
 			"scale": [

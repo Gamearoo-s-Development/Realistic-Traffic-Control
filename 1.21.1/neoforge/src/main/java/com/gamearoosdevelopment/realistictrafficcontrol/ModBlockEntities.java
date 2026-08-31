@@ -21,6 +21,10 @@ import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.StreetLightSi
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.StreetSignBlockEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.Type3BarrierBlockEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.WireAnchorBlockEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.DigitalSignBlockEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.DigitalSignControllerBlockEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.MessageBoardBlockEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.MessageBoardControllerBlockEntity;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.Block;
@@ -100,6 +104,19 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SignBlockEntity>> SIGN =
             BLOCK_ENTITIES.register("sign", () -> BlockEntityType.Builder.of(
                     SignBlockEntity::new, ModBlocks.SIGN.get()).build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<DigitalSignBlockEntity>> DIGITAL_SIGN =
+            BLOCK_ENTITIES.register("digital_sign", () -> BlockEntityType.Builder.of(
+                    DigitalSignBlockEntity::new, ModBlocks.DIGITAL_SIGN.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<DigitalSignControllerBlockEntity>> DIGITAL_SIGN_CONTROLLER =
+            BLOCK_ENTITIES.register("digital_sign_controller", () -> BlockEntityType.Builder.of(
+                    DigitalSignControllerBlockEntity::new, ModBlocks.DIGITAL_SIGN_CONTROLLER.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MessageBoardBlockEntity>> MESSAGE_BOARD =
+            BLOCK_ENTITIES.register("message_board", () -> BlockEntityType.Builder.of(
+                    MessageBoardBlockEntity::new, ModBlocks.MESSAGE_BOARD.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MessageBoardControllerBlockEntity>> MESSAGE_BOARD_CONTROLLER =
+            BLOCK_ENTITIES.register("message_board_controller", () -> BlockEntityType.Builder.of(
+                    MessageBoardControllerBlockEntity::new, ModBlocks.MESSAGE_BOARD_CONTROLLER.get()).build(null));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<StreetSignBlockEntity>> STREET_SIGN =
             BLOCK_ENTITIES.register("street_sign", () -> BlockEntityType.Builder.of(

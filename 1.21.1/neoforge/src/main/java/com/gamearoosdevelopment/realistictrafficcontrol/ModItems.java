@@ -142,6 +142,12 @@ public final class ModItems {
 
     // --- signs / street signs / street lights ---
     public static final DeferredItem<BlockItem> SIGN = simpleBlockItem("sign", ModBlocks.SIGN);
+    public static final DeferredItem<BlockItem> DIGITAL_SIGN = simpleBlockItem("digital_sign", ModBlocks.DIGITAL_SIGN);
+    public static final DeferredItem<BlockItem> DIGITAL_SIGN_CONTROLLER =
+            simpleBlockItem("digital_sign_controller", ModBlocks.DIGITAL_SIGN_CONTROLLER);
+    public static final DeferredItem<BlockItem> MESSAGE_BOARD = simpleBlockItem("message_board", ModBlocks.MESSAGE_BOARD);
+    public static final DeferredItem<BlockItem> MESSAGE_BOARD_CONTROLLER =
+            simpleBlockItem("message_board_controller", ModBlocks.MESSAGE_BOARD_CONTROLLER);
     public static final DeferredItem<ItemStreetSign> STREET_SIGN =
             ITEMS.register("street_sign", () -> new ItemStreetSign(ModBlocks.STREET_SIGN.get(), new Item.Properties()));
     public static final DeferredItem<BlockItem> STREET_LIGHT_SINGLE =

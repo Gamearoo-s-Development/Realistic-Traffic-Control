@@ -4,6 +4,10 @@ import com.gamearoosdevelopment.realistictrafficcontrol.ModItems;
 
 
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.SignTileEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.DigitalSignControllerTileEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.DigitalSignTileEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.MessageBoardControllerTileEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.MessageBoardTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.StreetSignTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLightControlBoxTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.Type3BarrierTileEntity;
@@ -122,6 +126,38 @@ public class GuiProxy implements IGuiHandler {
 				{
 					SignTileEntity signTE = (SignTileEntity)te;
 					return new SignGui(signTE);
+				}
+				break;
+			case GUI_IDs.DIGITAL_SIGN:
+				BlockPos digitalSignPos = new BlockPos(x, y, z);
+				TileEntity digitalSignTE = world.getTileEntity(digitalSignPos);
+				if (digitalSignTE instanceof SignTileEntity)
+				{
+					return new SignGui((SignTileEntity) digitalSignTE);
+				}
+				break;
+			case GUI_IDs.MESSAGE_BOARD:
+				BlockPos messageBoardPos = new BlockPos(x, y, z);
+				TileEntity messageBoardTE = world.getTileEntity(messageBoardPos);
+				if (messageBoardTE instanceof MessageBoardTileEntity)
+				{
+					return new MessageBoardGui((MessageBoardTileEntity) messageBoardTE);
+				}
+				break;
+			case GUI_IDs.DIGITAL_SIGN_CONTROLLER:
+				BlockPos digitalControllerPos = new BlockPos(x, y, z);
+				TileEntity digitalControllerTE = world.getTileEntity(digitalControllerPos);
+				if (digitalControllerTE instanceof DigitalSignControllerTileEntity)
+				{
+					return new DigitalSignControllerGui((DigitalSignControllerTileEntity) digitalControllerTE);
+				}
+				break;
+			case GUI_IDs.MESSAGE_BOARD_CONTROLLER:
+				BlockPos messageControllerPos = new BlockPos(x, y, z);
+				TileEntity messageControllerTE = world.getTileEntity(messageControllerPos);
+				if (messageControllerTE instanceof MessageBoardControllerTileEntity)
+				{
+					return new MessageBoardControllerGui((MessageBoardControllerTileEntity) messageControllerTE);
 				}
 				break;
 			case GUI_IDs.TRAFFIC_LIGHT_FRAME:
@@ -266,6 +302,10 @@ public class GuiProxy implements IGuiHandler {
 	public static class GUI_IDs
 	{
 		public static final int SIGN = 1;
+		public static final int DIGITAL_SIGN = 21;
+		public static final int MESSAGE_BOARD = 22;
+		public static final int DIGITAL_SIGN_CONTROLLER = 23;
+		public static final int MESSAGE_BOARD_CONTROLLER = 24;
 		public static final int TRAFFIC_LIGHT_FRAME = 2;
 		public static final int TRAFFIC_LIGHT_CONTROL_BOX = 3;
 		public static final int TYPE_3_BARRIER = 4;

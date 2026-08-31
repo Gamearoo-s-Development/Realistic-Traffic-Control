@@ -9,6 +9,7 @@ import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleAppr
 import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleHawkBeacon;
 import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleMain;
 import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleNightFlash;
+import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketTogglePowerOnFlash;
 import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleSplitAxis;
 import com.gamearoosdevelopment.realistictrafficcontrol.network.PacketToggleSplitDirections;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLightControlBoxTileEntity;
@@ -33,6 +34,7 @@ public class TrafficLightControlBoxAdvancedGui extends GuiScreen {
 	private static final int ID_LEFT = 21;
 	private static final int ID_RIGHT = 22;
 	private static final int ID_SHARED_TURNS = 23;
+	private static final int ID_NO_OPPOSING_RIGHT = 24;
 	private static final int ID_STRAIGHT_IDLE = 30;
 	private static final int ID_LEFT_IDLE = 31;
 	private static final int ID_RIGHT_IDLE = 32;
@@ -106,6 +108,8 @@ public class TrafficLightControlBoxAdvancedGui extends GuiScreen {
 		buttonList.add(new GuiButtonToggleMovement(ID_RIGHT, enabledX, rowY + ROW_HEIGHT * 2, 80, BTN_HEIGHT, "Right", settings.rightEnabled));
 		buttonList.add(new GuiButtonToggleMovement(ID_SHARED_TURNS, enabledX, rowY + ROW_HEIGHT * 3, 80, BTN_HEIGHT,
 				sharedTurnsLabel(selectedApproach), settings.sharedTurns));
+		buttonList.add(new GuiButtonToggleMovement(ID_NO_OPPOSING_RIGHT, enabledX, rowY + ROW_HEIGHT * 4, 80, BTN_HEIGHT,
+				noOpposingRightLabel(selectedApproach), settings.noOpposingRightWithLeft));
 		buttonList.add(new GuiButtonIdleMode(ID_STRAIGHT_IDLE, idleX, rowY, 90, BTN_HEIGHT, "Straight", settings.straightIdle, true));
 		buttonList.add(new GuiButtonIdleMode(ID_LEFT_IDLE, idleX, rowY + ROW_HEIGHT, 90, BTN_HEIGHT, "Left", settings.leftIdle, false));
 		buttonList.add(new GuiButtonIdleMode(ID_RIGHT_IDLE, idleX, rowY + ROW_HEIGHT * 2, 90, BTN_HEIGHT, "Right", settings.rightIdle, false));
@@ -119,6 +123,8 @@ public class TrafficLightControlBoxAdvancedGui extends GuiScreen {
 		buttonList.add(new GuiButtonToggleSplitDirections(9004, systemCol1X, rowY + systemStep * 3, 25, BTN_HEIGHT, te.isSplitDirectionsEnabled()));
 		buttonList.add(new GuiButtonToggleSplitNS(9005, systemCol1X, rowY + systemStep * 4, 25, BTN_HEIGHT, te.isSplitNorthSouthEnabled()));
 		buttonList.add(new GuiButtonToggleSplitEW(9006, systemCol1X, rowY + systemStep * 5, 25, BTN_HEIGHT, te.isSplitWestEastEnabled()));
+		buttonList.add(new GuiButtonToggle(9007, systemCol1X, rowY + systemStep * 6, 25, BTN_HEIGHT,
+				te.isPowerOnFlashEnabled(), "Power-On Flash"));
 
 		buttonList.add(new GuiButtonToggleApproach(9010, systemCol2X, rowY, 25, BTN_HEIGHT, EnumFacing.NORTH, te.hasNorth));
 		buttonList.add(new GuiButtonToggleApproach(9011, systemCol2X, rowY + systemStep, 25, BTN_HEIGHT, EnumFacing.SOUTH, te.hasSouth));
@@ -132,6 +138,13 @@ public class TrafficLightControlBoxAdvancedGui extends GuiScreen {
 			return "Shared";
 		}
 		return "Shared " + approach.getName().substring(0, 1).toUpperCase();
+	}
+
+	private static String noOpposingRightLabel(EnumFacing approach) {
+		if (approach == null) {
+			return "No Opp R";
+		}
+		return "No Opp R " + approach.getName().substring(0, 1).toUpperCase();
 	}
 
 	private TrafficLightControlBoxTileEntity refreshTileEntity() {
@@ -161,6 +174,10 @@ public class TrafficLightControlBoxAdvancedGui extends GuiScreen {
 				GuiButtonToggleMovement shared = (GuiButtonToggleMovement) button;
 				shared.setToggled(settings.sharedTurns);
 				shared.setMovementLabel(sharedTurnsLabel(selectedApproach));
+			} else if (button.id == ID_NO_OPPOSING_RIGHT && button instanceof GuiButtonToggleMovement) {
+				GuiButtonToggleMovement noOpposingRight = (GuiButtonToggleMovement) button;
+				noOpposingRight.setToggled(settings.noOpposingRightWithLeft);
+				noOpposingRight.setMovementLabel(noOpposingRightLabel(selectedApproach));
 			} else if (button.id == ID_STRAIGHT_IDLE && button instanceof GuiButtonIdleMode) {
 				GuiButtonIdleMode idleButton = (GuiButtonIdleMode) button;
 				idleButton.setMode(settings.straightIdle);
@@ -223,6 +240,7 @@ public class TrafficLightControlBoxAdvancedGui extends GuiScreen {
 			case ID_LEFT:
 			case ID_RIGHT:
 			case ID_SHARED_TURNS:
+			case ID_NO_OPPOSING_RIGHT:
 				if (button instanceof GuiButtonToggleMovement) {
 					GuiButtonToggleMovement toggle = (GuiButtonToggleMovement) button;
 					toggle.toggle();
@@ -233,8 +251,10 @@ public class TrafficLightControlBoxAdvancedGui extends GuiScreen {
 						settings.leftEnabled = toggle.isToggled();
 					} else if (button.id == ID_RIGHT) {
 						settings.rightEnabled = toggle.isToggled();
-					} else {
+					} else if (button.id == ID_SHARED_TURNS) {
 						settings.sharedTurns = toggle.isToggled();
+					} else {
+						settings.noOpposingRightWithLeft = toggle.isToggled();
 					}
 					te.setMovementSettings(selectedApproach, settings);
 					syncSettingsToServer();
@@ -289,6 +309,14 @@ public class TrafficLightControlBoxAdvancedGui extends GuiScreen {
 			boolean enabled = toggle.isToggled();
 			te.setNightFlashEnabled(enabled);
 			ModNetworkHandler.INSTANCE.sendToServer(new PacketToggleNightFlash(te.getPos(), enabled));
+			return true;
+		}
+		if (button.id == 9007 && button instanceof GuiButtonToggle) {
+			GuiButtonToggle toggle = (GuiButtonToggle) button;
+			toggle.toggle();
+			boolean enabled = toggle.isToggled();
+			te.setPowerOnFlashEnabled(enabled);
+			ModNetworkHandler.INSTANCE.sendToServer(new PacketTogglePowerOnFlash(te.getPos(), enabled));
 			return true;
 		}
 		if (button.id == 9002 && button instanceof GuiButtonToggle2) {
@@ -379,6 +407,8 @@ public class TrafficLightControlBoxAdvancedGui extends GuiScreen {
 
 		drawCenteredString(fontRenderer, "Idle if OFF: only applies when movement is disabled (grey = ON)", cx, cy + 74, 0x888888);
 		drawCenteredString(fontRenderer, "Shared Turns: left + U-turn + right arrows with straight (this Dir only)", cx, cy + 86, 0x888888);
+		drawCenteredString(fontRenderer, "No Opp R: suppresses this approach's opposing right during its left phase", cx, cy + 98, 0x888888);
+		drawCenteredString(fontRenderer, "Power-On Flash: hold the startup red/yellow flashing state until disabled", cx, cy + 110, 0x888888);
 
 		super.drawScreen(mouseX, mouseY, partialTicks);
 	}

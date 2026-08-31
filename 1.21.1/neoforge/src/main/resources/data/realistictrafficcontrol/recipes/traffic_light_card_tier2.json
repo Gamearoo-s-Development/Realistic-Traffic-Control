@@ -1,5 +1,11 @@
 {
   "type": "minecraft:crafting_shaped",
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "computercraft"
+    }
+  ],
   "pattern": [
     " T ",
     " C ",
@@ -13,7 +19,7 @@
       }
     },
     "C": {
-      "item": "computercraft:advanced_computer"
+      "item": "computercraft:computer_advanced"
     }
   },
   "result": {

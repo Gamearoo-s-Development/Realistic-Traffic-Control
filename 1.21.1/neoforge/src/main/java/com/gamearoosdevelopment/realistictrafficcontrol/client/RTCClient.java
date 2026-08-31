@@ -18,6 +18,7 @@ import com.gamearoosdevelopment.realistictrafficcontrol.client.render.StreetLigh
 import com.gamearoosdevelopment.realistictrafficcontrol.client.render.StreetSignBlockEntityRenderer;
 import com.gamearoosdevelopment.realistictrafficcontrol.client.render.Type3BarrierBlockEntityRenderer;
 import com.gamearoosdevelopment.realistictrafficcontrol.client.render.WireAnchorBlockEntityRenderer;
+import com.gamearoosdevelopment.realistictrafficcontrol.client.render.MessageBoardBlockEntityRenderer;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.ConcreteBarrierBlockItem;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.TrafficLightBulbItem;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.TrafficLightCardItem;
@@ -53,11 +54,13 @@ public final class RTCClient {
         event.register(ModMenus.SIGN.get(), SignScreen::new);
         event.register(ModMenus.STREET_SIGN.get(), StreetSignScreen::new);
         event.register(ModMenus.TYPE_3_BARRIER.get(), Type3BarrierScreen::new);
+        event.register(ModMenus.DISPLAY.get(), DisplayScreen::new);
     }
 
     @SubscribeEvent
     public static void onClientSetup(net.neoforged.fml.event.lifecycle.FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
+            ModRealisticTrafficControl.signRepo.initClientTextures();
             ItemProperties.register(
                     ModItems.TRAFFIC_LIGHT_CARD.get(),
                     ResourceLocation.fromNamespaceAndPath(ModRealisticTrafficControl.MODID, "card_tier"),
@@ -85,6 +88,8 @@ public final class RTCClient {
                 VerticalWigWagBlockEntityRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.WIRE_ANCHOR.get(), WireAnchorBlockEntityRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.SIGN.get(), SignBlockEntityRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.DIGITAL_SIGN.get(), SignBlockEntityRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.MESSAGE_BOARD.get(), MessageBoardBlockEntityRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.STREET_SIGN.get(), StreetSignBlockEntityRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.STREET_LIGHT_SINGLE.get(),
                 StreetLightSingleBlockEntityRenderer::new);

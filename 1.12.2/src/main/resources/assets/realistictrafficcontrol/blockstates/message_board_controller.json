@@ -1,0 +1,9 @@
+{
+  "variants": {
+    "facing=north": { "model":"realistictrafficcontrol:message_board_controller" },
+    "facing=south": { "model":"realistictrafficcontrol:message_board_controller", "y":180 },
+    "facing=west": { "model":"realistictrafficcontrol:message_board_controller", "y":270 },
+    "facing=east": { "model":"realistictrafficcontrol:message_board_controller", "y":90 },
+    "inventory": { "model":"realistictrafficcontrol:message_board_controller" }
+  }
+}

@@ -17,6 +17,10 @@ import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLightC
 import com.gamearoosdevelopment.realistictrafficcontrol.util.CustomAngleCalculator;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.TrafficLightFacingResolver;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.VerticalWigWagBlockEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.DigitalSignBlockEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.DigitalSignControllerBlockEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.MessageBoardBlockEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.MessageBoardControllerBlockEntity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -92,7 +96,9 @@ public class CrossingRelayTunerItem extends Item {
         int[] pairingPos = getPairingPos(stack);
 
         if (pairingPos == null) {
-            if (!(te instanceof RelayBlockEntity || te instanceof TrafficLightControlBoxBlockEntity)) {
+            if (!(te instanceof RelayBlockEntity || te instanceof TrafficLightControlBoxBlockEntity
+                    || te instanceof DigitalSignControllerBlockEntity
+                    || te instanceof MessageBoardControllerBlockEntity)) {
                 return false;
             }
 
@@ -105,16 +111,22 @@ public class CrossingRelayTunerItem extends Item {
                 }
                 relayPos = master.getBlockPos();
                 typeOfPairing = "Relay Box";
-            } else {
+            } else if (te instanceof TrafficLightControlBoxBlockEntity) {
                 relayPos = te.getBlockPos();
                 typeOfPairing = "Traffic Light Control Box";
+            } else {
+                relayPos = te.getBlockPos();
+                typeOfPairing = te instanceof DigitalSignControllerBlockEntity
+                        ? "Digital Sign Controller" : "Message Board Controller";
             }
 
             setPairingPos(stack, relayPos);
             player.displayClientMessage(Component.literal("Started pairing with " + typeOfPairing + " at "
                     + relayPos.getX() + ", " + relayPos.getY() + ", " + relayPos.getZ()), false);
         } else {
-            if (te instanceof RelayBlockEntity || te instanceof TrafficLightControlBoxBlockEntity) {
+            if (te instanceof RelayBlockEntity || te instanceof TrafficLightControlBoxBlockEntity
+                    || te instanceof DigitalSignControllerBlockEntity
+                    || te instanceof MessageBoardControllerBlockEntity) {
                 BlockPos relayPos;
                 String typeOfPairing;
                 if (te instanceof RelayBlockEntity relayTE) {
@@ -124,9 +136,13 @@ public class CrossingRelayTunerItem extends Item {
                     }
                     relayPos = master.getBlockPos();
                     typeOfPairing = "Relay Box";
-                } else {
+                } else if (te instanceof TrafficLightControlBoxBlockEntity) {
                     relayPos = te.getBlockPos();
                     typeOfPairing = "Traffic Light Control Box";
+                } else {
+                    relayPos = te.getBlockPos();
+                    typeOfPairing = te instanceof DigitalSignControllerBlockEntity
+                            ? "Digital Sign Controller" : "Message Board Controller";
                 }
 
                 clearPairingPos(stack);
@@ -156,7 +172,9 @@ public class CrossingRelayTunerItem extends Item {
                 BlockPos pos = new BlockPos(pairingPos[0], pairingPos[1], pairingPos[2]);
                 BlockEntity teAtPairingPos = level.getBlockEntity(pos);
                 if (!(teAtPairingPos instanceof RelayBlockEntity
-                        || teAtPairingPos instanceof TrafficLightControlBoxBlockEntity)) {
+                        || teAtPairingPos instanceof TrafficLightControlBoxBlockEntity
+                        || teAtPairingPos instanceof DigitalSignControllerBlockEntity
+                        || teAtPairingPos instanceof MessageBoardControllerBlockEntity)) {
                     clearPairingPos(stack);
                     player.displayClientMessage(Component.literal("Could not find pair at "
                             + pairingPos[0] + ", " + pairingPos[1] + ", " + pairingPos[2] + ". Unpaired."), false);
@@ -266,6 +284,20 @@ public class CrossingRelayTunerItem extends Item {
                     }
                 }
             }
+        }
+
+        if (pairedTE instanceof DigitalSignControllerBlockEntity controller
+                && te instanceof DigitalSignBlockEntity) {
+            player.displayClientMessage(Component.literal(controller.getLinkedSigns().contains(te.getBlockPos())
+                    ? (controller.unlinkSign(te.getBlockPos()) ? "Unpaired Digital Sign" : "Could not unpair Digital Sign")
+                    : (controller.linkSign(te.getBlockPos()) ? "Paired Digital Sign" : "Could not pair Digital Sign")), false);
+        }
+        if (pairedTE instanceof MessageBoardControllerBlockEntity controller
+                && te instanceof MessageBoardBlockEntity
+                && !(te instanceof MessageBoardControllerBlockEntity)) {
+            player.displayClientMessage(Component.literal(controller.getLinkedBoards().contains(te.getBlockPos())
+                    ? (controller.unlinkBoard(te.getBlockPos()) ? "Unpaired Message Board" : "Could not unpair Message Board")
+                    : (controller.linkBoard(te.getBlockPos()) ? "Paired Message Board" : "Could not pair Message Board")), false);
         }
     }
 

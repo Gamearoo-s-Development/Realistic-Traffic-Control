@@ -112,7 +112,8 @@ public class RelayBlockEntity extends SyncableBlockEntity implements IScannerSub
             setChanged();
         }
 
-        if (ModRealisticTrafficControl.IR_INSTALLED && level instanceof ServerLevel serverLevel) {
+        if ((ModRealisticTrafficControl.IR_INSTALLED || ModRealisticTrafficControl.CREATE_INSTALLED)
+                && level instanceof ServerLevel serverLevel) {
             Scanner scanner = Scanner.scannersByWorld.get(serverLevel.dimension());
             if (scanner != null) {
                 scanner.subscribe(this);

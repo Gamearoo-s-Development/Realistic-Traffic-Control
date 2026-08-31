@@ -163,7 +163,8 @@ public class BaseTrafficLightTileEntity extends TileEntity implements ITickable 
 		// The "2" yellow turn variants are flash-only bulbs. Ignore solid-on
 		// requests so they cannot light alongside a non-flashing primary arrow.
 		if (active && !flash && (bulbType == EnumTrafficLightBulbTypes.YellowArrowLeft2
-				|| bulbType == EnumTrafficLightBulbTypes.YellowArrowRight2)) {
+				|| bulbType == EnumTrafficLightBulbTypes.YellowArrowRight2
+				|| bulbType == EnumTrafficLightBulbTypes.YellowArrowUTurn2)) {
 			return;
 		}
 		setActiveForBulbType(bulbType, active, flash);

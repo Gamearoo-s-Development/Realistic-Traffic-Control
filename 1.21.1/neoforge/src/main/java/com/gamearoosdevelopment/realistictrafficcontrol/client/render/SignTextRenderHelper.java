@@ -10,6 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import org.joml.Matrix4f;
 
@@ -27,7 +28,7 @@ public final class SignTextRenderHelper {
         if (backFace) {
             poseStack.translate(0, 0, -0.01);
         }
-        var consumer = buffer.getBuffer(RenderType.entityCutout(texture));
+        var consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(texture));
         Matrix4f matrix = poseStack.last().pose();
         if (backFace) {
             putVertex(consumer, matrix, packedLight, 1, 1, 0, 0, 0);
@@ -43,9 +44,25 @@ public final class SignTextRenderHelper {
         poseStack.popPose();
     }
 
+    /**
+     * Digital cabinets use the opposite road-facing winding from freestanding
+     * signs in the 1.12.2 renderer. This keeps that mirrored face without
+     * drawing the generic rear sign plate over the cabinet.
+     */
+    public static void renderDigitalFace(PoseStack poseStack, MultiBufferSource buffer, int packedLight,
+            ResourceLocation texture, float width, float height) {
+        var consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(texture));
+        Matrix4f matrix = poseStack.last().pose();
+        putVertex(consumer, matrix, packedLight, width, height, 0, 0, 0);
+        putVertex(consumer, matrix, packedLight, width, 0, 0, 0, 1);
+        putVertex(consumer, matrix, packedLight, 0, 0, 0, 1, 1);
+        putVertex(consumer, matrix, packedLight, 0, height, 0, 1, 0);
+    }
+
     private static void putVertex(com.mojang.blaze3d.vertex.VertexConsumer consumer, Matrix4f matrix, int packedLight,
             float x, float y, float z, float u, float v) {
-        consumer.addVertex(matrix, x, y, z).setColor(255, 255, 255, 255).setUv(u, v).setLight(packedLight)
+        consumer.addVertex(matrix, x, y, z).setColor(255, 255, 255, 255).setUv(u, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLight)
                 .setNormal(0, 1, 0);
     }
 

@@ -9,23 +9,23 @@
 		{
 			"name": "Pole",
 			"from": [
-				7,
+				6,
 				0,
-				7
+				6
 			],
 			"to": [
-				9,
+				10,
 				16,
-				9
+				10
 			],
 			"rotation": {
-				"origin": [
-					8.0,
-					8.0,
-					8.0
-				],
+				"angle": 0,
 				"axis": "z",
-				"angle": 0.0
+				"origin": [
+					8,
+					8,
+					8
+				]
 			},
 			"faces": {
 				"north": {
@@ -88,13 +88,13 @@
 			"name": "N Support",
 			"from": [
 				7,
-				8,
-				6.1
+				6,
+				5.1
 			],
 			"to": [
 				8,
 				19,
-				7
+				6
 			],
 			"rotation": {
 				"angle": 45,
@@ -166,13 +166,13 @@
 			"name": "S Support",
 			"from": [
 				7,
-				8,
-				8.9
+				6,
+				9.9
 			],
 			"to": [
 				8,
 				19,
-				9.8
+				10.8
 			],
 			"rotation": {
 				"angle": 45,
@@ -245,21 +245,21 @@
 			"from": [
 				-5,
 				15,
-				6
+				5
 			],
 			"to": [
-				9,
+				10,
 				16,
-				7
+				6
 			],
 			"rotation": {
-				"origin": [
-					8.0,
-					8.0,
-					8.0
-				],
+				"angle": 0,
 				"axis": "z",
-				"angle": 0.0
+				"origin": [
+					8,
+					8,
+					8
+				]
 			},
 			"faces": {
 				"north": {
@@ -323,21 +323,21 @@
 			"from": [
 				-5,
 				15,
-				9
-			],
-			"to": [
-				9,
-				16,
 				10
 			],
+			"to": [
+				10,
+				16,
+				11
+			],
 			"rotation": {
-				"origin": [
-					8.0,
-					8.0,
-					8.0
-				],
+				"angle": 0,
 				"axis": "z",
-				"angle": 0.0
+				"origin": [
+					8,
+					8,
+					8
+				]
 			},
 			"faces": {
 				"north": {
@@ -401,21 +401,21 @@
 			"from": [
 				-5,
 				16,
-				6
+				5
 			],
 			"to": [
 				-1,
 				20,
-				10
+				11
 			],
 			"rotation": {
-				"origin": [
-					8.0,
-					8.0,
-					8.0
-				],
+				"angle": 0,
 				"axis": "z",
-				"angle": 0.0
+				"origin": [
+					8,
+					8,
+					8
+				]
 			},
 			"faces": {
 				"north": {
@@ -515,7 +515,7 @@
 		"firstperson_lefthand": {
 			"rotation": [
 				0,
-				225,
+				-135,
 				0
 			],
 			"scale": [
@@ -539,7 +539,7 @@
 		"gui": {
 			"rotation": [
 				30,
-				225,
+				-135,
 				0
 			],
 			"translation": [

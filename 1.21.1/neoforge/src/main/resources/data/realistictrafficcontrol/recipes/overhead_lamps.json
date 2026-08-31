@@ -1,25 +1,14 @@
-{    "type": "minecraft:crafting_shapeless",   "ingredients": [ 	  { 	    
-        param($m)
-        $id = $m.Groups[1].Value
-        if ($id -like 'traffic_light_bulb*') {
-            '"id": "realistictrafficcontrol:traffic_light_bulb", "components": { "realistictrafficcontrol:bulb_type": 0 }'
-        } else {
-            '"id": "realistictrafficcontrol:' + $id + '"'
-        }
-    , 	    "data": 0 	  }, 	  { 	  	
-        param($m)
-        $id = $m.Groups[1].Value
-        if ($id -like 'traffic_light_bulb*') {
-            '"id": "realistictrafficcontrol:traffic_light_bulb", "components": { "realistictrafficcontrol:bulb_type": 0 }'
-        } else {
-            '"id": "realistictrafficcontrol:' + $id + '"'
-        }
-    , 	  	"data": 0 	  }   ],   "result": {     
-        param($m)
-        $id = $m.Groups[1].Value
-        if ($id -like 'traffic_light_bulb*') {
-            '"id": "realistictrafficcontrol:traffic_light_bulb", "components": { "realistictrafficcontrol:bulb_type": 0 }'
-        } else {
-            '"id": "realistictrafficcontrol:' + $id + '"'
-        }
-    ,     "count": 1   } }
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "realistictrafficcontrol:overhead"
+    },
+    {
+      "item": "realistictrafficcontrol:crossing_gate_lamps"
+    }
+  ],
+  "result": {
+    "id": "realistictrafficcontrol:overhead_lamps"
+  }
+}

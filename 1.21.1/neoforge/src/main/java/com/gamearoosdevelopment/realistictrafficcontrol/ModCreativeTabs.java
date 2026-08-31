@@ -42,6 +42,8 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.WIRE_ANCHOR.get());
                         output.accept(ModItems.HORIZONTAL_POLE.get());
                         output.accept(ModItems.SIGN.get());
+                        output.accept(ModItems.DIGITAL_SIGN.get());
+                        output.accept(ModItems.MESSAGE_BOARD.get());
                         output.accept(ModItems.STREET_SIGN.get());
                         output.accept(ModItems.STREET_LIGHT_SINGLE.get());
                         output.accept(ModItems.STREET_LIGHT_DOUBLE.get());
@@ -57,6 +59,8 @@ public final class ModCreativeTabs {
                 output.accept(ModItems.WIRE_CUTTER.get());
                 output.accept(ModItems.SCREWDRIVER.get());
                 output.accept(ModItems.CROSSING_RELAY_TUNER.get());
+                output.accept(ModItems.DIGITAL_SIGN_CONTROLLER.get());
+                output.accept(ModItems.MESSAGE_BOARD_CONTROLLER.get());
             }));
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CONES = TABS.register("cones_tab",
