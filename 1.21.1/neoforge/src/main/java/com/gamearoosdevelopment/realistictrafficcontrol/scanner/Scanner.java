@@ -11,6 +11,7 @@ import java.util.UUID;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.Config;
 import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficControl;
+import com.gamearoosdevelopment.realistictrafficcontrol.compat.CreateCompat;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.ImmersiveRailroadingHelper;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.Tuple;
 
@@ -23,7 +24,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * Per-dimension train-track scanner used when Immersive Railroading is installed.
+ * Per-dimension train scanner used when Immersive Railroading or Create is installed.
  */
 public class Scanner {
     private static final UUID ISLAND_REQUEST = UUID.fromString("da2e3487-9fe6-4369-80bc-4b5ce40f0530");
@@ -51,7 +52,7 @@ public class Scanner {
     }
 
     public void tick(ServerLevel world) {
-        if (!ModRealisticTrafficControl.IR_INSTALLED) {
+        if (!ModRealisticTrafficControl.IR_INSTALLED && !ModRealisticTrafficControl.CREATE_INSTALLED) {
             return;
         }
         try {
@@ -71,6 +72,23 @@ public class Scanner {
                         scanSession.setScanSubscriber(null);
                     }
                     continue;
+                }
+
+                if (scanSession.getBlocksScannedThisSession() == 0
+                        && ModRealisticTrafficControl.CREATE_INSTALLED) {
+                    CreateCompat.TrainScanResult createResult =
+                            CreateCompat.scanForTrain(request, maxDistance(request), world);
+                    if (createResult.trainFound()) {
+                        scanSession.setFoundTrain(true);
+                    }
+                    if (createResult.movingTowardsDestination()) {
+                        scanSession.setTrainMovingTowardsDestination(true);
+                    }
+
+                    if (!ModRealisticTrafficControl.IR_INSTALLED) {
+                        completeRequest(scanSession, request, false);
+                        continue;
+                    }
                 }
 
                 int maxBlocksThisTick = maxBlocksPerTick(request);
@@ -103,6 +121,10 @@ public class Scanner {
                         }
                     }
 
+                    if (scanSession.getLastPosition() == null) {
+                        break;
+                    }
+
                     if (request == null) {
                         break;
                     }
@@ -113,7 +135,7 @@ public class Scanner {
                         if (request == null) {
                             break;
                         }
-                        continue;
+                        break;
                     }
 
                     Vec3 nextPosition = ImmersiveRailroadingHelper.getNextPosition(lastPosition, motion, world);
@@ -123,7 +145,7 @@ public class Scanner {
                         if (request == null) {
                             break;
                         }
-                        continue;
+                        break;
                     }
 
                     scanSession.setLastPosition(nextPosition);
@@ -145,8 +167,13 @@ public class Scanner {
     private void completeRequest(ScanSession scanSession, ScanRequest request, boolean timedOut) {
         IScannerSubscriber subscriber = scanSession.getScanSubscriber();
         if (subscriber != null) {
-            subscriber.onScanComplete(new ScanCompleteData(request, timedOut, scanSession.isFoundTrain(),
-                    scanSession.isTrainMovingTowardsDestination()));
+            ScanCompleteData result = new ScanCompleteData(request, timedOut, scanSession.isFoundTrain(),
+                    scanSession.isTrainMovingTowardsDestination());
+            subscriber.onScanComplete(result);
+            if (!result.getContinueScanningForTileEntity()) {
+                scanSession.setScanSubscriber(null);
+                return;
+            }
         }
         scanSession.popRequest();
     }

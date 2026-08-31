@@ -1,0 +1,1 @@
+{"variants":{"facing=north":{"model":"realistictrafficcontrol:block/digital_sign_controller"},"facing=east":{"model":"realistictrafficcontrol:block/digital_sign_controller","y":90},"facing=south":{"model":"realistictrafficcontrol:block/digital_sign_controller","y":180},"facing=west":{"model":"realistictrafficcontrol:block/digital_sign_controller","y":270}}}

@@ -21,6 +21,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -37,6 +38,8 @@ public class CrossingLampsScreen extends AbstractContainerScreen<CrossingLampsMe
 
     public CrossingLampsScreen(CrossingLampsMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
+        imageWidth = 1;
+        imageHeight = 1;
     }
 
     private int nwX;
@@ -51,6 +54,9 @@ public class CrossingLampsScreen extends AbstractContainerScreen<CrossingLampsMe
     @Override
     protected void init() {
         super.init();
+        if (minecraft == null || minecraft.player == null) {
+            return;
+        }
         BlockState state = minecraft.player.level().getBlockState(menu.getBlockPos());
         if (state.getBlock() instanceof BlockCrossingGateLamps) {
             blockRotation = state.getValue(RTCProperties.ROTATION);
@@ -120,6 +126,9 @@ public class CrossingLampsScreen extends AbstractContainerScreen<CrossingLampsMe
     }
 
     private void syncToServer() {
+        if (minecraft == null || minecraft.player == null) {
+            return;
+        }
         CrossingLampsBlockEntity te = menu.getLamps(minecraft.player);
         if (te != null) {
             te.performClientToServerSync();
@@ -136,6 +145,9 @@ public class CrossingLampsScreen extends AbstractContainerScreen<CrossingLampsMe
     }
 
     private void renderPreview(GuiGraphics graphics) {
+        if (minecraft == null || minecraft.player == null) {
+            return;
+        }
         BlockState state = minecraft.player.level().getBlockState(menu.getBlockPos());
         if (state.getRenderShape() == RenderShape.INVISIBLE) {
             return;
@@ -154,6 +166,9 @@ public class CrossingLampsScreen extends AbstractContainerScreen<CrossingLampsMe
     }
 
     private void drawAngleLabels(GuiGraphics graphics) {
+        if (minecraft == null || minecraft.player == null) {
+            return;
+        }
         CrossingLampsBlockEntity te = menu.getLamps(minecraft.player);
         if (te == null) {
             return;
@@ -184,5 +199,13 @@ public class CrossingLampsScreen extends AbstractContainerScreen<CrossingLampsMe
 
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
+    }
+
+    @Override
+    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+    }
+
+    @Override
+    protected void renderSlot(GuiGraphics graphics, Slot slot) {
     }
 }

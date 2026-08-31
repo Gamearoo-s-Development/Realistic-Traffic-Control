@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import org.joml.Matrix4f;
 
@@ -80,12 +81,12 @@ public class StreetSignBlockEntityRenderer implements BlockEntityRenderer<Street
             float x2, float y2, float z2, double u2, double v2,
             float x3, float y3, float z3, double u3, double v3) {
         consumer.addVertex(matrix, x0, y0, z0).setColor(255, 255, 255, 255).setUv((float) u0, (float) v0)
-                .setLight(packedLight).setNormal(0, 1, 0);
+                .setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLight).setNormal(0, 1, 0);
         consumer.addVertex(matrix, x1, y1, z1).setColor(255, 255, 255, 255).setUv((float) u1, (float) v1)
-                .setLight(packedLight).setNormal(0, 1, 0);
+                .setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLight).setNormal(0, 1, 0);
         consumer.addVertex(matrix, x2, y2, z2).setColor(255, 255, 255, 255).setUv((float) u2, (float) v2)
-                .setLight(packedLight).setNormal(0, 1, 0);
+                .setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLight).setNormal(0, 1, 0);
         consumer.addVertex(matrix, x3, y3, z3).setColor(255, 255, 255, 255).setUv((float) u3, (float) v3)
-                .setLight(packedLight).setNormal(0, 1, 0);
+                .setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLight).setNormal(0, 1, 0);
     }
 }

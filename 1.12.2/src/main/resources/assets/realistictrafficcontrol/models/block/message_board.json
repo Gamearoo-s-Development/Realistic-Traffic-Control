@@ -1,0 +1,18 @@
+{
+  "textures": {
+    "support": "realistictrafficcontrol:blocks/orangenoisy",
+    "particle": "realistictrafficcontrol:blocks/orangenoisy"
+  },
+  "elements": [
+    {
+      "name": "placement anchor",
+      "from": [5, 0, 5],
+      "to": [11, 3, 11],
+      "faces": {
+        "north":{"texture":"#support"}, "south":{"texture":"#support"},
+        "east":{"texture":"#support"}, "west":{"texture":"#support"},
+        "up":{"texture":"#support"}, "down":{"texture":"#support"}
+      }
+    }
+  ]
+}

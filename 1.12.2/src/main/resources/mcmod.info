@@ -3,7 +3,7 @@
   "modid": "realistictrafficcontrol",
   "name": "Realistic Traffic Control",
   "description": "Control traffic in Minecraft using signs, railroad crossings, traffic lights, and more!",
-  "version": "4.0.6",
+  "version": "4.1.0",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",

@@ -37,6 +37,10 @@ import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockWigWag;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.HorizontalPoleBlock;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.LightSourceBlock;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockConcreteBarrier;
+import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockDigitalSign;
+import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockDigitalSignController;
+import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockMessageBoard;
+import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockMessageBoardController;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.RotatedBlock;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.TrafficSensorBlock;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.TrafficSensorBlock.SensorKind;
@@ -166,7 +170,8 @@ public final class ModBlocks {
     // --- control box + pedestrian button (automation engine) ---
     public static final DeferredBlock<BlockTrafficLightControlBox> TRAFFIC_LIGHT_CONTROL_BOX =
             BLOCKS.register("traffic_light_control_box", () -> new BlockTrafficLightControlBox(
-                    BlockBehaviour.Properties.of().strength(2f).sound(SoundType.METAL).requiresCorrectToolForDrops()));
+                    BlockBehaviour.Properties.of().strength(2f).sound(SoundType.METAL)
+                            .requiresCorrectToolForDrops().noOcclusion()));
 
     public static final DeferredBlock<BlockPedestrianButton> PEDESTRIAN_BUTTON =
             BLOCKS.register("pedestrian_button", () -> new BlockPedestrianButton(metal()));
@@ -276,6 +281,14 @@ public final class ModBlocks {
 
     public static final DeferredBlock<BlockSign> SIGN =
             BLOCKS.register("sign", () -> new BlockSign(metal()));
+    public static final DeferredBlock<BlockDigitalSign> DIGITAL_SIGN =
+            BLOCKS.register("digital_sign", () -> new BlockDigitalSign(metal()));
+    public static final DeferredBlock<BlockDigitalSignController> DIGITAL_SIGN_CONTROLLER =
+            BLOCKS.register("digital_sign_controller", () -> new BlockDigitalSignController(metal()));
+    public static final DeferredBlock<BlockMessageBoard> MESSAGE_BOARD =
+            BLOCKS.register("message_board", () -> new BlockMessageBoard(metal()));
+    public static final DeferredBlock<BlockMessageBoardController> MESSAGE_BOARD_CONTROLLER =
+            BLOCKS.register("message_board_controller", () -> new BlockMessageBoardController(metal()));
     public static final DeferredBlock<BlockStreetSign> STREET_SIGN =
             BLOCKS.register("street_sign", () -> new BlockStreetSign(metal()));
     public static final DeferredBlock<BlockStreetLightSingle> STREET_LIGHT_SINGLE =

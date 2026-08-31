@@ -9,23 +9,23 @@
 		{
 			"name": "Pole",
 			"from": [
-				7,
+				6,
 				0,
-				7
+				6
 			],
 			"to": [
-				9,
+				10,
 				16,
-				9
+				10
 			],
 			"rotation": {
-				"origin": [
-					8.0,
-					8.0,
-					8.0
-				],
+				"angle": 0,
 				"axis": "z",
-				"angle": 0.0
+				"origin": [
+					8,
+					8,
+					8
+				]
 			},
 			"faces": {
 				"north": {
@@ -97,13 +97,13 @@
 				11
 			],
 			"rotation": {
-				"origin": [
-					8.0,
-					8.0,
-					8.0
-				],
+				"angle": 0,
 				"axis": "z",
-				"angle": 0.0
+				"origin": [
+					8,
+					8,
+					8
+				]
 			},
 			"faces": {
 				"north": {
@@ -213,7 +213,7 @@
 		"firstperson_lefthand": {
 			"rotation": [
 				0,
-				225,
+				-135,
 				0
 			],
 			"scale": [
@@ -237,7 +237,7 @@
 		"gui": {
 			"rotation": [
 				30,
-				225,
+				-135,
 				0
 			],
 			"scale": [

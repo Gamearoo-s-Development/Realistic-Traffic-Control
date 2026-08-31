@@ -1,31 +1,20 @@
-{ 
+{
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "WWO",
     "WOW",
-    "OW "  ],
+    "OW "
+  ],
   "key": {
-  	"O":
-	{
-		"item": "minecraft:stained_hardened_clay",
-		"data": 1
-	},
-  	"W":
-	{
-		"item": "minecraft:stained_hardened_clay",
-		"data": 0
-	}
+    "O": {
+      "item": "minecraft:orange_terracotta"
+    },
+    "W": {
+      "item": "minecraft:white_terracotta"
+    }
   },
   "result": {
-    
-        param($m)
-        $id = $m.Groups[1].Value
-        if ($id -like 'traffic_light_bulb*') {
-            '"id": "realistictrafficcontrol:traffic_light_bulb", "components": { "realistictrafficcontrol:bulb_type": 0 }'
-        } else {
-            '"id": "realistictrafficcontrol:' + $id + '"'
-        }
-    ,
+    "id": "realistictrafficcontrol:type_3_barrier",
     "count": 8
   }
 }

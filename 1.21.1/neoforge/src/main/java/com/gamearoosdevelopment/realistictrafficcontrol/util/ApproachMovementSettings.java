@@ -10,6 +10,7 @@ public class ApproachMovementSettings {
     public boolean leftEnabled = true;
     public boolean rightEnabled = true;
     public boolean sharedTurns = false;
+    public boolean noOpposingRightWithLeft = false;
     public IdleBulbMode straightIdle = IdleBulbMode.SOLID_RED;
     public IdleBulbMode leftIdle = IdleBulbMode.ARROW_RED;
     public IdleBulbMode rightIdle = IdleBulbMode.ARROW_RED;
@@ -22,6 +23,7 @@ public class ApproachMovementSettings {
         tag.putBoolean("leftEnabled", leftEnabled);
         tag.putBoolean("rightEnabled", rightEnabled);
         tag.putBoolean("sharedTurns", sharedTurns);
+        tag.putBoolean("noOpposingRightWithLeft", noOpposingRightWithLeft);
         tag.putInt("straightIdle", straightIdle.ordinal());
         tag.putInt("leftIdle", leftIdle.ordinal());
         tag.putInt("rightIdle", rightIdle.ordinal());
@@ -46,6 +48,9 @@ public class ApproachMovementSettings {
         if (tag.contains("sharedTurns")) {
             sharedTurns = tag.getBoolean("sharedTurns");
         }
+        if (tag.contains("noOpposingRightWithLeft")) {
+            noOpposingRightWithLeft = tag.getBoolean("noOpposingRightWithLeft");
+        }
         if (tag.contains("straightIdle")) {
             straightIdle = IdleBulbMode.fromLegacyOrdinal(tag.getInt("straightIdle"), true);
         }
@@ -69,6 +74,7 @@ public class ApproachMovementSettings {
         copy.leftEnabled = leftEnabled;
         copy.rightEnabled = rightEnabled;
         copy.sharedTurns = sharedTurns;
+        copy.noOpposingRightWithLeft = noOpposingRightWithLeft;
         copy.straightIdle = straightIdle;
         copy.leftIdle = leftIdle;
         copy.rightIdle = rightIdle;

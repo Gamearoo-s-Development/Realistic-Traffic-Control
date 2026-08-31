@@ -187,6 +187,10 @@ public class CommonProxy {
 		e.getRegistry().register(new BlockGenerator());
 		
 		e.getRegistry().register(new BlockSign());
+		e.getRegistry().register(new BlockDigitalSign());
+		e.getRegistry().register(new BlockMessageBoard());
+		e.getRegistry().register(new BlockDigitalSignController());
+		e.getRegistry().register(new BlockMessageBoardController());
 		e.getRegistry().register(new BlockCone());
 		e.getRegistry().register(new BlockChannelizer());
 		e.getRegistry().register(new BlockDrum());
@@ -259,6 +263,10 @@ public class CommonProxy {
 		GameRegistry.registerTileEntity(SafetranType1TileEntity.class, ModRealisticTrafficControl.MODID + "_safetrantype1");
 		GameRegistry.registerTileEntity(WaysideHornTileEntity.class, ModRealisticTrafficControl.MODID + "_waysidehorn");
 		GameRegistry.registerTileEntity(SignTileEntity.class, ModRealisticTrafficControl.MODID + "_sign");
+		GameRegistry.registerTileEntity(DigitalSignTileEntity.class, ModRealisticTrafficControl.MODID + "_digital_sign");
+		GameRegistry.registerTileEntity(MessageBoardTileEntity.class, ModRealisticTrafficControl.MODID + "_message_board");
+		GameRegistry.registerTileEntity(DigitalSignControllerTileEntity.class, ModRealisticTrafficControl.MODID + "_digital_sign_controller");
+		GameRegistry.registerTileEntity(MessageBoardControllerTileEntity.class, ModRealisticTrafficControl.MODID + "_message_board_controller");
 		GameRegistry.registerTileEntity(StreetLightSingleTileEntity.class, ModRealisticTrafficControl.MODID + "_streetsignsingle");
 		GameRegistry.registerTileEntity(StreetLightDoubleTileEntity.class, ModRealisticTrafficControl.MODID + "_streetlightdouble");
 		GameRegistry.registerTileEntity(TrafficLightTileEntity.class, ModRealisticTrafficControl.MODID + "_trafficlight");
@@ -357,6 +365,10 @@ public class CommonProxy {
 		e.getRegistry().register(new ItemBlock(ModBlocks.stand).setRegistryName(ModBlocks.stand.getRegistryName()));
 		e.getRegistry().register(new ItemBlock(ModBlocks.generator).setRegistryName(ModBlocks.generator.getRegistryName()));
 		e.getRegistry().register(new ItemBlock(ModBlocks.sign).setRegistryName(ModBlocks.sign.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.digital_sign).setRegistryName(ModBlocks.digital_sign.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.message_board).setRegistryName(ModBlocks.message_board.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.digital_sign_controller).setRegistryName(ModBlocks.digital_sign_controller.getRegistryName()));
+		e.getRegistry().register(new ItemBlock(ModBlocks.message_board_controller).setRegistryName(ModBlocks.message_board_controller.getRegistryName()));
 		e.getRegistry().register(new ItemCone(ModBlocks.cone).setRegistryName(ModBlocks.cone.getRegistryName()));
 		e.getRegistry().register(new ItemTrafficLightControlBox(ModBlocks.traffic_light_control_box).setRegistryName(ModBlocks.traffic_light_control_box.getRegistryName()));
 		e.getRegistry().register(new ItemCone(ModBlocks.channelizer).setRegistryName(ModBlocks.channelizer.getRegistryName()));

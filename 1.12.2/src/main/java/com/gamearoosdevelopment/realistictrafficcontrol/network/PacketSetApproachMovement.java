@@ -27,6 +27,7 @@ public class PacketSetApproachMovement implements IMessage {
 	private byte rightIdle;
 	private byte leftFya;
 	private byte rightFya;
+	private boolean noOpposingRightWithLeft;
 
 	public PacketSetApproachMovement() {}
 
@@ -43,6 +44,7 @@ public class PacketSetApproachMovement implements IMessage {
 		this.rightIdle = (byte) settings.rightIdle.ordinal();
 		this.leftFya = (byte) settings.leftFya.ordinal();
 		this.rightFya = (byte) settings.rightFya.ordinal();
+		this.noOpposingRightWithLeft = settings.noOpposingRightWithLeft;
 	}
 
 	@Override
@@ -58,6 +60,7 @@ public class PacketSetApproachMovement implements IMessage {
 		buf.writeByte(leftFya);
 		buf.writeByte(rightFya);
 		buf.writeBoolean(sharedTurns);
+		buf.writeBoolean(noOpposingRightWithLeft);
 	}
 
 	@Override
@@ -82,6 +85,11 @@ public class PacketSetApproachMovement implements IMessage {
 		} else {
 			sharedTurns = false;
 		}
+		if (buf.isReadable()) {
+			noOpposingRightWithLeft = buf.readBoolean();
+		} else {
+			noOpposingRightWithLeft = false;
+		}
 	}
 
 	public static class Handler implements IMessageHandler<PacketSetApproachMovement, IMessage> {
@@ -102,6 +110,7 @@ public class PacketSetApproachMovement implements IMessage {
 				settings.leftEnabled = msg.leftEnabled;
 				settings.rightEnabled = msg.rightEnabled;
 				settings.sharedTurns = msg.sharedTurns;
+				settings.noOpposingRightWithLeft = msg.noOpposingRightWithLeft;
 				settings.straightIdle = IdleBulbMode.fromLegacyOrdinal(msg.straightIdle & 0xFF, true);
 				settings.leftIdle = IdleBulbMode.fromLegacyOrdinal(msg.leftIdle & 0xFF, false);
 				settings.rightIdle = IdleBulbMode.fromLegacyOrdinal(msg.rightIdle & 0xFF, false);

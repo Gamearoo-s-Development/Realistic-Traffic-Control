@@ -73,6 +73,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 	private long nightFlashStart = 13000; // 7 PM
 	private long nightFlashEnd = 0;   // 5 AM
 	private boolean inNightFlash = false;
+	private boolean powerOnFlashEnabled = false;
 	private boolean fyaNightOnlyEnabled = false;
 	private boolean lastInNightFlash = false;
 	private int fyaDayTransitionTicksRemaining = 0;
@@ -127,6 +128,24 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 	}
 	public boolean isNightFlashEnabled() {
 	    return nightFlashEnabled;
+	}
+
+	public void setPowerOnFlashEnabled(boolean enabled) {
+		this.powerOnFlashEnabled = enabled;
+		markDirty();
+		if (world != null && !world.isRemote) {
+			if (enabled && powered && !isFlashingEmergency) {
+				flashRedYellowForRecovery();
+			} else if (!enabled && isFlashingEmergency) {
+				recoveryGeneration++;
+				isFlashingEmergency = false;
+				getAutomator().reset();
+			}
+		}
+	}
+
+	public boolean isPowerOnFlashEnabled() {
+		return powerOnFlashEnabled;
 	}
 	
 	public void setNorthMainEnabled(boolean enabled) {
@@ -324,6 +343,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		compound.setBoolean("hasEast", hasEast);
 		compound.setBoolean("hasWest", hasWest);
 		compound.setBoolean("NightFlashEnabled", nightFlashEnabled);
+		compound.setBoolean("PowerOnFlashEnabled", powerOnFlashEnabled);
 		compound.setBoolean("northMain", northMain);
 		compound.setBoolean("hawkBeaconEnabled", hawkBeaconEnabled);
 		compound.setBoolean("splitDirectionsEnabled", splitDirectionsEnabled);
@@ -432,6 +452,9 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		if (compound.hasKey("NightFlashEnabled")) {
 		    nightFlashEnabled = compound.getBoolean("NightFlashEnabled");
 		}
+		if (compound.hasKey("PowerOnFlashEnabled")) {
+			powerOnFlashEnabled = compound.getBoolean("PowerOnFlashEnabled");
+		}
 		
 		if(compound.hasKey("northMain")) {
 			northMain = compound.getBoolean("northMain");
@@ -508,6 +531,7 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		writeManualSettingDictionary(compound, manualNorthSouthInactive, "manualNorthSouthInactive");
 		writeManualSettingDictionary(compound, manualWestEastInactive, "manualWestEastInactive");
 		compound.setBoolean("NightFlashEnabled", nightFlashEnabled);
+		compound.setBoolean("PowerOnFlashEnabled", powerOnFlashEnabled);
 		compound.setBoolean("northMain", northMain);
 		compound.setBoolean("hawkBeaconEnabled", hawkBeaconEnabled);
 		compound.setBoolean("splitDirectionsEnabled", splitDirectionsEnabled);
@@ -542,6 +566,9 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 		hasWest = tag.getBoolean("hasWest");
 		if (tag.hasKey("NightFlashEnabled")) {
 		    nightFlashEnabled = tag.getBoolean("NightFlashEnabled");
+		}
+		if (tag.hasKey("PowerOnFlashEnabled")) {
+			powerOnFlashEnabled = tag.getBoolean("PowerOnFlashEnabled");
 		}
 		if(tag.hasKey("northMain")) {
 			northMain = tag.getBoolean("northMain");
@@ -932,12 +959,18 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 			    }
 			}
 			this.powered = isNowPowered;
+			if (isNowPowered && powerOnFlashEnabled && !isFlashingEmergency) {
+				isInDarkMode = false;
+				flashRedYellowForRecovery();
+			}
 			getAutomator().update();
 		}
 	}
 	
 	private void enterDarkMode() {
 		isInDarkMode = true;
+		recoveryGeneration++;
+		isFlashingEmergency = false;
 	    for (BlockPos pos : northSouthLights) {
 	        TileEntity te = world.getTileEntity(pos);
 	        if (te instanceof BaseTrafficLightTileEntity) {
@@ -953,13 +986,18 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 	}
 	
 	private boolean isFlashingEmergency = false;
+	private volatile int recoveryGeneration = 0;
 	public boolean isFlashOn;
 
 	
 	private void flashRedYellowForRecovery() {
 	    isFlashingEmergency = true;
+	    final int generation = ++recoveryGeneration;
+	    final boolean holdFlash = powerOnFlashEnabled;
+	    clearLightsBeforeRecoveryFlash();
 
 	    new Thread(() -> {
+	        clearLightsBeforeRecoveryFlash();
 	        // Set flashing state once
 	    	if(!northMain) {
 	    		  for (BlockPos pos : northSouthLights) {
@@ -1027,14 +1065,40 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 	    	}
 
 	        try {
-	            Thread.sleep(15000); // wait 15 seconds
+	            if (holdFlash) {
+	                while (generation == recoveryGeneration && powerOnFlashEnabled && powered) {
+	                    Thread.sleep(250);
+	                }
+	            } else {
+	                Thread.sleep(15000); // wait 15 seconds
+	            }
 	        } catch (InterruptedException ignored) {}
 
 	        ((WorldServer) world).addScheduledTask(() -> {
-	            getAutomator().reset();
+	            if (generation != recoveryGeneration) {
+	                return;
+	            }
 	            isFlashingEmergency = false;
+	            if (!powerOnFlashEnabled && powered) {
+	                getAutomator().reset();
+	            }
 	        });
 	    }).start();
+	}
+
+	private void clearLightsBeforeRecoveryFlash() {
+		for (BlockPos pos : northSouthLights) {
+			TileEntity te = world.getTileEntity(pos);
+			if (te instanceof BaseTrafficLightTileEntity) {
+				((BaseTrafficLightTileEntity) te).powerOff();
+			}
+		}
+		for (BlockPos pos : westEastLights) {
+			TileEntity te = world.getTileEntity(pos);
+			if (te instanceof BaseTrafficLightTileEntity) {
+				((BaseTrafficLightTileEntity) te).powerOff();
+			}
+		}
 	}
 
 
@@ -1952,7 +2016,13 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight, true, false);
+						if (stage != Stages.Direction1LeftTurnArrow
+								|| allowOpposingRightWithLeft(direction1, approach)) {
+							tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight, true, false);
+							tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight2, true, false);
+						} else {
+							setOpposingRightRed(tl);
+						}
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
@@ -2023,7 +2093,13 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight, true, false);
+						if (stage != Stages.Direction2LeftTurnArrow
+								|| allowOpposingRightWithLeft(direction2, approach)) {
+							tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight, true, false);
+							tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight2, true, false);
+						} else {
+							setOpposingRightRed(tl);
+						}
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
@@ -2061,11 +2137,22 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					trafficLightsOpposingRightOfWay
 					.stream()
 					.forEach(tl -> {
+						final EnumFacing approach = TrafficLightFacingResolver.resolveApproachFacing(tl);
+						final boolean allowRight = (approach != direction1cw && approach != direction2cw)
+								|| (approach == direction1cw
+								&& allowOpposingRightWithLeft(direction1, approach))
+								|| (approach == direction2cw
+								&& allowOpposingRightWithLeft(direction2, approach));
 						tl.powerOff();
 						tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight, true, false);
+						if (allowRight) {
+							tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight, true, false);
+							tl.setActive(EnumTrafficLightBulbTypes.GreenArrowRight2, true, false);
+						} else {
+							setOpposingRightRed(tl);
+						}
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
@@ -2156,8 +2243,12 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight3, true, false);
+						if (allowOpposingRightWithLeft(direction1, direction1cw)) {
+							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight, true, false);
+							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight3, true, false);
+						} else {
+							setOpposingRightRed(tl);
+						}
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
@@ -2244,8 +2335,12 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight3, true, false);
+						if (allowOpposingRightWithLeft(direction2, direction2cw)) {
+							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight, true, false);
+							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight3, true, false);
+						} else {
+							setOpposingRightRed(tl);
+						}
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft2, true, false);
@@ -2278,12 +2373,22 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 					trafficLightsOpposingRightOfWay
 					.stream()
 					.forEach(tl -> {
+						final EnumFacing approach = TrafficLightFacingResolver.resolveApproachFacing(tl);
+						final boolean allowRight = (approach != direction1cw && approach != direction2cw)
+								|| (approach == direction1cw
+								&& allowOpposingRightWithLeft(direction1, approach))
+								|| (approach == direction2cw
+								&& allowOpposingRightWithLeft(direction2, approach));
 						tl.powerOff();
 						tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.StraightRed, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight, true, false);
-						tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight3, true, false);
+						if (allowRight) {
+							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight, true, false);
+							tl.setActive(EnumTrafficLightBulbTypes.YellowArrowRight3, true, false);
+						} else {
+							setOpposingRightRed(tl);
+						}
 						
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowLeft, true, false);
 						tl.setActive(EnumTrafficLightBulbTypes.RedArrowUTurn, true, false);
@@ -2460,10 +2565,21 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 						} else {
 							opposingRightTurnFacing = null;
 						}
+						final EnumFacing sharedLeftApproach;
+						if (approach == direction1cw) {
+							sharedLeftApproach = direction1;
+						} else if (approach == direction2cw) {
+							sharedLeftApproach = direction2;
+						} else {
+							sharedLeftApproach = null;
+						}
 						final boolean allowOpposingRightTurnYellow;
 						if (splitYellow && opposingRightTurnFacing != null) {
 							allowOpposingRightTurnYellow = approach == opposingRightTurnFacing
+									&& allowOpposingRightWithLeft(splitYellowDir, approach)
 									&& (allowFyaFlashFor(opposingRightTurnFacing, false) || isFyaDayTransitionFor(opposingRightTurnFacing, false));
+						} else if (!splitYellow && sharedLeftApproach != null && isSharedTurnsFor(sharedLeftApproach)) {
+							allowOpposingRightTurnYellow = allowOpposingRightWithLeft(sharedLeftApproach, approach);
 						} else {
 							allowOpposingRightTurnYellow = false;
 						}
@@ -2610,17 +2726,28 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 							opposingRightTurnFacing = null;
 						}
 
+						final EnumFacing opposingApproach = TrafficLightFacingResolver.resolveApproachFacing(tl);
+						final EnumFacing sharedLeftApproach;
+						if (opposingApproach == direction1cw) {
+							sharedLeftApproach = direction1;
+						} else if (opposingApproach == direction2cw) {
+							sharedLeftApproach = direction2;
+						} else {
+							sharedLeftApproach = null;
+						}
 						final boolean allowOpposingRightTurn;
 						if (split && opposingRightTurnFacing != null) {
-							final EnumFacing opposingApproach = TrafficLightFacingResolver.resolveApproachFacing(tl);
-							allowOpposingRightTurn = opposingApproach == opposingRightTurnFacing;
+							allowOpposingRightTurn = opposingApproach == opposingRightTurnFacing
+									&& allowOpposingRightWithLeft(splitDir, opposingApproach);
+						} else if (!split && sharedLeftApproach != null && isSharedTurnsFor(sharedLeftApproach)) {
+							allowOpposingRightTurn = allowOpposingRightWithLeft(sharedLeftApproach, opposingApproach);
 						} else {
 							allowOpposingRightTurn = false;
 						}
 
 						tl.powerOff();
 						final ApproachMovementSettings opposingSettings = TrafficLightControlBoxTileEntity.this
-								.getMovementSettings(TrafficLightFacingResolver.resolveApproachFacing(tl));
+								.getMovementSettings(opposingApproach);
 						if (opposingSettings.straightEnabled) {
 							tl.setActive(EnumTrafficLightBulbTypes.Red, true, false);
 							tl.setActive(EnumTrafficLightBulbTypes.Red2, true, false);
@@ -2831,6 +2958,21 @@ public class TrafficLightControlBoxTileEntity extends SyncableTileEntity impleme
 				return false;
 			}
 			return TrafficLightControlBoxTileEntity.this.getMovementSettings(approach).sharedTurns;
+		}
+
+		private boolean allowOpposingRightWithLeft(EnumFacing leftApproach, EnumFacing opposingRightApproach) {
+			if (leftApproach == null || opposingRightApproach == null) {
+				return false;
+			}
+			ApproachMovementSettings opposingSettings = TrafficLightControlBoxTileEntity.this
+					.getMovementSettings(opposingRightApproach);
+			return opposingSettings.rightEnabled && !opposingSettings.noOpposingRightWithLeft;
+		}
+
+		private void setOpposingRightRed(BaseTrafficLightTileEntity tl) {
+			tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight, true, false);
+			tl.setActive(EnumTrafficLightBulbTypes.RedArrowRight2, true, false);
+			tl.setActive(EnumTrafficLightBulbTypes.NoRightTurn, true, false);
 		}
 
 		private boolean isStraightMovementEnabled(EnumFacing facing) {

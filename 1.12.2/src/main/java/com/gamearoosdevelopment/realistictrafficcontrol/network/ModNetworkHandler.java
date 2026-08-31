@@ -20,6 +20,12 @@ public class ModNetworkHandler {
             Side.SERVER
         );
         INSTANCE.registerMessage(
+            PacketTogglePowerOnFlash.Handler.class,
+            PacketTogglePowerOnFlash.class,
+            packetId++,
+            Side.SERVER
+        );
+        INSTANCE.registerMessage(
                 PacketToggleMain.Handler.class,
                 PacketToggleMain.class,
                 

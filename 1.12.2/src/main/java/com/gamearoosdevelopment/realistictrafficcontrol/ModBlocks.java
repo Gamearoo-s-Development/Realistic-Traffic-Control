@@ -124,6 +124,14 @@ public class ModBlocks {
 	
 	@ObjectHolder("sign")
 	public static BlockSign sign;
+	@ObjectHolder("digital_sign")
+	public static BlockDigitalSign digital_sign;
+	@ObjectHolder("message_board")
+	public static BlockMessageBoard message_board;
+	@ObjectHolder("digital_sign_controller")
+	public static BlockDigitalSignController digital_sign_controller;
+	@ObjectHolder("message_board_controller")
+	public static BlockMessageBoardController message_board_controller;
 	
 	
 	
@@ -247,6 +255,10 @@ public class ModBlocks {
 		
 		
 		sign.initModel();
+		digital_sign.initModel();
+		message_board.initModel();
+		digital_sign_controller.initModel();
+		message_board_controller.initModel();
 		
 		cone.initModel();
 		channelizer.initModel();

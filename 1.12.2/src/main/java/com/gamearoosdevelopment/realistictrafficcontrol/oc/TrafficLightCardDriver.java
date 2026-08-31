@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -19,9 +20,14 @@ import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficSenso
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockTrafficSensorStraight;
 import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemTrafficLightCard;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.BaseTrafficLightTileEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.DigitalSignControllerTileEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.DigitalSignTileEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.MessageBoardControllerTileEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.MessageBoardTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.PedestrianButtonTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLightControlBoxTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.CustomAngleCalculator;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.DisplaySchedule;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.EnumTrafficLightBulbTypes;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.TrafficLightOcApproachHelper;
 
@@ -254,6 +260,220 @@ public class TrafficLightCardDriver extends DriverItem {
 			}
 			
 			return new Object[] { blockPositions };
+		}
+
+		@Callback(doc = "linkDigitalSign(controllerX:int, controllerY:int, controllerZ:int, signX:int, signY:int, signZ:int):boolean, string -- Links a digital sign to its controller")
+		public Object[] linkDigitalSign(Context c, Arguments args) throws Exception {
+			BlockPos controllerPos = getBlockPosFromArgsAt(args, 0);
+			BlockPos signPos = getBlockPosFromArgsAt(args, 3);
+			TileEntity controller = host.world().getTileEntity(controllerPos);
+			TileEntity sign = host.world().getTileEntity(signPos);
+			if (!(controller instanceof DigitalSignControllerTileEntity) || !(sign instanceof DigitalSignTileEntity)) {
+				return new Object[] { false, "Invalid digital sign controller or sign position" };
+			}
+			return new Object[] { ((DigitalSignControllerTileEntity) controller).linkSign(signPos), "Link updated" };
+		}
+
+		@Callback(doc = "setDigitalSign(controllerX:int, controllerY:int, controllerZ:int, signId:string):boolean, string -- Displays a sign-pack UUID on linked digital signs")
+		public Object[] setDigitalSign(Context c, Arguments args) throws Exception {
+			BlockPos controllerPos = getBlockPosFromArgsAt(args, 0);
+			TileEntity tile = host.world().getTileEntity(controllerPos);
+			if (!(tile instanceof DigitalSignControllerTileEntity)) {
+				return new Object[] { false, "No digital sign controller at position" };
+			}
+			UUID signId = UUID.fromString(args.checkString(3));
+			int updated = ((DigitalSignControllerTileEntity) tile).setSelectedSign(signId);
+			return new Object[] { true, updated };
+		}
+
+		@Callback(doc = "addDigitalSignRotation(controllerX:int, controllerY:int, controllerZ:int, signId:string, gameTime:string?):boolean, string -- Adds or updates a sign; gameTime is that sign's HH:MM activation time")
+		public Object[] addDigitalSignRotation(Context c, Arguments args) throws Exception {
+			TileEntity tile = host.world().getTileEntity(getBlockPosFromArgsAt(args, 0));
+			if (!(tile instanceof DigitalSignControllerTileEntity)) {
+				return new Object[] { false, "No digital sign controller at position" };
+			}
+			UUID signId = UUID.fromString(args.checkString(3));
+			String gameTime = args.count() >= 5 ? args.checkString(4) : null;
+			if (gameTime != null && !gameTime.trim().isEmpty() && DisplaySchedule.parseGameTime(gameTime) < 0) {
+				return new Object[] { false, "Invalid game time" };
+			}
+			DigitalSignControllerTileEntity controller = (DigitalSignControllerTileEntity) tile;
+			boolean existed = controller.getRotationSigns().contains(signId);
+			boolean added = controller.addRotationSign(signId);
+			boolean timed = gameTime == null || controller.setRotationSignTime(signId, gameTime);
+			boolean success = timed && (added || existed);
+			return new Object[] { success, success ? (added ? "Rotation sign added" : "Rotation sign time updated")
+					: "Invalid time or rotation is full" };
+		}
+
+		@Callback(doc = "setDigitalSignRotationTime(controllerX:int, controllerY:int, controllerZ:int, signId:string, gameTime:string):boolean, string -- Sets one rotation sign's HH:MM activation time")
+		public Object[] setDigitalSignRotationTime(Context c, Arguments args) throws Exception {
+			TileEntity tile = host.world().getTileEntity(getBlockPosFromArgsAt(args, 0));
+			if (!(tile instanceof DigitalSignControllerTileEntity)) {
+				return new Object[] { false, "No digital sign controller at position" };
+			}
+			UUID signId = UUID.fromString(args.checkString(3));
+			boolean updated = ((DigitalSignControllerTileEntity) tile).setRotationSignTime(signId, args.checkString(4));
+			return new Object[] { updated, updated ? "Rotation sign time updated" : "Sign is not in rotation or time is invalid" };
+		}
+
+		@Callback(doc = "clearDigitalSignRotation(controllerX:int, controllerY:int, controllerZ:int):boolean -- Clears the controller sign rotation")
+		public Object[] clearDigitalSignRotation(Context c, Arguments args) throws Exception {
+			TileEntity tile = host.world().getTileEntity(getBlockPosFromArgsAt(args, 0));
+			if (!(tile instanceof DigitalSignControllerTileEntity)) {
+				return new Object[] { false, "No digital sign controller at position" };
+			}
+			((DigitalSignControllerTileEntity) tile).clearRotationSigns();
+			return new Object[] { true };
+		}
+
+		@Callback(doc = "setDigitalSignSchedule(controllerX:int, controllerY:int, controllerZ:int, mode:string, amount:int?):boolean, string -- Interval modes use playlist order; GAME_TIMES uses each sign's assigned time")
+		public Object[] setDigitalSignSchedule(Context c, Arguments args) throws Exception {
+			TileEntity tile = host.world().getTileEntity(getBlockPosFromArgsAt(args, 0));
+			if (!(tile instanceof DigitalSignControllerTileEntity)) {
+				return new Object[] { false, "No digital sign controller at position" };
+			}
+			DigitalSignControllerTileEntity controller = (DigitalSignControllerTileEntity) tile;
+			DisplaySchedule.Mode mode = DisplaySchedule.Mode.fromName(args.checkString(3));
+			controller.setScheduleMode(mode);
+			if (args.count() >= 5 && args.isInteger(4)) controller.setScheduleIntervalAmount(args.checkInteger(4));
+			return new Object[] { true, mode.name() };
+		}
+
+		@Callback(doc = "linkMessageBoard(controllerX:int, controllerY:int, controllerZ:int, boardX:int, boardY:int, boardZ:int):boolean, string -- Links a message board to its controller")
+		public Object[] linkMessageBoard(Context c, Arguments args) throws Exception {
+			BlockPos controllerPos = getBlockPosFromArgsAt(args, 0);
+			BlockPos boardPos = getBlockPosFromArgsAt(args, 3);
+			TileEntity controller = host.world().getTileEntity(controllerPos);
+			TileEntity board = host.world().getTileEntity(boardPos);
+			if (!(controller instanceof MessageBoardControllerTileEntity) || !(board instanceof MessageBoardTileEntity)) {
+				return new Object[] { false, "Invalid message board controller or board position" };
+			}
+			return new Object[] { ((MessageBoardControllerTileEntity) controller).linkBoard(boardPos), "Link updated" };
+		}
+
+		@Callback(doc = "setMessageBoardText(controllerX:int, controllerY:int, controllerZ:int, line:int, text:string):boolean, string -- Sets one line on all linked message boards")
+		public Object[] setMessageBoardText(Context c, Arguments args) throws Exception {
+			BlockPos controllerPos = getBlockPosFromArgsAt(args, 0);
+			TileEntity tile = host.world().getTileEntity(controllerPos);
+			if (!(tile instanceof MessageBoardControllerTileEntity)) {
+				return new Object[] { false, "No message board controller at position" };
+			}
+			int line = args.checkInteger(3);
+			if (line < 0 || line >= MessageBoardTileEntity.MAX_LINES) {
+				return new Object[] { false, "Line must be between 0 and " + (MessageBoardTileEntity.MAX_LINES - 1) };
+			}
+			int updated = ((MessageBoardControllerTileEntity) tile).setText(line, args.checkString(4));
+			return new Object[] { true, updated };
+		}
+
+		@Callback(doc = "clearMessageBoards(controllerX:int, controllerY:int, controllerZ:int):boolean, string -- Clears all linked message boards")
+		public Object[] clearMessageBoards(Context c, Arguments args) throws Exception {
+			BlockPos controllerPos = getBlockPosFromArgsAt(args, 0);
+			TileEntity tile = host.world().getTileEntity(controllerPos);
+			if (!(tile instanceof MessageBoardControllerTileEntity)) {
+				return new Object[] { false, "No message board controller at position" };
+			}
+			return new Object[] { true, ((MessageBoardControllerTileEntity) tile).clearBoards() };
+		}
+
+		@Callback(doc = "setMessageBoardBrightness(controllerX:int, controllerY:int, controllerZ:int, brightness:number):boolean, string -- Sets linked message board brightness from 0.1 to 1")
+		public Object[] setMessageBoardBrightness(Context c, Arguments args) throws Exception {
+			BlockPos controllerPos = getBlockPosFromArgsAt(args, 0);
+			TileEntity tile = host.world().getTileEntity(controllerPos);
+			if (!(tile instanceof MessageBoardControllerTileEntity)) {
+				return new Object[] { false, "No message board controller at position" };
+			}
+			return new Object[] { true, ((MessageBoardControllerTileEntity) tile).setBrightness((float) args.checkDouble(3)) };
+		}
+
+		@Callback(doc = "setMessageBoardTextScale(controllerX:int, controllerY:int, controllerZ:int, scale:number):boolean, string -- Sets text scale from 0.5 to 1.5")
+		public Object[] setMessageBoardTextScale(Context c, Arguments args) throws Exception {
+			TileEntity tile = host.world().getTileEntity(getBlockPosFromArgsAt(args, 0));
+			if (!(tile instanceof MessageBoardControllerTileEntity)) {
+				return new Object[] { false, "No message board controller at position" };
+			}
+			return new Object[] { true, ((MessageBoardControllerTileEntity) tile).setTextScale((float) args.checkDouble(3)) };
+		}
+
+		@Callback(doc = "setMessageBoardFontStyle(controllerX:int, controllerY:int, controllerZ:int, style:string):boolean, string -- Styles: REGULAR, BOLD, ITALIC, BOLD_ITALIC")
+		public Object[] setMessageBoardFontStyle(Context c, Arguments args) throws Exception {
+			TileEntity tile = host.world().getTileEntity(getBlockPosFromArgsAt(args, 0));
+			if (!(tile instanceof MessageBoardControllerTileEntity)) {
+				return new Object[] { false, "No message board controller at position" };
+			}
+			String requested = args.checkString(3).trim().toUpperCase().replace(' ', '_');
+			MessageBoardTileEntity.FontStyle style;
+			try {
+				style = MessageBoardTileEntity.FontStyle.valueOf(requested);
+			} catch (IllegalArgumentException ex) {
+				return new Object[] { false, "Unknown font style: " + requested };
+			}
+			return new Object[] { true, ((MessageBoardControllerTileEntity) tile).setFontStyle(style) };
+		}
+
+		@Callback(doc = "setMessageBoardMode(controllerX:int, controllerY:int, controllerZ:int, mode:string):boolean, string -- Sets TEXT, ARROW_LEFT, ARROW_RIGHT, CAUTION, or OFF")
+		public Object[] setMessageBoardMode(Context c, Arguments args) throws Exception {
+			BlockPos controllerPos = getBlockPosFromArgsAt(args, 0);
+			TileEntity tile = host.world().getTileEntity(controllerPos);
+			if (!(tile instanceof MessageBoardControllerTileEntity)) {
+				return new Object[] { false, "No message board controller at position" };
+			}
+			String requested = args.checkString(3).trim().toUpperCase();
+			if ("ARROW_MERGE_LEFT".equals(requested)) requested = "ARROW_LEFT";
+			if ("ARROW_MERGE_RIGHT".equals(requested)) requested = "ARROW_RIGHT";
+			MessageBoardTileEntity.DisplayMode mode;
+			try {
+				mode = MessageBoardTileEntity.DisplayMode.valueOf(requested);
+			} catch (IllegalArgumentException ex) {
+				return new Object[] { false, "Unknown mode: " + requested };
+			}
+			return new Object[] { true, ((MessageBoardControllerTileEntity) tile).setMode(mode) };
+		}
+
+		@Callback(doc = "setMessageBoardColor(controllerX:int, controllerY:int, controllerZ:int, rgb:int):boolean, string -- Sets the RGB text/lamp color on linked boards")
+		public Object[] setMessageBoardColor(Context c, Arguments args) throws Exception {
+			BlockPos controllerPos = getBlockPosFromArgsAt(args, 0);
+			TileEntity tile = host.world().getTileEntity(controllerPos);
+			if (!(tile instanceof MessageBoardControllerTileEntity)) {
+				return new Object[] { false, "No message board controller at position" };
+			}
+			return new Object[] { true, ((MessageBoardControllerTileEntity) tile).setColor(args.checkInteger(3)) };
+		}
+
+		@Callback(doc = "addMessageBoardRotationPage(controllerX:int, controllerY:int, controllerZ:int):boolean, string -- Adds the controller's current text, arrow mode, color, and brightness as a rotation page")
+		public Object[] addMessageBoardRotationPage(Context c, Arguments args) throws Exception {
+			TileEntity tile = host.world().getTileEntity(getBlockPosFromArgsAt(args, 0));
+			if (!(tile instanceof MessageBoardControllerTileEntity)) {
+				return new Object[] { false, "No message board controller at position" };
+			}
+			boolean added = ((MessageBoardControllerTileEntity) tile).addCurrentPage();
+			return new Object[] { added, added ? "Rotation page added" : "Rotation is full" };
+		}
+
+		@Callback(doc = "clearMessageBoardRotation(controllerX:int, controllerY:int, controllerZ:int):boolean -- Clears the controller page rotation")
+		public Object[] clearMessageBoardRotation(Context c, Arguments args) throws Exception {
+			TileEntity tile = host.world().getTileEntity(getBlockPosFromArgsAt(args, 0));
+			if (!(tile instanceof MessageBoardControllerTileEntity)) {
+				return new Object[] { false, "No message board controller at position" };
+			}
+			((MessageBoardControllerTileEntity) tile).clearRotationPages();
+			return new Object[] { true };
+		}
+
+		@Callback(doc = "setMessageBoardSchedule(controllerX:int, controllerY:int, controllerZ:int, mode:string, amountOrTimes:any?, times:string?):boolean, string -- Interval modes accept an amount; GAME_TIMES accepts HH:MM times")
+		public Object[] setMessageBoardSchedule(Context c, Arguments args) throws Exception {
+			TileEntity tile = host.world().getTileEntity(getBlockPosFromArgsAt(args, 0));
+			if (!(tile instanceof MessageBoardControllerTileEntity)) {
+				return new Object[] { false, "No message board controller at position" };
+			}
+			MessageBoardControllerTileEntity controller = (MessageBoardControllerTileEntity) tile;
+			DisplaySchedule.Mode mode = DisplaySchedule.Mode.fromName(args.checkString(3));
+			controller.setScheduleMode(mode);
+			if (args.count() >= 5 && args.isInteger(4)) controller.setScheduleIntervalAmount(args.checkInteger(4));
+			if (args.count() >= 5 && args.isString(4)) controller.setScheduleTimes(args.checkString(4));
+			if (args.count() >= 6 && args.isString(5)) controller.setScheduleTimes(args.checkString(5));
+			return new Object[] { true, mode.name() };
 		}
 		
 		@Callback(doc = "listSensors():array -- Returns a list of sensor positions")
@@ -767,6 +987,15 @@ public class TrafficLightCardDriver extends DriverItem {
 		        return BlockPos.fromLong((long) posIDDouble);
 		    }
 		    throw new IllegalArgumentException("Could not determine block position");
+		}
+
+		private BlockPos getBlockPosFromArgsAt(Arguments args, int offset) throws Exception {
+			if (args.count() >= offset + 3 && args.isInteger(offset) && args.isInteger(offset + 1)
+					&& args.isInteger(offset + 2)) {
+				return new BlockPos(args.checkInteger(offset), args.checkInteger(offset + 1),
+						args.checkInteger(offset + 2));
+			}
+			throw new IllegalArgumentException("Expected x, y, z integer coordinates");
 		}
 		
 		private BlockPos getBlockPosFromArgs(Arguments args) throws Exception

@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
@@ -125,13 +126,17 @@ public class Type3BarrierBlockEntityRenderer implements BlockEntityRenderer<Type
             ResourceLocation texture, float x0, float y0, float y1, float uSplit, float vBottom, float vTop) {
         VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutout(texture));
         Matrix4f matrix = poseStack.last().pose();
-        consumer.addVertex(matrix, 1, y0, 0).setColor(255, 255, 255, 255).setUv(uSplit, vBottom).setLight(packedLight)
+        consumer.addVertex(matrix, 1, y0, 0).setColor(255, 255, 255, 255).setUv(uSplit, vBottom)
+                .setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLight)
                 .setNormal(0, 1, 0);
-        consumer.addVertex(matrix, 1, y1, 0).setColor(255, 255, 255, 255).setUv(uSplit, vTop).setLight(packedLight)
+        consumer.addVertex(matrix, 1, y1, 0).setColor(255, 255, 255, 255).setUv(uSplit, vTop)
+                .setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLight)
                 .setNormal(0, 1, 0);
-        consumer.addVertex(matrix, 0, y1, 0).setColor(255, 255, 255, 255).setUv(0, vTop).setLight(packedLight)
+        consumer.addVertex(matrix, 0, y1, 0).setColor(255, 255, 255, 255).setUv(0, vTop)
+                .setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLight)
                 .setNormal(0, 1, 0);
-        consumer.addVertex(matrix, 0, y0, 0).setColor(255, 255, 255, 255).setUv(0, vBottom).setLight(packedLight)
+        consumer.addVertex(matrix, 0, y0, 0).setColor(255, 255, 255, 255).setUv(0, vBottom)
+                .setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLight)
                 .setNormal(0, 1, 0);
     }
 }

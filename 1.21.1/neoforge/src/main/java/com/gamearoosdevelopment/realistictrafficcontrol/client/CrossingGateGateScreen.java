@@ -10,6 +10,7 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
 
 /** Port of 1.12.2 {@code CrossingGateGateGui} using the original field layout. */
 public class CrossingGateGateScreen extends AbstractContainerScreen<CrossingGateGateMenu> {
@@ -24,6 +25,8 @@ public class CrossingGateGateScreen extends AbstractContainerScreen<CrossingGate
 
     public CrossingGateGateScreen(CrossingGateGateMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
+        imageWidth = 1;
+        imageHeight = 1;
     }
 
     @Override
@@ -123,5 +126,13 @@ public class CrossingGateGateScreen extends AbstractContainerScreen<CrossingGate
 
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
+    }
+
+    @Override
+    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+    }
+
+    @Override
+    protected void renderSlot(GuiGraphics graphics, Slot slot) {
     }
 }

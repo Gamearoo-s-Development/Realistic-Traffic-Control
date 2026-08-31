@@ -25,7 +25,7 @@ public class StreetSign {
     }
 
     public void setColor(StreetSignColors color) {
-        this.color = color;
+        this.color = color != null ? color : StreetSignColors.Green;
     }
 
     public String getText() {
@@ -82,7 +82,7 @@ public class StreetSign {
                     return c;
                 }
             }
-            return null;
+            return Green;
         }
     }
 

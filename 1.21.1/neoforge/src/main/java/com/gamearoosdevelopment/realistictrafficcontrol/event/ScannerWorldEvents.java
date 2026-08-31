@@ -10,8 +10,8 @@ import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 /**
- * Port of 1.12.2 {@code WorldEventHandler}: creates per-dimension {@link Scanner} instances when IR is
- * installed and ticks them at end of world tick.
+ * Port of 1.12.2 {@code WorldEventHandler}: creates per-dimension {@link Scanner} instances when a
+ * supported railroad mod is installed and ticks them at end of world tick.
  */
 @EventBusSubscriber(modid = ModRealisticTrafficControl.MODID)
 public final class ScannerWorldEvents {
@@ -21,7 +21,7 @@ public final class ScannerWorldEvents {
 
     @SubscribeEvent
     public static void onLoad(LevelEvent.Load event) {
-        if (!(event.getLevel() instanceof ServerLevel serverLevel) || !ModRealisticTrafficControl.IR_INSTALLED) {
+        if (!(event.getLevel() instanceof ServerLevel serverLevel) || !hasRailroadCompat()) {
             return;
         }
         try {
@@ -34,7 +34,7 @@ public final class ScannerWorldEvents {
 
     @SubscribeEvent
     public static void onUnload(LevelEvent.Unload event) {
-        if (event.getLevel() instanceof ServerLevel serverLevel && ModRealisticTrafficControl.IR_INSTALLED) {
+        if (event.getLevel() instanceof ServerLevel serverLevel && hasRailroadCompat()) {
             Scanner.scannersByWorld.remove(serverLevel.dimension());
         }
     }
@@ -42,7 +42,7 @@ public final class ScannerWorldEvents {
     @SubscribeEvent
     public static void onTick(LevelTickEvent.Post event) {
         if (!(event.getLevel() instanceof ServerLevel serverLevel)
-                || !ModRealisticTrafficControl.IR_INSTALLED
+                || !hasRailroadCompat()
                 || event.getLevel().isClientSide()) {
             return;
         }
@@ -50,5 +50,9 @@ public final class ScannerWorldEvents {
         if (scanner != null) {
             scanner.tick(serverLevel);
         }
+    }
+
+    private static boolean hasRailroadCompat() {
+        return ModRealisticTrafficControl.IR_INSTALLED || ModRealisticTrafficControl.CREATE_INSTALLED;
     }
 }

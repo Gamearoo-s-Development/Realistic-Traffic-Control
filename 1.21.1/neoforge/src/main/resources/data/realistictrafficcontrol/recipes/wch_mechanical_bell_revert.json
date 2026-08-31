@@ -1,17 +1,11 @@
-{    "type": "minecraft:crafting_shapeless",   "ingredients": [     {         
-        param($m)
-        $id = $m.Groups[1].Value
-        if ($id -like 'traffic_light_bulb*') {
-            '"id": "realistictrafficcontrol:traffic_light_bulb", "components": { "realistictrafficcontrol:bulb_type": 0 }'
-        } else {
-            '"id": "realistictrafficcontrol:' + $id + '"'
-        }
-         }   ],   "result": {     
-        param($m)
-        $id = $m.Groups[1].Value
-        if ($id -like 'traffic_light_bulb*') {
-            '"id": "realistictrafficcontrol:traffic_light_bulb", "components": { "realistictrafficcontrol:bulb_type": 0 }'
-        } else {
-            '"id": "realistictrafficcontrol:' + $id + '"'
-        }
-       } }
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "realistictrafficcontrol:wch_mechanical_bell"
+    }
+  ],
+  "result": {
+    "id": "realistictrafficcontrol:wch_bell"
+  }
+}

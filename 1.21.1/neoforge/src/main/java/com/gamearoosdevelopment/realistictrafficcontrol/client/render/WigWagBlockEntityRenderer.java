@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 /** Port of 1.12.2 {@code RendererWigWag}. */
 public class WigWagBlockEntityRenderer implements BlockEntityRenderer<WigWagBlockEntity> {
+    private static final float RESIZED_FRAME_FORWARD_OFFSET = 1.0F / 16.0F;
 
     public WigWagBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
     }
@@ -32,7 +33,8 @@ public class WigWagBlockEntityRenderer implements BlockEntityRenderer<WigWagBloc
         poseStack.translate(0.5, 0.545, 0.5);
         poseStack.mulPose(Axis.YP.rotationDegrees(state.getValue(RTCProperties.ROTATION) * -22.5F));
         poseStack.translate(-0.5, -0.5, -0.5);
-        poseStack.translate(0.03F, 0.06F, 0.21F);
+        // Keep the animated assembly on the outside face of the resized frame.
+        poseStack.translate(0.03F, 0.06F, 0.21F + RESIZED_FRAME_FORWARD_OFFSET);
         poseStack.translate(blockToWorld(-3.5), blockToWorld(16.5), blockToWorld(7.5));
         poseStack.mulPose(Axis.ZP.rotationDegrees(180F));
 

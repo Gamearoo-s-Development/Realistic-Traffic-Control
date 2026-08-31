@@ -20,6 +20,7 @@ public record SetApproachMovementPayload(
         boolean leftEnabled,
         boolean rightEnabled,
         boolean sharedTurns,
+        boolean noOpposingRightWithLeft,
         byte straightIdle,
         byte leftIdle,
         byte rightIdle,
@@ -33,6 +34,7 @@ public record SetApproachMovementPayload(
                 settings.leftEnabled,
                 settings.rightEnabled,
                 settings.sharedTurns,
+                settings.noOpposingRightWithLeft,
                 (byte) settings.straightIdle.ordinal(),
                 (byte) settings.leftIdle.ordinal(),
                 (byte) settings.rightIdle.ordinal(),
@@ -53,6 +55,7 @@ public record SetApproachMovementPayload(
                     buf.readBoolean(),
                     buf.readBoolean(),
                     buf.readBoolean(),
+                    buf.readBoolean(),
                     buf.readByte(),
                     buf.readByte(),
                     buf.readByte(),
@@ -68,6 +71,7 @@ public record SetApproachMovementPayload(
             buf.writeBoolean(payload.leftEnabled);
             buf.writeBoolean(payload.rightEnabled);
             buf.writeBoolean(payload.sharedTurns);
+            buf.writeBoolean(payload.noOpposingRightWithLeft);
             buf.writeByte(payload.straightIdle);
             buf.writeByte(payload.leftIdle);
             buf.writeByte(payload.rightIdle);
@@ -86,6 +90,7 @@ public record SetApproachMovementPayload(
         settings.leftEnabled = leftEnabled;
         settings.rightEnabled = rightEnabled;
         settings.sharedTurns = sharedTurns;
+        settings.noOpposingRightWithLeft = noOpposingRightWithLeft;
         settings.straightIdle = IdleBulbMode.fromLegacyOrdinal(straightIdle & 0xFF, true);
         settings.leftIdle = IdleBulbMode.fromLegacyOrdinal(leftIdle & 0xFF, false);
         settings.rightIdle = IdleBulbMode.fromLegacyOrdinal(rightIdle & 0xFF, false);

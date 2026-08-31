@@ -11,14 +11,14 @@
 		{
 			"name": "Pole",
 			"from": [
-				7,
+				6,
 				0,
-				7
+				6
 			],
 			"to": [
-				9,
+				10,
 				16,
-				9
+				10
 			],
 			"rotation": {
 				"angle": 0,
@@ -2922,7 +2922,7 @@
 		"firstperson_lefthand": {
 			"rotation": [
 				0,
-				225,
+				-135,
 				0
 			],
 			"scale": [
@@ -2946,7 +2946,7 @@
 		"gui": {
 			"rotation": [
 				30,
-				225,
+				-135,
 				0
 			],
 			"scale": [

@@ -256,5 +256,9 @@
   "block.realistictrafficcontrol.type_3_barrier_right": "(RTC) Type 3 Barrier",
   "block.realistictrafficcontrol.vertical_wig_wag": "(RTC) Upper Quadrant Wig Wag",
   "block.realistictrafficcontrol.wig_wag": "(RTC) Wig Wag",
-  "block.realistictrafficcontrol.wire_anchor": "(RTC) Wire Anchor"
+  "block.realistictrafficcontrol.wire_anchor": "(RTC) Wire Anchor",
+  "block.realistictrafficcontrol.digital_sign": "(RTC) Digital Sign",
+  "block.realistictrafficcontrol.digital_sign_controller": "(RTC) Digital Sign Controller",
+  "block.realistictrafficcontrol.message_board": "(RTC) Message / Arrow Board",
+  "block.realistictrafficcontrol.message_board_controller": "(RTC) Message Board Controller"
 }

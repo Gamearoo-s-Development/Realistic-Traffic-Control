@@ -1,45 +1,19 @@
-{ 
+{
   "type": "minecraft:crafting_shaped",
   "pattern": [
     " I ",
     " I ",
-    "CCC"  ],
+    "CCC"
+  ],
   "key": {
-	"C":
-	  {
-	    
-        param($m)
-        $ore = $m.Groups[1].Value
-        if ($oreMap.ContainsKey($ore)) {
-            '"item": "' + $oreMap[$ore] + '"'
-        } else {
-            '"tag": "c:' + ($ore.ToLower() -replace 'ingot','') + '"'
-        }
-    
-	  },
-  "I":
-	  {
-	  	
-        param($m)
-        $ore = $m.Groups[1].Value
-        if ($oreMap.ContainsKey($ore)) {
-            '"item": "' + $oreMap[$ore] + '"'
-        } else {
-            '"tag": "c:' + ($ore.ToLower() -replace 'ingot','') + '"'
-        }
-    
-	  }
+    "C": {
+      "item": "minecraft:cobblestone"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    }
   },
   "result": {
-    
-        param($m)
-        $id = $m.Groups[1].Value
-        if ($id -like 'traffic_light_bulb*') {
-            '"id": "realistictrafficcontrol:traffic_light_bulb", "components": { "realistictrafficcontrol:bulb_type": 0 }'
-        } else {
-            '"id": "realistictrafficcontrol:' + $id + '"'
-        }
-    ,
-    "count": 1
+    "id": "realistictrafficcontrol:crossing_gate_base"
   }
 }

@@ -13,6 +13,10 @@ import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.BaseTrafficLi
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.BellBaseTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.CrossingGateGateTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.CrossingLampsTileEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.DigitalSignControllerTileEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.DigitalSignTileEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.MessageBoardControllerTileEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.MessageBoardTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.PedestrianButtonTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.RelayTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.ShuntBorderTileEntity;
@@ -136,7 +140,8 @@ public class ItemCrossingRelayTuner extends Item {
 
 		if (nbt == null || !nbt.hasKey("pairingpos"))
 		{
-			if (te == null || (!(te instanceof RelayTileEntity) && !(te instanceof TrafficLightControlBoxTileEntity)))
+			if (te == null || (!(te instanceof RelayTileEntity) && !(te instanceof TrafficLightControlBoxTileEntity)
+					&& !(te instanceof DigitalSignControllerTileEntity) && !(te instanceof MessageBoardControllerTileEntity)))
 			{
 				return false;
 			}
@@ -167,6 +172,20 @@ public class ItemCrossingRelayTuner extends Item {
 				typeOfPairing = "Traffic Light Control Box";
 			}
 
+			if (te instanceof DigitalSignControllerTileEntity)
+			{
+				relayPos = te.getPos();
+				addTileEntityPosToNBT(nbt, "pairingpos", te);
+				typeOfPairing = "Digital Sign Controller";
+			}
+
+			if (te instanceof MessageBoardControllerTileEntity)
+			{
+				relayPos = te.getPos();
+				addTileEntityPosToNBT(nbt, "pairingpos", te);
+				typeOfPairing = "Message Board Controller";
+			}
+
 			player.inventory.getCurrentItem().setTagCompound(nbt);
 			player.sendMessage(new TextComponentString("Started pairing with " + typeOfPairing + " at "
 					+ relayPos.getX() + ", "
@@ -177,7 +196,8 @@ public class ItemCrossingRelayTuner extends Item {
 		else
 		{
 			int[] pairingpos = nbt.getIntArray("pairingpos");
-			if (te != null && (te instanceof RelayTileEntity || te instanceof TrafficLightControlBoxTileEntity))
+			if (te != null && (te instanceof RelayTileEntity || te instanceof TrafficLightControlBoxTileEntity
+					|| te instanceof DigitalSignControllerTileEntity || te instanceof MessageBoardControllerTileEntity))
 			{
 				BlockPos relayPos = null;
 				String typeOfPairing = "";
@@ -196,6 +216,18 @@ public class ItemCrossingRelayTuner extends Item {
 					relayPos = controlBoxTE.getPos();
 
 					typeOfPairing = "Traffic Light Control Box";
+				}
+
+				if (te instanceof DigitalSignControllerTileEntity)
+				{
+					relayPos = te.getPos();
+					typeOfPairing = "Digital Sign Controller";
+				}
+
+				if (te instanceof MessageBoardControllerTileEntity)
+				{
+					relayPos = te.getPos();
+					typeOfPairing = "Message Board Controller";
 				}
 
 				nbt.removeTag("pairingpos");
@@ -233,7 +265,10 @@ public class ItemCrossingRelayTuner extends Item {
 				BlockPos pos = new BlockPos(pairingpos[0], pairingpos[1], pairingpos[2]);
 				TileEntity teAtPairingPos = world.getTileEntity(pos);
 
-				if (teAtPairingPos == null || (!(teAtPairingPos instanceof RelayTileEntity) && !(teAtPairingPos instanceof TrafficLightControlBoxTileEntity)))
+				if (teAtPairingPos == null || (!(teAtPairingPos instanceof RelayTileEntity)
+						&& !(teAtPairingPos instanceof TrafficLightControlBoxTileEntity)
+						&& !(teAtPairingPos instanceof DigitalSignControllerTileEntity)
+						&& !(teAtPairingPos instanceof MessageBoardControllerTileEntity)))
 				{
 					nbt.removeTag("pairingpos");
 					player.inventory.getCurrentItem().setTagCompound(nbt);
@@ -422,6 +457,42 @@ public class ItemCrossingRelayTuner extends Item {
 						player.sendMessage(new TextComponentString("Unpaired Pedestrian Button to Traffic Light Control Box"));
 					}
 				}
+			}
+		}
+
+		if (pairedTE instanceof DigitalSignControllerTileEntity && te instanceof DigitalSignTileEntity)
+		{
+			DigitalSignControllerTileEntity controller = (DigitalSignControllerTileEntity) pairedTE;
+			if (controller.getLinkedSigns().contains(te.getPos()))
+			{
+				controller.unlinkSign(te.getPos());
+				player.sendMessage(new TextComponentString("Unpaired Digital Sign from Digital Sign Controller"));
+			}
+			else if (controller.linkSign(te.getPos()))
+			{
+				player.sendMessage(new TextComponentString("Paired Digital Sign to Digital Sign Controller"));
+			}
+			else
+			{
+				player.sendMessage(new TextComponentString("Could not pair Digital Sign; the controller may be full"));
+			}
+		}
+
+		if (pairedTE instanceof MessageBoardControllerTileEntity && te instanceof MessageBoardTileEntity)
+		{
+			MessageBoardControllerTileEntity controller = (MessageBoardControllerTileEntity) pairedTE;
+			if (controller.getLinkedBoards().contains(te.getPos()))
+			{
+				controller.unlinkBoard(te.getPos());
+				player.sendMessage(new TextComponentString("Unpaired Message Board from Message Board Controller"));
+			}
+			else if (controller.linkBoard(te.getPos()))
+			{
+				player.sendMessage(new TextComponentString("Paired Message Board to Message Board Controller"));
+			}
+			else
+			{
+				player.sendMessage(new TextComponentString("Could not pair Message Board; the controller may be full"));
 			}
 		}
 	}

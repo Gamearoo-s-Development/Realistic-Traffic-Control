@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "opencomputers"
+    }
+  ],
+  "pattern": [
+    " T ",
+    " C ",
+    "   "
+  ],
+  "key": {
+    "T": {
+      "item": "realistictrafficcontrol:crossing_relay_tuner"
+    },
+    "C": {
+      "item": "opencomputers:card"
+    }
+  },
+  "result": {
+    "id": "realistictrafficcontrol:traffic_light_card",
+    "count": 1,
+    "components": {
+      "realistictrafficcontrol:card_tier": 0
+    }
+  }
+}

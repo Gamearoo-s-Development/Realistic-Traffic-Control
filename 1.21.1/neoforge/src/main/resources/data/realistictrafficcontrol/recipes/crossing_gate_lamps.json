@@ -1,17 +1,19 @@
-{    "type": "minecraft:crafting_shaped",   "pattern": [     "III",     "RIR",     " I "  ],   "key": { 	"R": 	  { 	    "item": "minecraft:redstone_lamp", 	    "data": 0 	  },   "I": 	  { 	  	
-        param($m)
-        $ore = $m.Groups[1].Value
-        if ($oreMap.ContainsKey($ore)) {
-            '"item": "' + $oreMap[$ore] + '"'
-        } else {
-            '"tag": "c:' + ($ore.ToLower() -replace 'ingot','') + '"'
-        }
-     	  }   },   "result": {     
-        param($m)
-        $id = $m.Groups[1].Value
-        if ($id -like 'traffic_light_bulb*') {
-            '"id": "realistictrafficcontrol:traffic_light_bulb", "components": { "realistictrafficcontrol:bulb_type": 0 }'
-        } else {
-            '"id": "realistictrafficcontrol:' + $id + '"'
-        }
-    ,     "count": 1   } }
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "III",
+    "RIR",
+    " I "
+  ],
+  "key": {
+    "R": {
+      "item": "minecraft:redstone_lamp"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "id": "realistictrafficcontrol:crossing_gate_lamps"
+  }
+}
