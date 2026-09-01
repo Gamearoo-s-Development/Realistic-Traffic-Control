@@ -170,7 +170,8 @@ public class TrafficLightBlockEntity extends BlockEntity {
     public void setActive(EnumTrafficLightBulbTypes bulbType, boolean active, boolean flash) {
         // The secondary yellow turn bulbs are reserved for FYA flashing.
         if (active && !flash && (bulbType == EnumTrafficLightBulbTypes.YellowArrowLeft2
-                || bulbType == EnumTrafficLightBulbTypes.YellowArrowRight2)) {
+                || bulbType == EnumTrafficLightBulbTypes.YellowArrowRight2
+                || bulbType == EnumTrafficLightBulbTypes.YellowArrowUTurn2)) {
             return;
         }
         setActiveForBulbType(bulbType, active, flash);

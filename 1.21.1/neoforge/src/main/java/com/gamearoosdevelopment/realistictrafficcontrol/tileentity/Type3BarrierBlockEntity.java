@@ -106,7 +106,8 @@ public class Type3BarrierBlockEntity extends SyncableBlockEntity {
         if (thisSignTypeLegacy >= 0) {
             sign = ModRealisticTrafficControl.signRepo.getSignByTypeVariant(
                     SignBlockEntity.getSignTypeName(thisSignTypeLegacy), thisSignVariantLegacy);
-        } else if (thisSignID != null) {
+        }
+        if (sign == null && thisSignID != null) {
             sign = ModRealisticTrafficControl.signRepo.getSignByID(thisSignID);
         }
         if (sign == null) {

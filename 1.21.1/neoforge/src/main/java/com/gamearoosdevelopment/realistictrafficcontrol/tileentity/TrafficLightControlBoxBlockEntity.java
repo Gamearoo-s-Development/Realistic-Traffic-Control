@@ -160,9 +160,7 @@ public class TrafficLightControlBoxBlockEntity extends SyncableBlockEntity {
             } else if (!enabled && isFlashingEmergency) {
                 emergencyFlashTicksRemaining = 0;
                 isFlashingEmergency = false;
-                if (powered) {
-                    getAutomator().reset();
-                }
+                getAutomator().reset();
             }
         }
     }

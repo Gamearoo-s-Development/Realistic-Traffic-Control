@@ -22,7 +22,10 @@ final class SignClientLoader {
 
     static void loadExternalPacks(SignRepository repository) {
         Path packsDirectory = Minecraft.getInstance().gameDirectory.toPath().resolve("tc_signpacks");
-        if (!Files.isDirectory(packsDirectory)) {
+        try {
+            Files.createDirectories(packsDirectory);
+        } catch (Exception ex) {
+            ModRealisticTrafficControl.LOGGER.error("Could not create tc_signpacks folder.", ex);
             return;
         }
         try (var paths = Files.list(packsDirectory)) {

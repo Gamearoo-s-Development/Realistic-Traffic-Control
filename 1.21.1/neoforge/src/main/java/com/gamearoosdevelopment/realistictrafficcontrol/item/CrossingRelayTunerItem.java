@@ -124,6 +124,20 @@ public class CrossingRelayTunerItem extends Item {
             player.displayClientMessage(Component.literal("Started pairing with " + typeOfPairing + " at "
                     + relayPos.getX() + ", " + relayPos.getY() + ", " + relayPos.getZ()), false);
         } else {
+            BlockPos firstPos = new BlockPos(pairingPos[0], pairingPos[1], pairingPos[2]);
+            BlockEntity first = level.getBlockEntity(firstPos);
+            if (first instanceof DigitalSignControllerBlockEntity master
+                    && te instanceof DigitalSignControllerBlockEntity follower
+                    && !firstPos.equals(follower.getBlockPos())) {
+                boolean wasLinked = master.getSyncedControllers().contains(follower.getBlockPos());
+                boolean linked = master.linkSyncedController(follower.getBlockPos());
+                player.displayClientMessage(Component.literal(linked
+                        ? "Synced Digital Sign Controller timing with master at "
+                                + firstPos.getX() + ", " + firstPos.getY() + ", " + firstPos.getZ()
+                        : wasLinked ? "Unsynced Digital Sign Controllers"
+                                : "Could not sync controllers; invalid link"), false);
+                return false;
+            }
             if (te instanceof RelayBlockEntity || te instanceof TrafficLightControlBoxBlockEntity
                     || te instanceof DigitalSignControllerBlockEntity
                     || te instanceof MessageBoardControllerBlockEntity) {

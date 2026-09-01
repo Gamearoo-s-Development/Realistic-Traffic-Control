@@ -44,11 +44,39 @@ public final class DisplaySchedule {
     private int lastDayTime = -1;
 
     public Mode getMode() { return mode; }
-    public void setMode(Mode value) { mode = value == null ? Mode.MANUAL : value; reset(); }
+    public void setMode(Mode value) {
+        Mode next = value == null ? Mode.MANUAL : value;
+        if (mode != next) {
+            mode = next;
+            reset();
+        }
+    }
     public int getIntervalAmount() { return intervalAmount; }
-    public void setIntervalAmount(int value) { intervalAmount = Math.max(1, Math.min(1_000_000, value)); reset(); }
+    public void setIntervalAmount(int value) {
+        int next = Math.max(1, Math.min(1_000_000, value));
+        if (intervalAmount != next) {
+            intervalAmount = next;
+            reset();
+        }
+    }
     public List<Integer> getGameTimes() { return Collections.unmodifiableList(gameTimes); }
-    public void setGameTimesFromText(String text) { gameTimes.clear(); gameTimes.addAll(parseGameTimes(text)); reset(); }
+    public void setGameTimesFromText(String text) {
+        List<Integer> parsed = parseGameTimes(text);
+        if (gameTimes.equals(parsed)) return;
+        gameTimes.clear();
+        gameTimes.addAll(parsed);
+        reset();
+    }
+    public void copyTimingFrom(DisplaySchedule other) {
+        if (other == null) return;
+        setMode(other.mode);
+        setIntervalAmount(other.intervalAmount);
+        if (!gameTimes.equals(other.gameTimes)) {
+            gameTimes.clear();
+            gameTimes.addAll(other.gameTimes);
+            reset();
+        }
+    }
     public String getGameTimesText() {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < gameTimes.size(); i++) {
@@ -81,13 +109,18 @@ public final class DisplaySchedule {
     }
 
     public void load(CompoundTag tag, String prefix) {
-        mode = Mode.fromName(tag.getString(prefix + "Mode"));
-        intervalAmount = Math.max(1, Math.min(1_000_000,
+        Mode nextMode = Mode.fromName(tag.getString(prefix + "Mode"));
+        int nextAmount = Math.max(1, Math.min(1_000_000,
                 tag.contains(prefix + "IntervalAmount") ? tag.getInt(prefix + "IntervalAmount") : 1));
+        ArrayList<Integer> nextTimes = new ArrayList<>();
+        for (int time : tag.getIntArray(prefix + "Times")) nextTimes.add(normalizeDayTime(time));
+        Collections.sort(nextTimes);
+        boolean changed = mode != nextMode || intervalAmount != nextAmount || !gameTimes.equals(nextTimes);
+        mode = nextMode;
+        intervalAmount = nextAmount;
         gameTimes.clear();
-        for (int time : tag.getIntArray(prefix + "Times")) gameTimes.add(normalizeDayTime(time));
-        Collections.sort(gameTimes);
-        reset();
+        gameTimes.addAll(nextTimes);
+        if (changed) reset();
     }
 
     public void save(CompoundTag tag, String prefix) {
