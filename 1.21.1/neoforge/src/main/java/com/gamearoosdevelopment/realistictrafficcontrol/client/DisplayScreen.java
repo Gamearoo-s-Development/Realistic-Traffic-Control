@@ -1,11 +1,14 @@
 package com.gamearoosdevelopment.realistictrafficcontrol.client;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficControl;
 import com.gamearoosdevelopment.realistictrafficcontrol.client.gui.SignImageListWidget;
 import com.gamearoosdevelopment.realistictrafficcontrol.menu.DisplayMenu;
 import com.gamearoosdevelopment.realistictrafficcontrol.signs.Sign;
+import com.gamearoosdevelopment.realistictrafficcontrol.signs.SignHorizontalAlignment;
+import com.gamearoosdevelopment.realistictrafficcontrol.signs.SignVerticalAlignment;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.DigitalSignControllerBlockEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.MessageBoardBlockEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.MessageBoardControllerBlockEntity;
@@ -38,9 +41,14 @@ public final class DisplayScreen extends AbstractContainerScreen<DisplayMenu> {
     private Button brightnessButton;
     private Button pageButton;
     private Button scheduleButton;
+    private Button digitalTextEditorButton;
     private SignImageListWidget signList;
+    private EditBox digitalSearch;
     private int editingPage = -1;
     private UUID editingSign;
+    private final ArrayList<String> editingTextLines = new ArrayList<>();
+    private boolean digitalTextEditMode;
+    private int currentDigitalTextLine;
 
     public DisplayScreen(DisplayMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -140,67 +148,75 @@ public final class DisplayScreen extends AbstractContainerScreen<DisplayMenu> {
     }
 
     private void initDigitalController(DigitalSignControllerBlockEntity controller) {
-        int panelCenter = (width - 128) / 2;
-        int buttonWidth = Math.min(170, Math.max(90, width - 150));
-        int x = panelCenter - buttonWidth / 2;
-        int count = controller.getRotationSigns().size();
+        int x = 8;
+        int buttonWidth = Math.min(188, Math.max(120, width / 4 - 16));
+        int editPanelX = x + buttonWidth + 8;
+        int editPanelWidth = Math.max(96, width - editPanelX - 136);
+        int count = controller.getRotationPageCount();
         editingPage = count == 0 ? -1 : Math.max(0, Math.min(count - 1, controller.getRotationIndex()));
-        editingSign = editingPage >= 0 ? controller.getRotationSigns().get(editingPage) : controller.getSelectedSign();
+        editingSign = editingPage >= 0 ? controller.getPageSignId(editingPage) : controller.getSelectedSign();
+        loadDigitalTextLines(controller);
 
-        signList = addRenderableWidget(new SignImageListWidget(width - 128, 18, 112, height - 68, sign -> {
-            commitDigitalTime(controller);
-            editingSign = sign.getID();
-            signTime.setValue(controller.getRotationSignTimeText(editingSign));
-        }));
+        signList = addRenderableWidget(new SignImageListWidget(width - 128, 18, 112, height - 68,
+                sign -> selectDigitalSign(controller, sign.getID())));
+        digitalSearch = edit(width - 128, height - 40, 112, 20, 64, "", "Search...");
+        digitalSearch.setResponder(signList::filter);
         addRenderableWidget(Button.builder(Component.literal(addDigitalLabel(controller)), b -> {
             if (editingSign != null) {
-                controller.addRotationSign(editingSign);
-                editingPage = controller.getRotationSigns().indexOf(editingSign);
-                controller.selectRotationSign(editingPage);
-                commitDigitalTime(controller);
+                saveDigitalPage(controller);
+                if (controller.addRotationSign(editingSign)) {
+                    editingPage = controller.getRotationPageCount() - 1;
+                    controller.saveRotationPage(editingPage, editingSign, new ArrayList<>(editingTextLines));
+                    reloadDigital(controller);
+                }
                 refreshDigitalControls(controller);
                 sync(controller);
             }
-        }).bounds(x, 40, buttonWidth, 20).build());
+        }).bounds(x, 8, buttonWidth, 20).build());
         addRenderableWidget(Button.builder(Component.literal("<"), b -> selectDigitalPage(controller, -1))
-                .bounds(x, 64, 30, 20).build());
+                .bounds(x, 30, 30, 20).build());
         pageButton = addRenderableWidget(Button.builder(Component.literal(digitalPageLabel(controller)), b -> {})
-                .bounds(panelCenter - 66, 64, 132, 20).build());
+                .bounds(x + 34, 30, buttonWidth - 68, 20).build());
         pageButton.active = false;
         addRenderableWidget(Button.builder(Component.literal(">"), b -> selectDigitalPage(controller, 1))
-                .bounds(x + buttonWidth - 30, 64, 30, 20).build());
+                .bounds(x + buttonWidth - 30, 30, 30, 20).build());
         addRenderableWidget(Button.builder(Component.literal("Save page"), b -> {
             saveDigitalPage(controller);
             sync(controller);
-        }).bounds(x, 88, buttonWidth / 2 - 2, 20).build());
+        }).bounds(x, 52, buttonWidth / 2 - 2, 20).build());
         addRenderableWidget(Button.builder(Component.literal("Delete page"), b -> {
             controller.removeRotationSign(editingPage);
             editingPage = controller.getRotationIndex();
             reloadDigital(controller);
             sync(controller);
-        }).bounds(panelCenter + 2, 88, buttonWidth / 2 - 2, 20).build());
+        }).bounds(x + buttonWidth / 2 + 2, 52, buttonWidth / 2 - 2, 20).build());
         addRenderableWidget(Button.builder(Component.literal("Clear pages"), b -> {
             controller.clearRotationSigns();
             editingPage = -1;
             editingSign = controller.getSelectedSign();
             signTime.setValue("");
+            loadDigitalTextLines(controller);
             refreshDigitalControls(controller);
             sync(controller);
-        }).bounds(x, 112, buttonWidth, 20).build());
+        }).bounds(x, 74, buttonWidth, 20).build());
         scheduleButton = addRenderableWidget(Button.builder(digitalScheduleLabel(controller), b -> {
             commitDigitalSchedule(controller);
             controller.setScheduleMode(controller.getScheduleMode().next());
             refreshDigitalControls(controller);
             sync(controller);
-        }).bounds(x, 136, buttonWidth, 20).build());
-        interval = edit(x, 170, buttonWidth, 18, 7,
+        }).bounds(x, 96, buttonWidth, 20).build());
+        interval = edit(x, 130, buttonWidth, 18, 7,
                 Integer.toString(controller.getScheduleIntervalAmount()), "Interval amount");
-        signTime = edit(x, 200, buttonWidth, 18, 5,
-                controller.getRotationSignTimeText(editingSign), "HH:MM");
+        signTime = edit(x, 160, buttonWidth, 18, 5,
+                controller.getRotationPageTimeText(editingPage), "HH:MM");
         addRenderableWidget(Button.builder(Component.literal("Save selected time"), b -> {
             commitDigitalSchedule(controller);
             sync(controller);
-        }).bounds(x, 224, buttonWidth, 20).build());
+        }).bounds(x, 182, buttonWidth, 20).build());
+        digitalTextEditorButton = addRenderableWidget(Button.builder(Component.literal("Text Editor (T)"),
+                b -> toggleDigitalTextEditor(controller))
+                .bounds(editPanelX + Math.max(0, (editPanelWidth - Math.min(180, editPanelWidth)) / 2),
+                        8, Math.min(180, editPanelWidth), 20).build());
         refreshDigitalControls(controller);
     }
 
@@ -270,7 +286,7 @@ public final class DisplayScreen extends AbstractContainerScreen<DisplayMenu> {
 
     private void selectDigitalPage(DigitalSignControllerBlockEntity controller, int delta) {
         saveDigitalPage(controller);
-        int count = controller.getRotationSigns().size();
+        int count = controller.getRotationPageCount();
         if (count > 0) {
             editingPage = Math.floorMod(editingPage + delta, count);
             controller.selectRotationSign(editingPage);
@@ -281,7 +297,7 @@ public final class DisplayScreen extends AbstractContainerScreen<DisplayMenu> {
 
     private void saveDigitalPage(DigitalSignControllerBlockEntity controller) {
         if (editingPage >= 0 && editingSign != null) {
-            controller.updateRotationSign(editingPage, editingSign);
+            controller.saveRotationPage(editingPage, editingSign, new ArrayList<>(editingTextLines));
             commitDigitalTime(controller);
         }
         commitDigitalSchedule(controller);
@@ -289,9 +305,10 @@ public final class DisplayScreen extends AbstractContainerScreen<DisplayMenu> {
 
     private void reloadDigital(DigitalSignControllerBlockEntity controller) {
         editingPage = controller.getRotationIndex();
-        editingSign = editingPage >= 0 && editingPage < controller.getRotationSigns().size()
-                ? controller.getRotationSigns().get(editingPage) : controller.getSelectedSign();
-        signTime.setValue(controller.getRotationSignTimeText(editingSign));
+        editingSign = editingPage >= 0 && editingPage < controller.getRotationPageCount()
+                ? controller.getPageSignId(editingPage) : controller.getSelectedSign();
+        signTime.setValue(controller.getRotationPageTimeText(editingPage));
+        loadDigitalTextLines(controller);
         refreshDigitalControls(controller);
     }
 
@@ -301,17 +318,76 @@ public final class DisplayScreen extends AbstractContainerScreen<DisplayMenu> {
     }
 
     private void commitDigitalTime(DigitalSignControllerBlockEntity controller) {
-        if (editingSign != null && signTime != null
-                && controller.setRotationSignTime(editingSign, signTime.getValue())) {
-            signTime.setValue(controller.getRotationSignTimeText(editingSign));
+        if (editingPage >= 0 && signTime != null
+                && controller.setRotationPageTime(editingPage, signTime.getValue())) {
+            signTime.setValue(controller.getRotationPageTimeText(editingPage));
         }
     }
 
     private void refreshDigitalControls(DigitalSignControllerBlockEntity controller) {
         if (pageButton != null) pageButton.setMessage(Component.literal(digitalPageLabel(controller)));
         if (scheduleButton != null) scheduleButton.setMessage(digitalScheduleLabel(controller));
-        if (interval != null) interval.setEditable(controller.getScheduleMode().isInterval());
-        if (signTime != null) signTime.setEditable(editingSign != null);
+        boolean follower = controller.isSyncFollower();
+        if (scheduleButton != null) scheduleButton.active = !follower && !digitalTextEditMode;
+        if (interval != null) interval.setEditable(!follower && controller.getScheduleMode().isInterval()
+                && !digitalTextEditMode);
+        if (signTime != null) signTime.setEditable(!follower && editingPage >= 0 && !digitalTextEditMode);
+        Sign sign = getEditingDigitalSign();
+        boolean hasText = sign != null && !sign.getTextLines().isEmpty();
+        if (!hasText) digitalTextEditMode = false;
+        if (digitalTextEditorButton != null) {
+            digitalTextEditorButton.active = hasText;
+            digitalTextEditorButton.setMessage(Component.literal(
+                    digitalTextEditMode ? "Finish Editing" : "Text Editor (T)"));
+        }
+        if (digitalSearch != null) digitalSearch.setEditable(!digitalTextEditMode);
+        if (signList != null) signList.active = !digitalTextEditMode;
+    }
+
+    private Sign getEditingDigitalSign() {
+        return editingSign == null ? null : ModRealisticTrafficControl.signRepo.getSignByID(editingSign);
+    }
+
+    private void loadDigitalTextLines(DigitalSignControllerBlockEntity controller) {
+        editingTextLines.clear();
+        Sign sign = getEditingDigitalSign();
+        if (sign == null) return;
+        for (int i = 0; i < sign.getTextLines().size(); i++) {
+            editingTextLines.add(editingPage >= 0 ? controller.getPageTextLine(editingPage, i) : "");
+        }
+        if (currentDigitalTextLine >= editingTextLines.size()) currentDigitalTextLine = 0;
+    }
+
+    private String getEditingDigitalText(int index) {
+        return index >= 0 && index < editingTextLines.size() && editingTextLines.get(index) != null
+                ? editingTextLines.get(index) : "";
+    }
+
+    private void setEditingDigitalText(int index, String value) {
+        while (editingTextLines.size() <= index) editingTextLines.add("");
+        editingTextLines.set(index, value == null ? "" : value);
+    }
+
+    private void selectDigitalSign(DigitalSignControllerBlockEntity controller, UUID id) {
+        saveDigitalPage(controller);
+        editingSign = id;
+        digitalTextEditMode = false;
+        currentDigitalTextLine = 0;
+        if (editingPage >= 0) controller.updateRotationSign(editingPage, id);
+        loadDigitalTextLines(controller);
+        if (signTime != null) signTime.setValue(controller.getRotationPageTimeText(editingPage));
+        refreshDigitalControls(controller);
+    }
+
+    private void toggleDigitalTextEditor(DigitalSignControllerBlockEntity controller) {
+        Sign sign = getEditingDigitalSign();
+        if (sign == null || sign.getTextLines().isEmpty()) {
+            digitalTextEditMode = false;
+        } else {
+            digitalTextEditMode = !digitalTextEditMode;
+            if (!digitalTextEditMode) currentDigitalTextLine = 0;
+        }
+        refreshDigitalControls(controller);
     }
 
     private void saveLines(MessageBoardBlockEntity board) {
@@ -354,11 +430,11 @@ public final class DisplayScreen extends AbstractContainerScreen<DisplayMenu> {
         };
     }
     private static String addDigitalLabel(DigitalSignControllerBlockEntity controller) {
-        return "Add page (" + controller.getRotationSigns().size() + "/"
+        return "Add page (" + controller.getRotationPageCount() + "/"
                 + DigitalSignControllerBlockEntity.MAX_ROTATION_SIGNS + ")";
     }
     private static String digitalPageLabel(DigitalSignControllerBlockEntity controller) {
-        int count = controller.getRotationSigns().size();
+        int count = controller.getRotationPageCount();
         return count == 0 ? "Page 0 / 0" : "Page " + (controller.getRotationIndex() + 1) + " / " + count;
     }
     private static int positiveInt(String value, int fallback) {
@@ -408,7 +484,7 @@ public final class DisplayScreen extends AbstractContainerScreen<DisplayMenu> {
         graphics.drawCenteredString(font, "Message / Arrow Board Controller", width / 2, 5, 0xFFFFA000);
         graphics.drawCenteredString(font, "Linked boards: " + controller.getLinkedBoards().size(),
                 width / 2, startY + 211, 0xFFFFFFFF);
-        graphics.drawCenteredString(font, "Use tuner on controller, then board.", width / 2,
+        graphics.drawCenteredString(font, "Use tuner on controller, then board. OpenComputers can also control it.", width / 2,
                 startY + 223, 0xFFAAAAAA);
         graphics.drawCenteredString(font, "Interval amount", width / 2 - 106, startY + 149, 0xFFAAAAAA);
         graphics.drawCenteredString(font, "Game times (HH:MM, comma-separated)", width / 2 - 106,
@@ -433,17 +509,83 @@ public final class DisplayScreen extends AbstractContainerScreen<DisplayMenu> {
     }
 
     private void renderDigitalController(GuiGraphics graphics, DigitalSignControllerBlockEntity controller) {
-        int center = (width - 128) / 2;
-        graphics.drawCenteredString(font, "Digital Sign Controller", center, 8, 0xFFFFFF00);
-        graphics.drawCenteredString(font, "Linked signs: " + controller.getLinkedSigns().size(), center,
-                height - 38, 0xFFFFFFFF);
-        graphics.drawCenteredString(font, "Use tuner on controller, then digital sign.", center,
-                height - 25, 0xFFAAAAAA);
-        graphics.drawCenteredString(font, "Interval amount", center, 160, 0xFFAAAAAA);
-        graphics.drawCenteredString(font, "Selected sign time (HH:MM)", center, 190, 0xFFAAAAAA);
-        Sign selected = editingSign == null ? null : ModRealisticTrafficControl.signRepo.getSignByID(editingSign);
-        if (selected != null) graphics.drawCenteredString(font, "Selected: " + selected.getName(), center,
-                24, 0xFFFFA000);
+        int controlsWidth = Math.min(188, Math.max(120, width / 4 - 16));
+        int controlsCenter = 8 + controlsWidth / 2;
+        int editPanelX = 16 + controlsWidth;
+        int editPanelWidth = Math.max(96, width - editPanelX - 136);
+        int editCenter = editPanelX + editPanelWidth / 2;
+        graphics.drawCenteredString(font, "Interval amount", controlsCenter, 120, 0xFFAAAAAA);
+        graphics.drawCenteredString(font, controller.isSyncFollower()
+                ? "Page time locked to master" : "Page time (HH:MM)", controlsCenter, 150,
+                controller.isSyncFollower() ? 0xFFFF5555 : 0xFFAAAAAA);
+
+        Sign selected = getEditingDigitalSign();
+        if (selected != null) {
+            graphics.drawCenteredString(font, selected.getName(), editCenter, 30, 0xFFFFA000);
+            int previewSize = Math.max(16, Math.min(editPanelWidth - 16, height - 104));
+            int previewX = editCenter - previewSize / 2;
+            int previewY = 42;
+            graphics.blit(selected.getFrontImageResourceLocation(), previewX, previewY, previewSize, previewSize,
+                    0, 0, 16, 16, 16, 16);
+            renderDigitalPreviewText(graphics, selected, previewX, previewY, previewSize);
+        }
+
+        graphics.drawCenteredString(font,
+                "Signs: " + controller.getLinkedSigns().size() + "  |  Synced: "
+                        + controller.getSyncedControllers().size()
+                        + (controller.isSyncFollower() ? "  |  Following master" : ""),
+                editCenter, height - 38, 0xFFFFFFFF);
+        graphics.drawCenteredString(font, controller.isSyncFollower()
+                ? "Edit timing on the master controller."
+                : "Tuner: controller to sign, or controller to controller for timing sync.",
+                editCenter, height - 25, controller.isSyncFollower() ? 0xFFFF5555 : 0xFFAAAAAA);
+    }
+
+    private void renderDigitalPreviewText(GuiGraphics graphics, Sign sign, int previewX, int previewY,
+            int previewSize) {
+        if (sign.getTextLines().isEmpty()) return;
+        graphics.pose().pushPose();
+        graphics.pose().translate(previewX, previewY, 100);
+        float fullScale = (float) (((double) previewSize / font.lineHeight) / 16D);
+        graphics.pose().scale(fullScale, fullScale, 1);
+        for (int i = 0; i < sign.getTextLines().size(); i++) {
+            Sign.TextLine textLine = sign.getTextLines().get(i);
+            graphics.pose().pushPose();
+            graphics.pose().translate(textLine.getX() * font.lineHeight, textLine.getY() * font.lineHeight, 0);
+            graphics.pose().scale((float) textLine.getXScale(), (float) textLine.getYScale(), 1);
+            if (textLine.getvAlign() == SignVerticalAlignment.Center)
+                graphics.pose().translate(0, -font.lineHeight / 2F, 0);
+            else if (textLine.getvAlign() == SignVerticalAlignment.Bottom)
+                graphics.pose().translate(0, -font.lineHeight, 0);
+            double availableWidth = textLine.getScaleAdjustedWidth() * font.lineHeight;
+            if (textLine.gethAlign() == SignHorizontalAlignment.Center)
+                graphics.pose().translate(-availableWidth / 2, 0, 0);
+            else if (textLine.gethAlign() == SignHorizontalAlignment.Right)
+                graphics.pose().translate(-availableWidth, 0, 0);
+            if (digitalTextEditMode) {
+                graphics.fill(0, 0, (int) availableWidth, font.lineHeight,
+                        currentDigitalTextLine == i ? 0x6600FF00 : 0x66FF0000);
+                graphics.pose().pushPose();
+                graphics.pose().scale(.5F, .5F, 1);
+                graphics.drawString(font, textLine.getLabel(), 0, -font.lineHeight,
+                        currentDigitalTextLine == i ? 0xFF00FF00 : 0xFFFF0000);
+                graphics.pose().popPose();
+            }
+            String text = getEditingDigitalText(i);
+            int textWidth = font.width(text);
+            if (textWidth > 0) {
+                float widthScale = (float) Math.min(1D, availableWidth / textWidth);
+                graphics.pose().scale(widthScale, 1, 1);
+                int textX = 0;
+                if (textLine.gethAlign() == SignHorizontalAlignment.Center && widthScale == 1F)
+                    textX = (int) (availableWidth / 2) - textWidth / 2;
+                else if (textLine.gethAlign() == SignHorizontalAlignment.Right)
+                    textX = (int) availableWidth - textWidth;
+                graphics.drawString(font, text, textX + 1, 1, textLine.getColor());
+            }
+            graphics.pose().popPose();
+        }
+        graphics.pose().popPose();
     }
 
     private static int litColor(MessageBoardBlockEntity board) {
@@ -462,6 +604,105 @@ public final class DisplayScreen extends AbstractContainerScreen<DisplayMenu> {
             case BOLD_ITALIC -> "\u00a7l\u00a7o" + text;
             default -> text;
         };
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (display instanceof DigitalSignControllerBlockEntity && digitalTextEditMode
+                && selectDigitalTextLine(mouseX, mouseY)) return true;
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    private boolean selectDigitalTextLine(double mouseX, double mouseY) {
+        Sign sign = getEditingDigitalSign();
+        if (sign == null || sign.getTextLines().isEmpty()) return false;
+        int controlsWidth = Math.min(188, Math.max(120, width / 4 - 16));
+        int editPanelX = 16 + controlsWidth;
+        int editPanelWidth = Math.max(96, width - editPanelX - 136);
+        int previewSize = Math.max(16, Math.min(editPanelWidth - 16, height - 104));
+        int previewX = editPanelX + editPanelWidth / 2 - previewSize / 2;
+        int previewY = 42;
+        if (mouseX < previewX || mouseX > previewX + previewSize
+                || mouseY < previewY || mouseY > previewY + previewSize) return false;
+        double fullScale = ((double) previewSize / font.lineHeight) / 16D;
+        double localX = (mouseX - previewX) / fullScale;
+        double localY = (mouseY - previewY) / fullScale;
+        for (int i = 0; i < sign.getTextLines().size(); i++) {
+            Sign.TextLine line = sign.getTextLines().get(i);
+            double x = line.getX() * font.lineHeight;
+            double y = line.getY() * font.lineHeight;
+            double lineWidth = line.getScaleAdjustedWidth() * font.lineHeight * line.getXScale();
+            double lineHeight = font.lineHeight * line.getYScale();
+            if (line.gethAlign() == SignHorizontalAlignment.Center) x -= lineWidth / 2D;
+            else if (line.gethAlign() == SignHorizontalAlignment.Right) x -= lineWidth;
+            if (line.getvAlign() == SignVerticalAlignment.Center) y -= lineHeight / 2D;
+            else if (line.getvAlign() == SignVerticalAlignment.Bottom) y -= lineHeight;
+            if (localX >= x && localX <= x + lineWidth && localY >= y && localY <= y + lineHeight) {
+                currentDigitalTextLine = i;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (display instanceof DigitalSignControllerBlockEntity controller) {
+            Sign sign = getEditingDigitalSign();
+            if (digitalTextEditMode && sign != null && !sign.getTextLines().isEmpty()) {
+                if (currentDigitalTextLine < 0 || currentDigitalTextLine >= sign.getTextLines().size())
+                    currentDigitalTextLine = 0;
+                String text = getEditingDigitalText(currentDigitalTextLine);
+                if (keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_BACKSPACE && !text.isEmpty()) {
+                    setEditingDigitalText(currentDigitalTextLine, text.substring(0, text.length() - 1));
+                    return true;
+                }
+                if (keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_DOWN) {
+                    currentDigitalTextLine = (currentDigitalTextLine + 1) % sign.getTextLines().size();
+                    return true;
+                }
+                if (keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_UP) {
+                    currentDigitalTextLine = currentDigitalTextLine <= 0
+                            ? sign.getTextLines().size() - 1 : currentDigitalTextLine - 1;
+                    return true;
+                }
+                if (keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_ENTER
+                        || keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_KP_ENTER) {
+                    if (currentDigitalTextLine == sign.getTextLines().size() - 1)
+                        toggleDigitalTextEditor(controller);
+                    else currentDigitalTextLine++;
+                    return true;
+                }
+                if (keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE) {
+                    toggleDigitalTextEditor(controller);
+                    return true;
+                }
+            } else if (keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_T
+                    && (digitalSearch == null || !digitalSearch.isFocused())
+                    && (interval == null || !interval.isFocused())
+                    && (signTime == null || !signTime.isFocused())) {
+                toggleDigitalTextEditor(controller);
+                return true;
+            }
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean charTyped(char codePoint, int modifiers) {
+        if (display instanceof DigitalSignControllerBlockEntity && digitalTextEditMode) {
+            Sign sign = getEditingDigitalSign();
+            if (sign != null && currentDigitalTextLine >= 0
+                    && currentDigitalTextLine < sign.getTextLines().size()) {
+                Sign.TextLine line = sign.getTextLines().get(currentDigitalTextLine);
+                String text = getEditingDigitalText(currentDigitalTextLine);
+                if (text.length() < line.getMaxLength() && !Character.isISOControl(codePoint)) {
+                    setEditingDigitalText(currentDigitalTextLine, text + codePoint);
+                    return true;
+                }
+            }
+        }
+        return super.charTyped(codePoint, modifiers);
     }
 
     @Override protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) { }

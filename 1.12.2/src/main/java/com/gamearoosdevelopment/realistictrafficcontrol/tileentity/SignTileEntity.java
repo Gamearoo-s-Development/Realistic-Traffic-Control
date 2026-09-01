@@ -268,7 +268,8 @@ public class SignTileEntity extends TileEntity {
 		{
 			for(int i = 0; i < textLines.size(); i++)
 			{
-				compound.setString("text" + i, textLines.get(i));
+				String line = textLines.get(i);
+				compound.setString("text" + i, line == null ? "" : line);
 			}
 		}
 		

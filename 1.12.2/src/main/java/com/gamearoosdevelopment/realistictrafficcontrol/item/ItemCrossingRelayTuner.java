@@ -196,6 +196,36 @@ public class ItemCrossingRelayTuner extends Item {
 		else
 		{
 			int[] pairingpos = nbt.getIntArray("pairingpos");
+			BlockPos pairedPos = new BlockPos(pairingpos[0], pairingpos[1], pairingpos[2]);
+			TileEntity pairedAtStart = world.getTileEntity(pairedPos);
+
+			// Digital sign controllers sync rotation timing only (not page content).
+			if (te instanceof DigitalSignControllerTileEntity
+					&& pairedAtStart instanceof DigitalSignControllerTileEntity
+					&& !te.getPos().equals(pairedPos))
+			{
+				DigitalSignControllerTileEntity master = (DigitalSignControllerTileEntity) pairedAtStart;
+				DigitalSignControllerTileEntity follower = (DigitalSignControllerTileEntity) te;
+				boolean wasLinked = master.getSyncedControllers().contains(follower.getPos());
+				boolean linked = master.linkSyncedController(follower.getPos());
+				if (linked)
+				{
+					player.sendMessage(new TextComponentString(
+							"Synced Digital Sign Controller timing with master at "
+									+ pairedPos.getX() + ", " + pairedPos.getY() + ", " + pairedPos.getZ()));
+				}
+				else if (wasLinked)
+				{
+					player.sendMessage(new TextComponentString("Unsynced Digital Sign Controllers"));
+				}
+				else
+				{
+					player.sendMessage(new TextComponentString(
+							"Could not sync controllers; invalid link"));
+				}
+				return false;
+			}
+
 			if (te != null && (te instanceof RelayTileEntity || te instanceof TrafficLightControlBoxTileEntity
 					|| te instanceof DigitalSignControllerTileEntity || te instanceof MessageBoardControllerTileEntity))
 			{

@@ -55,7 +55,8 @@ public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEnt
             poseStack.scale(faceRight - faceLeft, faceTop - faceBottom, 1);
             SignTextRenderHelper.renderDigitalFace(poseStack, buffer, LightTexture.FULL_BRIGHT,
                     sign.getFrontImageResourceLocation(), 1, 1);
-            SignTextRenderHelper.renderSignText(poseStack, buffer, LightTexture.FULL_BRIGHT, sign, te::getTextLine);
+            SignTextRenderHelper.renderDigitalSignText(
+                    poseStack, buffer, LightTexture.FULL_BRIGHT, sign, te::getTextLine);
         } else {
             SignTextRenderHelper.applySignRotation(poseStack, rotation);
             SignTextRenderHelper.renderSignFace(poseStack, buffer, packedLight,

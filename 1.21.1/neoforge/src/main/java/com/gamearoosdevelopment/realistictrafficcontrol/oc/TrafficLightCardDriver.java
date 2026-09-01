@@ -367,25 +367,23 @@ public final class TrafficLightCardDriver extends DriverItem {
             if (!(be instanceof DigitalSignControllerBlockEntity controller)) {
                 return result(false, "No digital sign controller at position");
             }
-            controller.setSelectedSign(UUID.fromString(args.checkString(3)));
-            return new Object[] { true, controller.getLinkedSigns().size() };
+            return new Object[] { true, controller.setSelectedSign(UUID.fromString(args.checkString(3))) };
         }
 
         @Callback(doc = "addDigitalSignRotation(controllerX:int, controllerY:int, controllerZ:int, signId:string, gameTime:string?):boolean, string")
         public Object[] addDigitalSignRotation(Context context, Arguments args) {
             DigitalSignControllerBlockEntity controller = digitalController(args);
             if (controller == null) return result(false, "No digital sign controller at position");
+            if (controller.isSyncFollower()) return result(false, "Timing is controlled by the master controller");
             UUID id = UUID.fromString(args.checkString(3));
             String time = args.count() >= 5 ? args.checkString(4) : null;
             if (time != null && !time.isBlank() && DisplaySchedule.parseGameTime(time) < 0) {
                 return result(false, "Invalid game time");
             }
-            boolean existed = controller.getRotationSigns().contains(id);
             boolean added = controller.addRotationSign(id);
-            boolean timed = time == null || controller.setRotationSignTime(id, time);
-            boolean success = timed && (added || existed);
-            return result(success, success ? (added ? "Rotation sign added" : "Rotation sign time updated")
-                    : "Invalid time or rotation is full");
+            boolean timed = added && (time == null
+                    || controller.setRotationPageTime(controller.getRotationPageCount() - 1, time));
+            return result(timed, timed ? "Rotation page added" : "Invalid time or rotation is full");
         }
 
         @Callback(doc = "setDigitalSignRotationTime(controllerX:int, controllerY:int, controllerZ:int, signId:string, gameTime:string):boolean, string")
@@ -408,6 +406,7 @@ public final class TrafficLightCardDriver extends DriverItem {
         public Object[] setDigitalSignSchedule(Context context, Arguments args) {
             DigitalSignControllerBlockEntity controller = digitalController(args);
             if (controller == null) return result(false, "No digital sign controller at position");
+            if (controller.isSyncFollower()) return result(false, "Timing is controlled by the master controller");
             DisplaySchedule.Mode mode = DisplaySchedule.Mode.fromName(args.checkString(3).toUpperCase(Locale.ROOT));
             controller.setScheduleMode(mode);
             if (args.count() >= 5 && args.isInteger(4)) controller.setScheduleIntervalAmount(args.checkInteger(4));

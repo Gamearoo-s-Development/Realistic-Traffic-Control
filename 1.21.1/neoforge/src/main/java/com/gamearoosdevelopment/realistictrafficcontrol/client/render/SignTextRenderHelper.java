@@ -31,8 +31,8 @@ public final class SignTextRenderHelper {
         var consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(texture));
         Matrix4f matrix = poseStack.last().pose();
         if (backFace) {
-            putVertex(consumer, matrix, packedLight, 1, 1, 0, 0, 0);
-            putVertex(consumer, matrix, packedLight, 1, 0, 0, 0, 1);
+            putVertex(consumer, matrix, packedLight, width, height, 0, 0, 0);
+            putVertex(consumer, matrix, packedLight, width, 0, 0, 0, 1);
             putVertex(consumer, matrix, packedLight, 0, 0, 0, 1, 1);
             putVertex(consumer, matrix, packedLight, 0, height, 0, 1, 0);
         } else {
@@ -68,13 +68,29 @@ public final class SignTextRenderHelper {
 
     public static void renderSignText(PoseStack poseStack, MultiBufferSource buffer, int packedLight, Sign sign,
             IntFunction<String> textProvider) {
+        renderSignText(poseStack, buffer, packedLight, sign, textProvider, 0.01F);
+    }
+
+    public static void renderDigitalSignText(PoseStack poseStack, MultiBufferSource buffer, int packedLight, Sign sign,
+            IntFunction<String> textProvider) {
+        poseStack.pushPose();
+        // The cabinet face uses mirrored UVs. Mirror text around the same unit
+        // face so sign-pack text coordinates match the 1.12.2 renderer.
+        poseStack.translate(1, 0, -0.02);
+        poseStack.scale(-1, 1, 1);
+        renderSignText(poseStack, buffer, packedLight, sign, textProvider, 0);
+        poseStack.popPose();
+    }
+
+    private static void renderSignText(PoseStack poseStack, MultiBufferSource buffer, int packedLight, Sign sign,
+            IntFunction<String> textProvider, float zOffset) {
         if (sign.getTextLines().isEmpty()) {
             return;
         }
         Font font = Minecraft.getInstance().font;
         poseStack.pushPose();
         poseStack.scale(1F / font.lineHeight, -1F / font.lineHeight, 1);
-        poseStack.translate(0, -9, 0.01);
+        poseStack.translate(0, -9, zOffset);
         poseStack.scale(1 / 16F, 1 / 16F, 1);
 
         for (int i = 0; i < sign.getTextLines().size(); i++) {

@@ -81,8 +81,11 @@ public class DisplaySchedule {
 	}
 
 	public void setMode(Mode mode) {
-		this.mode = mode == null ? Mode.MANUAL : mode;
-		resetClock();
+		Mode next = mode == null ? Mode.MANUAL : mode;
+		if (this.mode != next) {
+			this.mode = next;
+			resetClock();
+		}
 	}
 
 	public int getIntervalAmount() {
@@ -90,8 +93,11 @@ public class DisplaySchedule {
 	}
 
 	public void setIntervalAmount(int amount) {
-		intervalAmount = Math.max(1, Math.min(1000000, amount));
-		resetClock();
+		int next = Math.max(1, Math.min(1000000, amount));
+		if (intervalAmount != next) {
+			intervalAmount = next;
+			resetClock();
+		}
 	}
 
 	public List<Integer> getGameTimes() {
@@ -99,9 +105,23 @@ public class DisplaySchedule {
 	}
 
 	public void setGameTimesFromText(String text) {
+		List<Integer> parsed = parseGameTimes(text);
+		if (gameTimes.equals(parsed)) return;
 		gameTimes.clear();
-		gameTimes.addAll(parseGameTimes(text));
+		gameTimes.addAll(parsed);
 		resetClock();
+	}
+
+	/** Copy timing settings from another schedule without unnecessarily resetting clocks. */
+	public void copyTimingFrom(DisplaySchedule other) {
+		if (other == null) return;
+		setMode(other.mode);
+		setIntervalAmount(other.intervalAmount);
+		if (!gameTimes.equals(other.gameTimes)) {
+			gameTimes.clear();
+			gameTimes.addAll(other.gameTimes);
+			resetClock();
+		}
 	}
 
 	public String getGameTimesText() {
@@ -147,15 +167,20 @@ public class DisplaySchedule {
 	}
 
 	public void readFromNBT(NBTTagCompound compound, String prefix) {
-		mode = Mode.fromName(compound.getString(prefix + "Mode"));
-		intervalAmount = compound.hasKey(prefix + "IntervalAmount")
+		Mode newMode = Mode.fromName(compound.getString(prefix + "Mode"));
+		int newAmount = compound.hasKey(prefix + "IntervalAmount")
 				? Math.max(1, Math.min(1000000, compound.getInteger(prefix + "IntervalAmount"))) : 1;
-		gameTimes.clear();
+		ArrayList<Integer> newTimes = new ArrayList<>();
 		for (int value : compound.getIntArray(prefix + "Times")) {
-			gameTimes.add(normalizeDayTime(value));
+			newTimes.add(normalizeDayTime(value));
 		}
-		Collections.sort(gameTimes);
-		resetClock();
+		Collections.sort(newTimes);
+		boolean changed = mode != newMode || intervalAmount != newAmount || !gameTimes.equals(newTimes);
+		mode = newMode;
+		intervalAmount = newAmount;
+		gameTimes.clear();
+		gameTimes.addAll(newTimes);
+		if (changed) resetClock();
 	}
 
 	public void writeToNBT(NBTTagCompound compound, String prefix) {

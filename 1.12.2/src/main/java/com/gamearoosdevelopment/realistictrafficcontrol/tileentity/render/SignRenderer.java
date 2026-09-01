@@ -2,8 +2,8 @@ package com.gamearoosdevelopment.realistictrafficcontrol.tileentity.render;
 
 import org.lwjgl.opengl.GL11;
 
-import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockSign;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockDigitalSign;
+import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockSign;
 import com.gamearoosdevelopment.realistictrafficcontrol.signs.Sign;
 import com.gamearoosdevelopment.realistictrafficcontrol.signs.SignHorizontalAlignment;
 import com.gamearoosdevelopment.realistictrafficcontrol.signs.SignVerticalAlignment;
@@ -30,38 +30,38 @@ public class SignRenderer extends TileEntitySpecialRenderer<SignTileEntity> {
 	public void render(SignTileEntity te, double x, double y, double z, float partialTicks, int destroyStage,
 			float alpha) {
 		Sign sign = te.getSign();
-		if (sign == null)
-		{
+		if (sign == null) {
 			return;
 		}
-		
-		
+
 		TextureManager texManager = Minecraft.getMinecraft().getRenderManager().renderEngine;
-				
 		IBlockState block = te.getWorld().getBlockState(te.getPos());
-		if (!(block.getBlock() instanceof BlockSign) && !(block.getBlock() instanceof BlockDigitalSign))
-		{
+		if (!(block.getBlock() instanceof BlockSign) && !(block.getBlock() instanceof BlockDigitalSign)) {
 			return;
 		}
+
 		float rotation = block.getBlock() instanceof BlockSign
 				? block.getValue(BlockSign.ROTATION) * -22.5F
 				: block.getValue(BlockDigitalSign.ROTATION) * -22.5F;
 		boolean digital = block.getBlock() instanceof BlockDigitalSign;
-		
-		
-		
+
 		GlStateManager.pushMatrix();
+		GlStateManager.color(1F, 1F, 1F, 1F);
 		texManager.bindTexture(sign.getFrontImageResourceLocation());
+
 		if (digital) {
-			GlStateManager.disableLighting();
-			GlStateManager.translate(x + 0.5, y, z + 0.5);
-			GlStateManager.rotate(rotation, 0, 1, 0);
 			boolean connectedLeft = BlockDigitalSign.hasNeighbor(te.getWorld(), te.getPos(), block, -1, 0);
 			boolean connectedRight = BlockDigitalSign.hasNeighbor(te.getWorld(), te.getPos(), block, 1, 0);
 			boolean connectedDown = BlockDigitalSign.hasNeighbor(te.getWorld(), te.getPos(), block, 0, -1);
 			boolean connectedUp = BlockDigitalSign.hasNeighbor(te.getWorld(), te.getPos(), block, 0, 1);
+
+			GlStateManager.disableLighting();
+			GlStateManager.disableCull();
+			GlStateManager.translate(x + 0.5, y, z + 0.5);
+			GlStateManager.rotate(rotation, 0, 1, 0);
 			renderDigitalBezel(connectedLeft, connectedRight, connectedDown, connectedUp);
 			texManager.bindTexture(sign.getFrontImageResourceLocation());
+
 			double left = connectedLeft ? 0 : 0.0625;
 			double right = connectedRight ? 1 : 0.9375;
 			double bottom = connectedDown ? 0 : 0.0625;
@@ -69,28 +69,26 @@ public class SignRenderer extends TileEntitySpecialRenderer<SignTileEntity> {
 			GlStateManager.translate(-0.5 + left, bottom, DIGITAL_FACE_Z);
 			GlStateManager.scale(right - left, top - bottom, 1);
 		} else {
-		GlStateManager.translate(x, y, z);
-		if (rotation == -90) {
-		GlStateManager.translate(1.44, 0.4, 0.41);
-		} else if (rotation == 0) {
-			GlStateManager.translate(0.4, 0.4, -0.44);
-			} else if (rotation == -180)  {
+			GlStateManager.translate(x, y, z);
+			if (rotation == -90) {
+				GlStateManager.translate(1.44, 0.4, 0.41);
+			} else if (rotation == 0) {
+				GlStateManager.translate(0.4, 0.4, -0.44);
+			} else if (rotation == -180) {
 				GlStateManager.translate(0.6, 0.4, 1.44);
 			} else {
-			GlStateManager.translate(-0.44, 0.4, 0.59);
+				GlStateManager.translate(-0.44, 0.4, 0.59);
+			}
+			GlStateManager.rotate(rotation, 0, 1, 0);
+			GlStateManager.translate(-0.4, -0.4, 0.06875);
 		}
-		GlStateManager.rotate(rotation, 0, 1, 0);
-		GlStateManager.translate(-0.4, -0.4, 0.06875);
-		}
-		
-		// Draw front
+
 		Tessellator tess = Tessellator.getInstance();
 		BufferBuilder builder = tess.getBuffer();
 		builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-		
 		if (digital) {
-			// The digital cabinet faces the opposite side of the legacy freestanding
-			// sign transform, so wind its selected front toward the player.
+			// Cabinet faces the opposite side of freestanding signs; keep the original
+			// winding so the pack texture is visible from the road.
 			builder.pos(1, 1, 0).tex(0, 0).endVertex();
 			builder.pos(1, 0, 0).tex(0, 1).endVertex();
 			builder.pos(0, 0, 0).tex(1, 1).endVertex();
@@ -101,94 +99,12 @@ public class SignRenderer extends TileEntitySpecialRenderer<SignTileEntity> {
 			builder.pos(1, 0, 0).tex(1, 1).endVertex();
 			builder.pos(1, 1, 0).tex(1, 0).endVertex();
 		}
-		
 		tess.draw();
-		
-		// === Draw text ===
-		if (sign.getTextLines().size() > 0)
-		{
-			// Scale to sign
-			FontRenderer fontRenderer = getFontRenderer();
-			GlStateManager.scale(1F / fontRenderer.FONT_HEIGHT, -1F / fontRenderer.FONT_HEIGHT, 1);
-			GlStateManager.translate(0, -9, 0.01);
-			GlStateManager.scale(1 / 16F, 1 / 16F, 1);
-			
-			for(int i = 0; i < sign.getTextLines().size(); i++)
-			{
-				Sign.TextLine textLine = sign.getTextLines().get(i);
-				
-				GlStateManager.translate(textLine.getX() * fontRenderer.FONT_HEIGHT, textLine.getY() * fontRenderer.FONT_HEIGHT, 0);
-				GlStateManager.scale(textLine.getXScale(), textLine.getYScale(), 1);
-				if (textLine.getvAlign() == SignVerticalAlignment.Center)
-				{
-					GlStateManager.translate(0, -fontRenderer.FONT_HEIGHT / 2.0, 0);
-				}
-				else if (textLine.getvAlign() == SignVerticalAlignment.Bottom)
-				{
-					GlStateManager.translate(0,  -fontRenderer.FONT_HEIGHT, 0);
-				}
-				
-				if (textLine.gethAlign() == SignHorizontalAlignment.Center)
-				{
-					GlStateManager.translate(-(textLine.getScaleAdjustedWidth() * fontRenderer.FONT_HEIGHT) / 2.0, 0, 0);
-				}
-				else if (textLine.gethAlign() == SignHorizontalAlignment.Right)
-				{
-					GlStateManager.translate(-textLine.getScaleAdjustedWidth() * fontRenderer.FONT_HEIGHT, 0, 0);
-				}
-				
-				int textWidth = fontRenderer.getStringWidth(te.getTextLine(i));
-				if (textWidth > 0)
-				{
-					double widthScaling = ((textLine.getScaleAdjustedWidth() * fontRenderer.FONT_HEIGHT) / (textWidth));
-					if (widthScaling > 1)
-					{
-						widthScaling = 1;
-					}
-					
-					GlStateManager.scale(widthScaling, 1, 1);
-					int textX = 0;
-					if (textLine.gethAlign() == SignHorizontalAlignment.Center && widthScaling == 1)
-					{
-						textX = (int)((textLine.getScaleAdjustedWidth() * fontRenderer.FONT_HEIGHT) / 2) - (textWidth / 2);
-					}
-					else if (textLine.gethAlign() == SignHorizontalAlignment.Right)
-					{
-						textX = (int)(textLine.getScaleAdjustedWidth() * fontRenderer.FONT_HEIGHT) - textWidth;
-					}
-					fontRenderer.drawString(te.getTextLine(i), textX + 1, 1, textLine.getColor());
-					GlStateManager.scale(1 / widthScaling, 1, 1);
-				}
-				
-				if (textLine.gethAlign() == SignHorizontalAlignment.Center)
-				{
-					GlStateManager.translate((textLine.getScaleAdjustedWidth() * fontRenderer.FONT_HEIGHT) / 2.0, 0, 0);
-				}
-				else if (textLine.gethAlign() == SignHorizontalAlignment.Right)
-				{
-					GlStateManager.translate(textLine.getScaleAdjustedWidth() * fontRenderer.FONT_HEIGHT, 0, 0);
-				}
-				
-				if (textLine.getvAlign() == SignVerticalAlignment.Center)
-				{
-					GlStateManager.translate(0, fontRenderer.FONT_HEIGHT / 2.0, 0);
-				}
-				else if (textLine.getvAlign() == SignVerticalAlignment.Bottom)
-				{
-					GlStateManager.translate(0,  fontRenderer.FONT_HEIGHT, 0);
-				}
-				GlStateManager.scale(1 / textLine.getXScale(), 1 / textLine.getYScale(), 1);
-				GlStateManager.translate(-textLine.getX() * fontRenderer.FONT_HEIGHT, -textLine.getY() * fontRenderer.FONT_HEIGHT, 0);
-			}
-			
-			// Reverse scale to sign
-			GlStateManager.scale(16F, 16F, 1);
-			GlStateManager.translate(0, 9, -0.0001);
-			GlStateManager.scale(fontRenderer.FONT_HEIGHT, -fontRenderer.FONT_HEIGHT, 1);
+
+		if (!sign.getTextLines().isEmpty()) {
+			renderTextLines(te, sign, digital);
 		}
-		
-		// Electronic cabinets already have a modeled rear panel. Drawing the generic
-		// sign back here placed it in front of the selected digital image.
+
 		if (!digital) {
 			GlStateManager.translate(0, 0, -0.01);
 			GlStateManager.color(1, 1, 1);
@@ -200,12 +116,97 @@ public class SignRenderer extends TileEntitySpecialRenderer<SignTileEntity> {
 			builder.pos(0, 0, 0).tex(1, 1).endVertex();
 			builder.pos(0, 1, 0).tex(1, 0).endVertex();
 			tess.draw();
+		} else {
+			GlStateManager.enableCull();
+			GlStateManager.enableLighting();
 		}
-		if (digital) GlStateManager.enableLighting();
+
 		GlStateManager.popMatrix();
 	}
 
-	private void renderDigitalBezel(boolean leftConnected, boolean rightConnected, boolean downConnected, boolean upConnected) {
+	private void renderTextLines(SignTileEntity te, Sign sign, boolean digital) {
+		FontRenderer fontRenderer = getFontRenderer();
+		GlStateManager.pushMatrix();
+
+		if (digital) {
+			// Face UVs are mirrored for the cabinet; mirror text the same way so pack
+			// text-line coords still land like a normal sign.
+			GlStateManager.translate(1, 0, -0.02);
+			GlStateManager.scale(-1, 1, 1);
+		}
+
+		GlStateManager.enableTexture2D();
+		GlStateManager.enableAlpha();
+		GlStateManager.enableBlend();
+		GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
+				GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
+				GlStateManager.DestFactor.ZERO);
+		GlStateManager.color(1F, 1F, 1F, 1F);
+
+		// Same text placement as freestanding signs / SignGui.
+		GlStateManager.scale(1F / fontRenderer.FONT_HEIGHT, -1F / fontRenderer.FONT_HEIGHT, 1);
+		GlStateManager.translate(0, -9, digital ? 0 : 0.01);
+		GlStateManager.scale(1 / 16F, 1 / 16F, 1);
+
+		for (int i = 0; i < sign.getTextLines().size(); i++) {
+			Sign.TextLine textLine = sign.getTextLines().get(i);
+			String line = te.getTextLine(i);
+			if (line == null) {
+				line = "";
+			}
+
+			GlStateManager.translate(textLine.getX() * fontRenderer.FONT_HEIGHT, textLine.getY() * fontRenderer.FONT_HEIGHT, 0);
+			GlStateManager.scale(textLine.getXScale(), textLine.getYScale(), 1);
+			if (textLine.getvAlign() == SignVerticalAlignment.Center) {
+				GlStateManager.translate(0, -fontRenderer.FONT_HEIGHT / 2.0, 0);
+			} else if (textLine.getvAlign() == SignVerticalAlignment.Bottom) {
+				GlStateManager.translate(0, -fontRenderer.FONT_HEIGHT, 0);
+			}
+
+			if (textLine.gethAlign() == SignHorizontalAlignment.Center) {
+				GlStateManager.translate(-(textLine.getScaleAdjustedWidth() * fontRenderer.FONT_HEIGHT) / 2.0, 0, 0);
+			} else if (textLine.gethAlign() == SignHorizontalAlignment.Right) {
+				GlStateManager.translate(-textLine.getScaleAdjustedWidth() * fontRenderer.FONT_HEIGHT, 0, 0);
+			}
+
+			int textWidth = fontRenderer.getStringWidth(line);
+			if (textWidth > 0) {
+				double widthScaling = (textLine.getScaleAdjustedWidth() * fontRenderer.FONT_HEIGHT) / textWidth;
+				if (widthScaling > 1) {
+					widthScaling = 1;
+				}
+
+				GlStateManager.scale(widthScaling, 1, 1);
+				int textX = 0;
+				if (textLine.gethAlign() == SignHorizontalAlignment.Center && widthScaling == 1) {
+					textX = (int) ((textLine.getScaleAdjustedWidth() * fontRenderer.FONT_HEIGHT) / 2) - (textWidth / 2);
+				} else if (textLine.gethAlign() == SignHorizontalAlignment.Right) {
+					textX = (int) (textLine.getScaleAdjustedWidth() * fontRenderer.FONT_HEIGHT) - textWidth;
+				}
+				fontRenderer.drawString(line, textX + 1, 1, textLine.getColor());
+				GlStateManager.scale(1 / widthScaling, 1, 1);
+			}
+
+			if (textLine.gethAlign() == SignHorizontalAlignment.Center) {
+				GlStateManager.translate((textLine.getScaleAdjustedWidth() * fontRenderer.FONT_HEIGHT) / 2.0, 0, 0);
+			} else if (textLine.gethAlign() == SignHorizontalAlignment.Right) {
+				GlStateManager.translate(textLine.getScaleAdjustedWidth() * fontRenderer.FONT_HEIGHT, 0, 0);
+			}
+
+			if (textLine.getvAlign() == SignVerticalAlignment.Center) {
+				GlStateManager.translate(0, fontRenderer.FONT_HEIGHT / 2.0, 0);
+			} else if (textLine.getvAlign() == SignVerticalAlignment.Bottom) {
+				GlStateManager.translate(0, fontRenderer.FONT_HEIGHT, 0);
+			}
+			GlStateManager.scale(1 / textLine.getXScale(), 1 / textLine.getYScale(), 1);
+			GlStateManager.translate(-textLine.getX() * fontRenderer.FONT_HEIGHT, -textLine.getY() * fontRenderer.FONT_HEIGHT, 0);
+		}
+
+		GlStateManager.popMatrix();
+	}
+
+	private void renderDigitalBezel(boolean leftConnected, boolean rightConnected, boolean downConnected,
+			boolean upConnected) {
 		GlStateManager.disableTexture2D();
 		Tessellator tess = Tessellator.getInstance();
 		BufferBuilder builder = tess.getBuffer();

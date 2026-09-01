@@ -94,8 +94,10 @@ public class Type3BarrierBlockEntityRenderer implements BlockEntityRenderer<Type
         }
 
         drawTexturedQuad(poseStack, buffer, packedLight, ROAD_CLOSED, 0, 0, 0.6875F, 0.5F, textureBottomY,
-                textureBottomY - heightFactor);
-        drawTexturedQuad(poseStack, buffer, packedLight, GENERIC, 0, 0, 0.6875F, 1, 0, 0.6875F);
+                textureBottomY - heightFactor, false);
+        // The rear panel must use the opposite winding. Drawing both sides with
+        // the front winding made the generic gray back overwrite the sign face.
+        drawTexturedQuad(poseStack, buffer, packedLight, GENERIC, 0, 0, 0.6875F, 1, 0, 0.6875F, true);
         poseStack.popPose();
     }
 
@@ -123,20 +125,27 @@ public class Type3BarrierBlockEntityRenderer implements BlockEntityRenderer<Type
     }
 
     private static void drawTexturedQuad(PoseStack poseStack, MultiBufferSource buffer, int packedLight,
-            ResourceLocation texture, float x0, float y0, float y1, float uSplit, float vBottom, float vTop) {
+            ResourceLocation texture, float x0, float y0, float y1, float uSplit, float vBottom, float vTop,
+            boolean reverse) {
         VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutout(texture));
         Matrix4f matrix = poseStack.last().pose();
-        consumer.addVertex(matrix, 1, y0, 0).setColor(255, 255, 255, 255).setUv(uSplit, vBottom)
+        if (reverse) {
+            vertex(consumer, matrix, packedLight, 1, y0, uSplit, vBottom, -1);
+            vertex(consumer, matrix, packedLight, 0, y0, 0, vBottom, -1);
+            vertex(consumer, matrix, packedLight, 0, y1, 0, vTop, -1);
+            vertex(consumer, matrix, packedLight, 1, y1, uSplit, vTop, -1);
+        } else {
+            vertex(consumer, matrix, packedLight, 1, y0, uSplit, vBottom, 1);
+            vertex(consumer, matrix, packedLight, 1, y1, uSplit, vTop, 1);
+            vertex(consumer, matrix, packedLight, 0, y1, 0, vTop, 1);
+            vertex(consumer, matrix, packedLight, 0, y0, 0, vBottom, 1);
+        }
+    }
+
+    private static void vertex(VertexConsumer consumer, Matrix4f matrix, int packedLight,
+            float x, float y, float u, float v, float normalZ) {
+        consumer.addVertex(matrix, x, y, 0).setColor(255, 255, 255, 255).setUv(u, v)
                 .setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLight)
-                .setNormal(0, 1, 0);
-        consumer.addVertex(matrix, 1, y1, 0).setColor(255, 255, 255, 255).setUv(uSplit, vTop)
-                .setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLight)
-                .setNormal(0, 1, 0);
-        consumer.addVertex(matrix, 0, y1, 0).setColor(255, 255, 255, 255).setUv(0, vTop)
-                .setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLight)
-                .setNormal(0, 1, 0);
-        consumer.addVertex(matrix, 0, y0, 0).setColor(255, 255, 255, 255).setUv(0, vBottom)
-                .setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLight)
-                .setNormal(0, 1, 0);
+                .setNormal(0, 0, normalZ);
     }
 }

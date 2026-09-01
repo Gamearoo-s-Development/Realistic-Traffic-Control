@@ -93,7 +93,8 @@ public class SignBlockEntity extends BlockEntity {
         Sign sign = null;
         if (variantLegacy != -1) {
             sign = ModRealisticTrafficControl.signRepo.getSignByTypeVariant(getSignTypeName(typeLegacy), variantLegacy);
-        } else if (id != null) {
+        }
+        if (sign == null && id != null) {
             sign = ModRealisticTrafficControl.signRepo.getSignByID(id);
         }
         if (sign == null) {
