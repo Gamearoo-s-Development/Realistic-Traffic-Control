@@ -6,7 +6,6 @@ import com.gamearoosdevelopment.realistictrafficcontrol.ModItems;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.SignTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.DigitalSignControllerTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.DigitalSignTileEntity;
-import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.MessageBoardControllerTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.MessageBoardTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.StreetSignTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLightControlBoxTileEntity;
@@ -141,7 +140,7 @@ public class GuiProxy implements IGuiHandler {
 				TileEntity messageBoardTE = world.getTileEntity(messageBoardPos);
 				if (messageBoardTE instanceof MessageBoardTileEntity)
 				{
-					return new MessageBoardGui((MessageBoardTileEntity) messageBoardTE);
+					return new MessageBoardControllerGui((MessageBoardTileEntity) messageBoardTE);
 				}
 				break;
 			case GUI_IDs.DIGITAL_SIGN_CONTROLLER:
@@ -150,14 +149,6 @@ public class GuiProxy implements IGuiHandler {
 				if (digitalControllerTE instanceof DigitalSignControllerTileEntity)
 				{
 					return new DigitalSignControllerGui((DigitalSignControllerTileEntity) digitalControllerTE);
-				}
-				break;
-			case GUI_IDs.MESSAGE_BOARD_CONTROLLER:
-				BlockPos messageControllerPos = new BlockPos(x, y, z);
-				TileEntity messageControllerTE = world.getTileEntity(messageControllerPos);
-				if (messageControllerTE instanceof MessageBoardControllerTileEntity)
-				{
-					return new MessageBoardControllerGui((MessageBoardControllerTileEntity) messageControllerTE);
 				}
 				break;
 			case GUI_IDs.TRAFFIC_LIGHT_FRAME:
@@ -305,7 +296,6 @@ public class GuiProxy implements IGuiHandler {
 		public static final int DIGITAL_SIGN = 21;
 		public static final int MESSAGE_BOARD = 22;
 		public static final int DIGITAL_SIGN_CONTROLLER = 23;
-		public static final int MESSAGE_BOARD_CONTROLLER = 24;
 		public static final int TRAFFIC_LIGHT_FRAME = 2;
 		public static final int TRAFFIC_LIGHT_CONTROL_BOX = 3;
 		public static final int TYPE_3_BARRIER = 4;

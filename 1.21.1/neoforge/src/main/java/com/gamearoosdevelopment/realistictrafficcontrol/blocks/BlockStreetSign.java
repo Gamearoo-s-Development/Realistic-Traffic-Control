@@ -9,7 +9,6 @@ import com.gamearoosdevelopment.realistictrafficcontrol.util.CustomAngleCalculat
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.LivingEntity;
@@ -35,13 +34,21 @@ import java.util.List;
 /** Port of 1.12.2 {@code BlockStreetSign}. */
 public class BlockStreetSign extends Block implements EntityBlock {
 
+    private static final ThreadLocal<Integer> PENDING_ROTATION = new ThreadLocal<>();
+
     public BlockStreetSign(Properties properties) {
         super(properties);
     }
 
     @Override
+    public BlockState getStateForPlacement(net.minecraft.world.item.context.BlockPlaceContext context) {
+        PENDING_ROTATION.set(CustomAngleCalculator.rotationForPlacement(context));
+        return defaultBlockState();
+    }
+
+    @Override
     public RenderShape getRenderShape(BlockState state) {
-        return RenderShape.MODEL;
+        return RenderShape.ENTITYBLOCK_ANIMATED;
     }
 
     @Override
@@ -79,7 +86,9 @@ public class BlockStreetSign extends Block implements EntityBlock {
         BlockEntity be = level.getBlockEntity(pos);
         if (be instanceof StreetSignBlockEntity te) {
             StreetSign newSign = new StreetSign();
-            newSign.setRotation(CustomAngleCalculator.getRotationForYaw(placer.getYRot()));
+            Integer pending = PENDING_ROTATION.get();
+            PENDING_ROTATION.remove();
+            newSign.setRotation(pending != null ? pending : CustomAngleCalculator.getRotationForYaw(placer.getYRot()));
             te.addStreetSign(newSign);
         }
         if (!level.isClientSide && placer instanceof ServerPlayer serverPlayer) {

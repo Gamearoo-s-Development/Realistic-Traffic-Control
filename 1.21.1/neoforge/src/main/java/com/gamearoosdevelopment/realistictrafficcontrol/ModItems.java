@@ -45,21 +45,23 @@ public final class ModItems {
             ITEMS.register("traffic_light_card", () -> new TrafficLightCardItem(new Item.Properties()));
 
     // --- block items for the simple blocks ---
-    public static final DeferredItem<BlockItem> POLE = simpleBlockItem("pole", ModBlocks.POLE);
-    public static final DeferredItem<BlockItem> WOOD_POLE = simpleBlockItem("wood_pole", ModBlocks.WOOD_POLE);
-    public static final DeferredItem<BlockItem> PLUS_POLE = simpleBlockItem("plus_pole", ModBlocks.PLUS_POLE);
-    public static final DeferredItem<BlockItem> T_POLE = simpleBlockItem("t_pole", ModBlocks.T_POLE);
-    public static final DeferredItem<BlockItem> D_POLE = simpleBlockItem("d_pole", ModBlocks.D_POLE);
-    public static final DeferredItem<BlockItem> DH_POLE = simpleBlockItem("dh_pole", ModBlocks.DH_POLE);
-    public static final DeferredItem<BlockItem> C_POLE = simpleBlockItem("c_pole", ModBlocks.C_POLE);
-    public static final DeferredItem<BlockItem> CH_POLE = simpleBlockItem("ch_pole", ModBlocks.CH_POLE);
-    public static final DeferredItem<BlockItem> H_POLE = simpleBlockItem("h_pole", ModBlocks.H_POLE);
-    public static final DeferredItem<BlockItem> U_T_POLE = simpleBlockItem("u_t_pole", ModBlocks.U_T_POLE);
+    public static final DeferredItem<BlockItem> POLE = poleBlockItem("pole", ModBlocks.POLE);
+    public static final DeferredItem<BlockItem> WOOD_POLE = poleBlockItem("wood_pole", ModBlocks.WOOD_POLE);
+    public static final DeferredItem<BlockItem> PLUS_POLE = poleBlockItem("plus_pole", ModBlocks.PLUS_POLE);
+    public static final DeferredItem<BlockItem> T_POLE = poleBlockItem("t_pole", ModBlocks.T_POLE);
+    public static final DeferredItem<BlockItem> D_POLE = poleBlockItem("d_pole", ModBlocks.D_POLE);
+    public static final DeferredItem<BlockItem> DH_POLE = poleBlockItem("dh_pole", ModBlocks.DH_POLE);
+    public static final DeferredItem<BlockItem> C_POLE = poleBlockItem("c_pole", ModBlocks.C_POLE);
+    public static final DeferredItem<BlockItem> CH_POLE = poleBlockItem("ch_pole", ModBlocks.CH_POLE);
+    public static final DeferredItem<BlockItem> H_POLE = poleBlockItem("h_pole", ModBlocks.H_POLE);
+    public static final DeferredItem<BlockItem> U_T_POLE = poleBlockItem("u_t_pole", ModBlocks.U_T_POLE);
     public static final DeferredItem<BlockItem> POLE_BASE = simpleBlockItem("pole_base", ModBlocks.POLE_BASE);
     public static final DeferredItem<BlockItem> STAND = simpleBlockItem("stand", ModBlocks.STAND);
     public static final DeferredItem<BlockItem> GENERATOR = simpleBlockItem("generator", ModBlocks.GENERATOR);
-    public static final DeferredItem<BlockItem> TAG = simpleBlockItem("tag", ModBlocks.TAG);
-    public static final DeferredItem<BlockItem> HORIZONTAL_POLE = simpleBlockItem("horizontal_pole", ModBlocks.HORIZONTAL_POLE);
+    public static final DeferredItem<BlockItem> TAG = poleBlockItem("tag", ModBlocks.TAG);
+    public static final DeferredItem<BlockItem> HORIZONTAL_POLE =
+            ITEMS.register("horizontal_pole", () -> new com.gamearoosdevelopment.realistictrafficcontrol.item.HorizontalPoleBlockItem(
+                    ModBlocks.HORIZONTAL_POLE.get(), new Item.Properties()));
 
     public static final DeferredItem<ItemCone> CONE =
             ITEMS.register("cone", () -> new ItemCone(ModBlocks.CONE.get(), new Item.Properties()));
@@ -113,13 +115,13 @@ public final class ModItems {
             frame("traffic_light_8_frame", FrameGuiType.UPSIDE_DOWN_T_4, () -> ModBlocks.TRAFFIC_LIGHT_8.get(), "Upside-down T");
 
     // --- simple crossing decoratives ---
-    public static final DeferredItem<BlockItem> CROSSING_GATE_POLE = simpleBlockItem("crossing_gate_pole", ModBlocks.CROSSING_GATE_POLE);
+    public static final DeferredItem<BlockItem> CROSSING_GATE_POLE = poleBlockItem("crossing_gate_pole", ModBlocks.CROSSING_GATE_POLE);
     public static final DeferredItem<BlockItem> QUIET_ZONE_SIGNAL = simpleBlockItem("quiet_zone_signal", ModBlocks.QUIET_ZONE_SIGNAL);
     public static final DeferredItem<BlockItem> GATE_GUARD = simpleBlockItem("gate_guard", ModBlocks.GATE_GUARD);
 
     // --- overhead span family + crossbucks ---
     public static final DeferredItem<BlockItem> OVERHEAD = simpleBlockItem("overhead", ModBlocks.OVERHEAD);
-    public static final DeferredItem<BlockItem> OVERHEAD_POLE = simpleBlockItem("overhead_pole", ModBlocks.OVERHEAD_POLE);
+    public static final DeferredItem<BlockItem> OVERHEAD_POLE = poleBlockItem("overhead_pole", ModBlocks.OVERHEAD_POLE);
     public static final DeferredItem<BlockItem> OVERHEAD_CROSSBUCK = simpleBlockItem("overhead_crossbuck", ModBlocks.OVERHEAD_CROSSBUCK);
     public static final DeferredItem<BlockItem> CROSSING_GATE_CROSSBUCK = simpleBlockItem("crossing_gate_crossbuck", ModBlocks.CROSSING_GATE_CROSSBUCK);
 
@@ -141,13 +143,15 @@ public final class ModItems {
             simpleBlockItem("type_3_barrier_right", ModBlocks.TYPE_3_BARRIER_RIGHT);
 
     // --- signs / street signs / street lights ---
-    public static final DeferredItem<BlockItem> SIGN = simpleBlockItem("sign", ModBlocks.SIGN);
-    public static final DeferredItem<BlockItem> DIGITAL_SIGN = simpleBlockItem("digital_sign", ModBlocks.DIGITAL_SIGN);
+    public static final DeferredItem<BlockItem> SIGN =
+            ITEMS.register("sign", () -> new com.gamearoosdevelopment.realistictrafficcontrol.item.HozMountBlockItem(
+                    ModBlocks.SIGN.get(), new Item.Properties()));
+    public static final DeferredItem<BlockItem> DIGITAL_SIGN =
+            ITEMS.register("digital_sign", () -> new com.gamearoosdevelopment.realistictrafficcontrol.item.HozMountBlockItem(
+                    ModBlocks.DIGITAL_SIGN.get(), new Item.Properties()));
     public static final DeferredItem<BlockItem> DIGITAL_SIGN_CONTROLLER =
             simpleBlockItem("digital_sign_controller", ModBlocks.DIGITAL_SIGN_CONTROLLER);
     public static final DeferredItem<BlockItem> MESSAGE_BOARD = simpleBlockItem("message_board", ModBlocks.MESSAGE_BOARD);
-    public static final DeferredItem<BlockItem> MESSAGE_BOARD_CONTROLLER =
-            simpleBlockItem("message_board_controller", ModBlocks.MESSAGE_BOARD_CONTROLLER);
     public static final DeferredItem<ItemStreetSign> STREET_SIGN =
             ITEMS.register("street_sign", () -> new ItemStreetSign(ModBlocks.STREET_SIGN.get(), new Item.Properties()));
     public static final DeferredItem<BlockItem> STREET_LIGHT_SINGLE =
@@ -183,6 +187,12 @@ public final class ModItems {
     private static DeferredItem<BlockItem> simpleBlockItem(String name,
             net.neoforged.neoforge.registries.DeferredBlock<?> block) {
         return ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));
+    }
+
+    private static DeferredItem<BlockItem> poleBlockItem(String name,
+            net.neoforged.neoforge.registries.DeferredBlock<?> block) {
+        return ITEMS.register(name, () -> new com.gamearoosdevelopment.realistictrafficcontrol.item.PoleBlockItem(
+                block.get(), new Item.Properties()));
     }
 
     private ModItems() {

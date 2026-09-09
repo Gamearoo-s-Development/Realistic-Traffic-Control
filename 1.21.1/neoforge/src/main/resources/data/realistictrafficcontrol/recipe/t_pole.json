@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PPP",
+    " P ",
+    " P "
+  ],
+  "key": {
+    "P": {
+      "item": "realistictrafficcontrol:pole"
+    }
+  },
+  "result": {
+    "id": "realistictrafficcontrol:t_pole",
+    "count": 5
+  }
+}

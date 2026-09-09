@@ -1,0 +1,21 @@
+{
+  "type": "create:cutting",
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ],
+  "ingredients": [
+    {
+      "item": "create:iron_sheet"
+    }
+  ],
+  "processing_time": 150,
+  "results": [
+    {
+      "id": "realistictrafficcontrol:pole",
+      "count": 3
+    }
+  ]
+}

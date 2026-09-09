@@ -85,6 +85,14 @@ public class CrossingRelaySettingsScreen extends Screen {
     }
 
     @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (GuiTypingGuard.shouldConsumeInventoryKey(keyCode, scanCode, bellStopSeconds != null && bellStopSeconds.isFocused())) {
+            return true;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
     public boolean isPauseScreen() {
         return false;
     }

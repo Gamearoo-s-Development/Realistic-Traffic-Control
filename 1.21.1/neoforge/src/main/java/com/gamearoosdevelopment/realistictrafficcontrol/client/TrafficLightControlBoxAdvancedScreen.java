@@ -81,6 +81,8 @@ public class TrafficLightControlBoxAdvancedScreen extends AbstractContainerScree
 
     @Override
     protected void init() {
+        imageWidth = width;
+        imageHeight = height;
         super.init();
         clearWidgets();
         TrafficLightControlBoxBlockEntity box = getBox();
@@ -95,8 +97,10 @@ public class TrafficLightControlBoxAdvancedScreen extends AbstractContainerScree
         int idleX = cx - 96;
         int fyaX = cx - 18;
         int rowY = cy - 78;
-        int systemCol1X = cx + 8;
-        int systemCol2X = cx + 150;
+        // Keep system controls out of the movement/FYA columns.
+        int movementRightX = fyaX + 74;
+        int systemCol1X = Math.max(cx + 56, movementRightX + 16);
+        int systemCol2X = systemCol1X + 142;
 
         addRenderableWidget(Button.builder(Component.literal("Back"), b -> minecraft.setScreen(parent))
                 .bounds(cx - 40, cy + 124, 80, 20).build());
@@ -360,9 +364,11 @@ public class TrafficLightControlBoxAdvancedScreen extends AbstractContainerScree
         graphics.drawString(font, "Enabled", cx - 182, cy - 88, 0xAAAAAA);
         graphics.drawString(font, "Idle if OFF", cx - 96, cy - 88, 0xAAAAAA);
         graphics.drawString(font, "FYA", cx - 18, cy - 88, 0xAAAAAA);
-        graphics.drawString(font, "System Options", cx + 8, cy - 100, 0xFFFF55);
-        graphics.drawString(font, "Modes", cx + 8, cy - 88, 0xAAAAAA);
-        graphics.drawString(font, "Approach", cx + 150, cy - 88, 0xAAAAAA);
+        int movementRightX = (cx - 18) + 74;
+        int systemLabelX = Math.max(cx + 56, movementRightX + 16);
+        graphics.drawString(font, "System Options", systemLabelX, cy - 100, 0xFFFF55);
+        graphics.drawString(font, "Modes", systemLabelX, cy - 88, 0xAAAAAA);
+        graphics.drawString(font, "Approach", systemLabelX + 142, cy - 88, 0xAAAAAA);
         graphics.drawCenteredString(font, "Idle if OFF: only applies when movement is disabled (grey = ON)",
                 cx, cy + 74, 0x888888);
         graphics.drawCenteredString(font, "Shared Turns: left + U-turn + right arrows with straight (this approach only)",

@@ -5,6 +5,7 @@ import com.gamearoosdevelopment.realistictrafficcontrol.menu.SignMenu;
 import com.gamearoosdevelopment.realistictrafficcontrol.signs.Sign;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.SignBlockEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.CustomAngleCalculator;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.RTCShapes;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -19,14 +20,12 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
-import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.SimpleMenuProvider;
 
@@ -39,19 +38,32 @@ public class BlockSign extends Block implements EntityBlock {
         super(properties);
         registerDefaultState(stateDefinition.any()
                 .setValue(RTCProperties.ROTATION, 0)
+                .setValue(RTCProperties.MOUNT_FACE, net.minecraft.core.Direction.SOUTH)
                 .setValue(RTCProperties.VALIDHORIZONTALBAR, false)
                 .setValue(RTCProperties.ISHALFHEIGHT, false));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(RTCProperties.ROTATION, RTCProperties.VALIDHORIZONTALBAR, RTCProperties.ISHALFHEIGHT);
+        builder.add(RTCProperties.ROTATION, RTCProperties.MOUNT_FACE, RTCProperties.VALIDHORIZONTALBAR,
+                RTCProperties.ISHALFHEIGHT);
     }
 
     @Override
     public BlockState getStateForPlacement(net.minecraft.world.item.context.BlockPlaceContext context) {
-        int rotation = CustomAngleCalculator.getRotationForYaw(context.getRotation());
-        return defaultBlockState().setValue(RTCProperties.ROTATION, rotation);
+        return defaultBlockState()
+                .setValue(RTCProperties.ROTATION, CustomAngleCalculator.rotationForPlacement(context))
+                .setValue(RTCProperties.MOUNT_FACE, com.gamearoosdevelopment.realistictrafficcontrol.util.PoleAssembly.mountFace(context));
+    }
+
+    @Override
+    protected BlockState rotate(BlockState state, net.minecraft.world.level.block.Rotation rotation) {
+        return RTCProperties.rotate16(state, rotation);
+    }
+
+    @Override
+    protected BlockState mirror(BlockState state, net.minecraft.world.level.block.Mirror mirror) {
+        return RTCProperties.mirror16(state, mirror);
     }
 
     @Override
@@ -114,8 +126,9 @@ public class BlockSign extends Block implements EntityBlock {
     private boolean getValidStateForAttachableSubModels(BlockState signState, BlockState state,
             Direction... validFacings) {
         if (state.getBlock() == ModBlocks.HORIZONTAL_POLE.get()) {
-            Direction facing = state.getValue(HorizontalPoleBlock.FACING);
-            return Arrays.stream(validFacings).noneMatch(facing::equals);
+            boolean poleNorthSouth = CustomAngleCalculator.isNorthSouth(state.getValue(RTCProperties.ROTATION));
+            boolean wantNorthSouth = Arrays.stream(validFacings).anyMatch(f -> f == Direction.NORTH);
+            return poleNorthSouth != wantNorthSouth;
         }
         if (state.getBlock() instanceof BlockBaseTrafficLight) {
             return true;
@@ -138,13 +151,14 @@ public class BlockSign extends Block implements EntityBlock {
             poleHeight = signTE.getSign().getHalfHeight() ? 0.5 : 1;
         }
         int rotation = state.getValue(RTCProperties.ROTATION);
-        return switch (rotation) {
-            case 0, 8 -> Block.box(0, 0, 6.9, 16, poleHeight * 16, 9);
-            case 4, 12 -> Block.box(7, 0, 0, 9.1, poleHeight * 16, 16);
-            case 1, 15, 7, 9, 3, 5, 11, 13 -> Block.box(6, 0, 6, 12, poleHeight * 16, 12);
-            case 2, 6, 10, 14 -> Block.box(3.2, 0, 3.2, 12.8, poleHeight * 16, 12.8);
-            default -> Shapes.block();
-        };
+        VoxelShape base = Block.box(0, 0, -7, 16, poleHeight * 16, -1);
+        return RTCShapes.rotateYPoleMounted(base, rotation, com.gamearoosdevelopment.realistictrafficcontrol.util.PoleAssembly.mountCardinal(state));
+    }
+
+    @Override
+    protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos,
+            CollisionContext context) {
+        return RTCShapes.clipToBlock(getShape(state, level, pos, context));
     }
 
     @Override
@@ -172,5 +186,11 @@ public class BlockSign extends Block implements EntityBlock {
         if (actualState != level.getBlockState(pos)) {
             level.setBlock(pos, actualState, Block.UPDATE_ALL);
         }
+    }
+
+    @Override
+    protected java.util.List<ItemStack> getDrops(BlockState state,
+            net.minecraft.world.level.storage.loot.LootParams.Builder params) {
+        return com.gamearoosdevelopment.realistictrafficcontrol.util.RTCDrops.self(state);
     }
 }

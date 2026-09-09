@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "iSi",
+    "iRi",
+    "igi"
+  ],
+  "key": {
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIron"
+    },
+    "S": {
+      "item": "realistictrafficcontrol:digital_sign"
+    },
+    "R": {
+      "item": "minecraft:redstone_block"
+    },
+    "g": {
+      "type": "forge:ore_dict",
+      "ore": "ingotGold"
+    }
+  },
+  "result": {
+    "item": "realistictrafficcontrol:digital_sign_controller",
+    "count": 1
+  }
+}

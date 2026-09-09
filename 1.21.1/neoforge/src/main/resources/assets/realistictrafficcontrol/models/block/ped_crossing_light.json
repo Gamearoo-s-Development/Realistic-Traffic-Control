@@ -637,6 +637,20 @@
 			}
 		},
 		{
+			"name": "Pole",
+			"from": [6, 0, 6],
+			"to": [10, 16, 10],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 8, 8]},
+			"faces": {
+				"north": {"uv": [2, 0, 0, 16], "texture": "#1"},
+				"east": {"uv": [3, 0, 1, 14], "texture": "#1"},
+				"south": {"uv": [4, 0, 2, 16], "texture": "#1"},
+				"west": {"uv": [3, 0, 5, 16], "texture": "#1"},
+				"up": {"uv": [0, 0, 2, 2], "texture": "#1"},
+				"down": {"uv": [0, 0, 2, 2], "texture": "#1"}
+			}
+		},
+		{
 			"from": [
 				2,
 				0,

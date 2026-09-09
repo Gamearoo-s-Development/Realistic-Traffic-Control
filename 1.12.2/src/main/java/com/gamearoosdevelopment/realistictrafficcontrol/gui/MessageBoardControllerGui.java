@@ -2,7 +2,6 @@ package com.gamearoosdevelopment.realistictrafficcontrol.gui;
 
 import java.io.IOException;
 
-import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.MessageBoardControllerTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.MessageBoardTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.DisplaySchedule;
 
@@ -17,7 +16,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.lwjgl.opengl.GL11;
 
 public class MessageBoardControllerGui extends GuiScreen {
-	private final MessageBoardControllerTileEntity controller;
+	private final MessageBoardTileEntity controller;
 	private final GuiTextField[] fields = new GuiTextField[MessageBoardTileEntity.MAX_LINES];
 	private GuiButton modeButton;
 	private GuiButton addPageButton;
@@ -42,7 +41,7 @@ public class MessageBoardControllerGui extends GuiScreen {
 	private int editingColor;
 	private float editingBrightness;
 
-	public MessageBoardControllerGui(MessageBoardControllerTileEntity controller) {
+	public MessageBoardControllerGui(MessageBoardTileEntity controller) {
 		this.controller = controller;
 	}
 
@@ -87,10 +86,10 @@ public class MessageBoardControllerGui extends GuiScreen {
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		drawDefaultBackground();
-		drawCenteredString(fontRenderer, "Message / Arrow Board Controller", width / 2, 5, 0xFFFFA000);
+		drawCenteredString(fontRenderer, "Message / Arrow Board", width / 2, 5, 0xFFFFA000);
 		drawCenteredString(fontRenderer, "Linked boards: " + controller.getLinkedBoards().size(), width / 2,
 				startY + 211, 0xFFFFFF);
-		drawCenteredString(fontRenderer, "Use tuner on controller, then board. OpenComputers can also control it.", width / 2,
+		drawCenteredString(fontRenderer, "Tuner: board->board to link. OpenComputers can also control it.", width / 2,
 				startY + 223, 0xAAAAAA);
 		drawCenteredString(fontRenderer, "Interval amount", controlX + 100, startY + 149, 0xAAAAAA);
 		drawCenteredString(fontRenderer, "Game times (HH:MM, comma-separated)", controlX + 100, startY + 180, 0xAAAAAA);
@@ -173,7 +172,7 @@ public class MessageBoardControllerGui extends GuiScreen {
 		nextPageButton.enabled = hasPages;
 		savePageButton.enabled = hasPages;
 		deletePageButton.enabled = hasPages;
-		addPageButton.enabled = count < MessageBoardControllerTileEntity.MAX_ROTATION_PAGES;
+		addPageButton.enabled = count < MessageBoardTileEntity.MAX_ROTATION_PAGES;
 	}
 
 	private void loadPageFromController() {
@@ -224,8 +223,9 @@ public class MessageBoardControllerGui extends GuiScreen {
 		if (mode == MessageBoardTileEntity.DisplayMode.TEXT) {
 			drawPreviewText(left, top, right, bottom, pixelsPerWorld, color);
 		} else if (mode == MessageBoardTileEntity.DisplayMode.ARROW_LEFT
-				|| mode == MessageBoardTileEntity.DisplayMode.ARROW_RIGHT) {
-			drawPreviewArrow(left, top, right, bottom, mode == MessageBoardTileEntity.DisplayMode.ARROW_LEFT, color);
+				|| mode == MessageBoardTileEntity.DisplayMode.ARROW_RIGHT
+				|| mode == MessageBoardTileEntity.DisplayMode.ARROW_BOTH) {
+			drawPreviewArrow(left, top, right, bottom, mode, color);
 		} else if (mode == MessageBoardTileEntity.DisplayMode.CAUTION) {
 			drawPreviewCaution(left, top, right, bottom, color);
 		}
@@ -252,14 +252,35 @@ public class MessageBoardControllerGui extends GuiScreen {
 		GL11.glDisable(GL11.GL_SCISSOR_TEST);
 	}
 
-	private void drawPreviewArrow(int left, int top, int right, int bottom, boolean pointsLeft, int color) {
+	private void drawPreviewArrow(int left, int top, int right, int bottom,
+			MessageBoardTileEntity.DisplayMode mode, int color) {
 		int centerY = (top + bottom) / 2;
-		int headBase = pointsLeft ? left + (right - left) * 2 / 5 : right - (right - left) * 2 / 5;
-		int tip = pointsLeft ? left + 5 : right - 5;
-		int shaftStart = pointsLeft ? headBase : left + 6;
-		int shaftEnd = pointsLeft ? right - 6 : headBase;
-		drawRect(Math.min(shaftStart, shaftEnd), centerY - 3, Math.max(shaftStart, shaftEnd), centerY + 4, 0xFF000000 | color);
-		drawGuiTriangle(tip, centerY, headBase, top + 5, headBase, bottom - 5, color);
+		boolean drawLeft = mode == MessageBoardTileEntity.DisplayMode.ARROW_LEFT
+				|| mode == MessageBoardTileEntity.DisplayMode.ARROW_BOTH;
+		boolean drawRight = mode == MessageBoardTileEntity.DisplayMode.ARROW_RIGHT
+				|| mode == MessageBoardTileEntity.DisplayMode.ARROW_BOTH;
+		if (drawLeft) {
+			int headBase = left + (right - left) * 2 / 5;
+			int tip = left + 5;
+			drawGuiTriangle(tip, centerY, headBase, top + 5, headBase, bottom - 5, color);
+			if (mode == MessageBoardTileEntity.DisplayMode.ARROW_LEFT) {
+				drawRect(headBase, centerY - 3, right - 6, centerY + 4, 0xFF000000 | color);
+			}
+		}
+		if (drawRight) {
+			int headBase = right - (right - left) * 2 / 5;
+			int tip = right - 5;
+			drawGuiTriangle(tip, centerY, headBase, top + 5, headBase, bottom - 5, color);
+			if (mode == MessageBoardTileEntity.DisplayMode.ARROW_RIGHT) {
+				drawRect(left + 6, centerY - 3, headBase, centerY + 4, 0xFF000000 | color);
+			}
+		}
+		if (mode == MessageBoardTileEntity.DisplayMode.ARROW_BOTH) {
+			int leftBase = left + (right - left) * 2 / 5;
+			int rightBase = right - (right - left) * 2 / 5;
+			drawRect(Math.min(leftBase, rightBase), centerY - 3, Math.max(leftBase, rightBase), centerY + 4,
+					0xFF000000 | color);
+		}
 	}
 
 	private void drawPreviewCaution(int left, int top, int right, int bottom, int color) {

@@ -2,6 +2,8 @@ package com.gamearoosdevelopment.realistictrafficcontrol.signs;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
@@ -21,6 +23,7 @@ import com.google.gson.JsonParser;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.fml.loading.FMLPaths;
 
 /**
  * Port of 1.12.2 {@code SignRepository}. Loads bundled {@code misc/signs.json}; external signpack ZIP
@@ -33,6 +36,7 @@ public class SignRepository {
     private final HashMap<UUID, String> packNamesByID = new HashMap<>();
     private final ArrayList<Sign> allSigns = new ArrayList<>();
     private boolean signsInitialized;
+    private static Path signpackDirectory;
 
     public void reload() {
         signsByTypeVariant.clear();
@@ -57,8 +61,26 @@ public class SignRepository {
         } catch (Exception ex) {
             ModRealisticTrafficControl.LOGGER.error("Could not process base signpack.", ex);
         }
+        Path signpackDir = resolveSignpackDirectory();
+        try {
+            Files.createDirectories(signpackDir);
+        } catch (Exception ex) {
+            ModRealisticTrafficControl.LOGGER.error("Could not create signpack folder.", ex);
+        }
         ensureFallbackSigns();
         signsInitialized = true;
+    }
+
+    /**
+     * Signpacks live next to the config folder ({@code <gamedir>/tc_signpacks}),
+     * matching 1.12.2 {@code Loader.getConfigDir().getParentFile()}.
+     */
+    public static Path resolveSignpackDirectory() {
+        if (signpackDirectory == null) {
+            signpackDirectory = FMLPaths.CONFIGDIR.get().getParent().resolve("tc_signpacks");
+            ModRealisticTrafficControl.LOGGER.info("Loading signpacks from {}", signpackDirectory.toAbsolutePath());
+        }
+        return signpackDirectory;
     }
 
     private InputStream getBaseJson() {

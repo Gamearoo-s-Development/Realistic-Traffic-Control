@@ -41,7 +41,7 @@ public final class Config {
     // --- static mirrors (read across the codebase) ---
     public static int parallelScans = 1;
     public static int islandTimeout = 20;
-    public static int borderTimeout = 150;
+    public static int borderTimeout = 512;
     public static int borderTick = 10;
     public static int crossingBellStopAfterSeconds = 0;
     public static int tooltipCharWrapLength = 256;
@@ -73,8 +73,8 @@ public final class Config {
                 .comment("How far (in blocks) should each island shunt scan for the next island shunt?")
                 .defineInRange("islandTimeout", 20, 1, 100);
         BORDER_TIMEOUT = builder
-                .comment("How far (in blocks) should border shunts scan for the next island shunt?")
-                .defineInRange("borderTimeout", 150, 1, 2000);
+                .comment("How far (in blocks) should border shunts scan for the next island shunt? Distant chunkloaded approaches can also use a red/powered train signal next to the border shunt as a ghost approach circuit.")
+                .defineInRange("borderTimeout", 512, 1, 2000);
         BORDER_TICK = builder
                 .comment("How far (in blocks) should border shunts scan per tick?")
                 .defineInRange("borderTick", 10, 1, 2000);

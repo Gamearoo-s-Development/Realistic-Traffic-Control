@@ -53,6 +53,18 @@ public final class BerModelHelper {
         renderQuads(poseStack, consumer, model.getQuads(state, null, random), packedLight, packedOverlay);
     }
 
+    /** GUI-safe atlas binding; world BER keeps {@link RenderType#solid()}. */
+    public static void renderModelGui(PoseStack poseStack, BakedModel model,
+            net.minecraft.client.renderer.MultiBufferSource buffer, int packedLight, int packedOverlay) {
+        if (model == null || model == Minecraft.getInstance().getModelManager().getMissingModel()) {
+            return;
+        }
+        RandomSource random = RandomSource.create();
+        renderQuadsForLayer(poseStack, model, null, buffer,
+                RenderType.entitySolid(net.minecraft.client.renderer.texture.TextureAtlas.LOCATION_BLOCKS), random,
+                packedLight, packedOverlay);
+    }
+
     private static void renderQuads(PoseStack poseStack, VertexConsumer consumer, List<BakedQuad> quads,
             int packedLight, int packedOverlay) {
         PoseStack.Pose pose = poseStack.last();

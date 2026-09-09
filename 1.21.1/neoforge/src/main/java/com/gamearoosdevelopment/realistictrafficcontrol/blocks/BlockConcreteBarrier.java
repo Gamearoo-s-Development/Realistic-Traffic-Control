@@ -41,8 +41,18 @@ public class BlockConcreteBarrier extends Block {
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         int dye = ConcreteBarrierBlockItem.getDye(context.getItemInHand());
         return defaultBlockState()
-                .setValue(FACING, context.getHorizontalDirection())
+                .setValue(FACING, com.gamearoosdevelopment.realistictrafficcontrol.util.CustomAngleCalculator.horizontalFacingForPlacement(context))
                 .setValue(DYE, dye);
+    }
+
+    @Override
+    protected BlockState rotate(BlockState state, net.minecraft.world.level.block.Rotation rotation) {
+        return RTCProperties.rotateFacing(state, rotation, FACING);
+    }
+
+    @Override
+    protected BlockState mirror(BlockState state, net.minecraft.world.level.block.Mirror mirror) {
+        return RTCProperties.mirrorFacing(state, mirror, FACING);
     }
 
     @Override
@@ -60,5 +70,13 @@ public class BlockConcreteBarrier extends Block {
     @Override
     public boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
         return true;
+    }
+
+    @Override
+    protected java.util.List<ItemStack> getDrops(BlockState state,
+            net.minecraft.world.level.storage.loot.LootParams.Builder params) {
+        ItemStack stack = new ItemStack(asItem());
+        stack.set(RTCDataComponents.BARRIER_DYE.get(), state.getValue(DYE));
+        return java.util.List.of(stack);
     }
 }

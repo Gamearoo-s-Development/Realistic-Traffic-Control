@@ -22,7 +22,7 @@ import com.gamearoosdevelopment.realistictrafficcontrol.item.TrafficLightCardIte
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.DigitalSignBlockEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.DigitalSignControllerBlockEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.MessageBoardBlockEntity;
-import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.MessageBoardControllerBlockEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.MessageBoardBlockEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.PedestrianButtonBlockEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLightBlockEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLightControlBoxBlockEntity;
@@ -413,23 +413,23 @@ public final class TrafficLightCardDriver extends DriverItem {
             return result(true, mode.name());
         }
 
-        @Callback(doc = "linkMessageBoard(controllerX:int, controllerY:int, controllerZ:int, boardX:int, boardY:int, boardZ:int):boolean, string")
+        @Callback(doc = "linkMessageBoard(boardX:int, boardY:int, boardZ:int, otherX:int, otherY:int, otherZ:int):boolean, string")
         public Object[] linkMessageBoard(Context context, Arguments args) {
             BlockEntity controller = level().getBlockEntity(xyz(args, 0));
             BlockPos boardPos = xyz(args, 3);
             BlockEntity board = level().getBlockEntity(boardPos);
-            if (!(controller instanceof MessageBoardControllerBlockEntity message)
+            if (!(controller instanceof MessageBoardBlockEntity message)
                     || !(board instanceof MessageBoardBlockEntity)
-                    || board instanceof MessageBoardControllerBlockEntity) {
-                return result(false, "Invalid message board controller or board position");
+                    || boardPos.equals(controller.getBlockPos())) {
+                return result(false, "Invalid message board position");
             }
             return result(message.linkBoard(boardPos), "Link updated");
         }
 
-        @Callback(doc = "setMessageBoardText(controllerX:int, controllerY:int, controllerZ:int, line:int, text:string):boolean, number/string")
+        @Callback(doc = "setMessageBoardText(boardX:int, boardY:int, boardZ:int, line:int, text:string):boolean, number/string")
         public Object[] setMessageBoardText(Context context, Arguments args) {
-            MessageBoardControllerBlockEntity controller = messageController(args);
-            if (controller == null) return result(false, "No message board controller at position");
+            MessageBoardBlockEntity controller = messageBoard(args);
+            if (controller == null) return result(false, "No message board at position");
             int line = args.checkInteger(3);
             if (line < 0 || line >= MessageBoardBlockEntity.MAX_LINES) {
                 return result(false, "Line must be between 0 and " + (MessageBoardBlockEntity.MAX_LINES - 1));
@@ -440,32 +440,32 @@ public final class TrafficLightCardDriver extends DriverItem {
 
         @Callback(doc = "clearMessageBoards(controllerX:int, controllerY:int, controllerZ:int):boolean, number -- Clears linked boards")
         public Object[] clearMessageBoards(Context context, Arguments args) {
-            MessageBoardControllerBlockEntity controller = messageController(args);
-            if (controller == null) return result(false, "No message board controller at position");
+            MessageBoardBlockEntity controller = messageBoard(args);
+            if (controller == null) return result(false, "No message board at position");
             for (int i = 0; i < MessageBoardBlockEntity.MAX_LINES; i++) controller.setLine(i, "");
             return new Object[] { true, controller.getLinkedBoards().size() };
         }
 
         @Callback(doc = "setMessageBoardBrightness(controllerX:int, controllerY:int, controllerZ:int, brightness:number):boolean, number")
         public Object[] setMessageBoardBrightness(Context context, Arguments args) {
-            MessageBoardControllerBlockEntity controller = messageController(args);
-            if (controller == null) return result(false, "No message board controller at position");
+            MessageBoardBlockEntity controller = messageBoard(args);
+            if (controller == null) return result(false, "No message board at position");
             controller.setBrightness((float) args.checkDouble(3));
             return new Object[] { true, controller.getLinkedBoards().size() };
         }
 
         @Callback(doc = "setMessageBoardTextScale(controllerX:int, controllerY:int, controllerZ:int, scale:number):boolean, number")
         public Object[] setMessageBoardTextScale(Context context, Arguments args) {
-            MessageBoardControllerBlockEntity controller = messageController(args);
-            if (controller == null) return result(false, "No message board controller at position");
+            MessageBoardBlockEntity controller = messageBoard(args);
+            if (controller == null) return result(false, "No message board at position");
             controller.setTextScale((float) args.checkDouble(3));
             return new Object[] { true, controller.getLinkedBoards().size() };
         }
 
         @Callback(doc = "setMessageBoardFontStyle(controllerX:int, controllerY:int, controllerZ:int, style:string):boolean, number/string")
         public Object[] setMessageBoardFontStyle(Context context, Arguments args) {
-            MessageBoardControllerBlockEntity controller = messageController(args);
-            if (controller == null) return result(false, "No message board controller at position");
+            MessageBoardBlockEntity controller = messageBoard(args);
+            if (controller == null) return result(false, "No message board at position");
             String requested = args.checkString(3).trim().toUpperCase(Locale.ROOT).replace(' ', '_');
             try {
                 controller.setFontStyle(MessageBoardBlockEntity.FontStyle.valueOf(requested));
@@ -477,11 +477,15 @@ public final class TrafficLightCardDriver extends DriverItem {
 
         @Callback(doc = "setMessageBoardMode(controllerX:int, controllerY:int, controllerZ:int, mode:string):boolean, number/string")
         public Object[] setMessageBoardMode(Context context, Arguments args) {
-            MessageBoardControllerBlockEntity controller = messageController(args);
-            if (controller == null) return result(false, "No message board controller at position");
+            MessageBoardBlockEntity controller = messageBoard(args);
+            if (controller == null) return result(false, "No message board at position");
             String requested = args.checkString(3).trim().toUpperCase(Locale.ROOT);
             if ("ARROW_MERGE_LEFT".equals(requested)) requested = "ARROW_LEFT";
             if ("ARROW_MERGE_RIGHT".equals(requested)) requested = "ARROW_RIGHT";
+            if ("ARROW_LEFT_RIGHT".equals(requested) || "ARROW_COMBINED".equals(requested)
+                    || "DOUBLE_ARROW".equals(requested) || "ARROW_MERGE_BOTH".equals(requested)) {
+                requested = "ARROW_BOTH";
+            }
             try {
                 controller.setMode(MessageBoardBlockEntity.DisplayMode.valueOf(requested));
             } catch (IllegalArgumentException exception) {
@@ -492,32 +496,32 @@ public final class TrafficLightCardDriver extends DriverItem {
 
         @Callback(doc = "setMessageBoardColor(controllerX:int, controllerY:int, controllerZ:int, rgb:int):boolean, number")
         public Object[] setMessageBoardColor(Context context, Arguments args) {
-            MessageBoardControllerBlockEntity controller = messageController(args);
-            if (controller == null) return result(false, "No message board controller at position");
+            MessageBoardBlockEntity controller = messageBoard(args);
+            if (controller == null) return result(false, "No message board at position");
             controller.setColor(args.checkInteger(3));
             return new Object[] { true, controller.getLinkedBoards().size() };
         }
 
         @Callback(doc = "addMessageBoardRotationPage(controllerX:int, controllerY:int, controllerZ:int):boolean, string")
         public Object[] addMessageBoardRotationPage(Context context, Arguments args) {
-            MessageBoardControllerBlockEntity controller = messageController(args);
-            if (controller == null) return result(false, "No message board controller at position");
+            MessageBoardBlockEntity controller = messageBoard(args);
+            if (controller == null) return result(false, "No message board at position");
             boolean added = controller.addCurrentPage();
             return result(added, added ? "Rotation page added" : "Rotation is full");
         }
 
         @Callback(doc = "clearMessageBoardRotation(controllerX:int, controllerY:int, controllerZ:int):boolean")
         public Object[] clearMessageBoardRotation(Context context, Arguments args) {
-            MessageBoardControllerBlockEntity controller = messageController(args);
-            if (controller == null) return result(false, "No message board controller at position");
+            MessageBoardBlockEntity controller = messageBoard(args);
+            if (controller == null) return result(false, "No message board at position");
             controller.clearRotationPages();
             return one(true);
         }
 
         @Callback(doc = "setMessageBoardSchedule(controllerX:int, controllerY:int, controllerZ:int, mode:string, amountOrTimes:any?, times:string?):boolean, string")
         public Object[] setMessageBoardSchedule(Context context, Arguments args) {
-            MessageBoardControllerBlockEntity controller = messageController(args);
-            if (controller == null) return result(false, "No message board controller at position");
+            MessageBoardBlockEntity controller = messageBoard(args);
+            if (controller == null) return result(false, "No message board at position");
             DisplaySchedule.Mode mode = DisplaySchedule.Mode.fromName(args.checkString(3).toUpperCase(Locale.ROOT));
             controller.setScheduleMode(mode);
             if (args.count() >= 5 && args.isInteger(4)) controller.setScheduleIntervalAmount(args.checkInteger(4));
@@ -694,9 +698,9 @@ public final class TrafficLightCardDriver extends DriverItem {
             return be instanceof DigitalSignControllerBlockEntity controller ? controller : null;
         }
 
-        private MessageBoardControllerBlockEntity messageController(Arguments args) {
+        private MessageBoardBlockEntity messageBoard(Arguments args) {
             BlockEntity be = level().getBlockEntity(xyz(args, 0));
-            return be instanceof MessageBoardControllerBlockEntity controller ? controller : null;
+            return be instanceof MessageBoardBlockEntity board ? board : null;
         }
 
         private EnumTrafficLightBulbTypes bulb(String name) {

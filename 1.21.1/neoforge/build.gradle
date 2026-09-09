@@ -2,7 +2,7 @@ plugins {
     id 'java-library'
     id 'idea'
     id 'eclipse'
-    id 'net.neoforged.moddev' version '2.0.124'
+    id 'net.neoforged.moddev' version '2.0.141'
 }
 
 version = mod_version
@@ -49,6 +49,11 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 repositories {
     mavenLocal()
     maven {
+        name = 'BlameJared'
+        url = 'https://maven.blamejared.com'
+        content { includeGroup 'mezz.jei' }
+    }
+    maven {
         name = 'Cursemaven'
         url = 'https://cursemaven.com'
         content { includeGroup 'curse.maven' }
@@ -62,9 +67,32 @@ repositories {
 
 dependencies {
     // Optional integration mods shipped in deps/ (CC:Tweaked, Immersive Railroading, TrackAPI, UMC).
-    compileOnly fileTree(dir: 'deps', include: '*.jar')
-    additionalRuntimeClasspath fileTree(dir: 'deps', include: '*.jar')
+    compileOnly fileTree(dir: 'deps', include: '*.jar', exclude: 'create-*.jar')
+    additionalRuntimeClasspath fileTree(dir: 'deps', include: '*.jar', exclude: 'create-*.jar')
+    implementation files('deps/create-1.21.1-6.0.10.jar')
+    compileOnly files(layout.buildDirectory.file('extracted/ponder-api.jar'))
     compileOnly 'cc.tweaked:cc-tweaked-1.21.1-common-api:1.119.0'
+    compileOnly 'mezz.jei:jei-1.21.1-neoforge-api:19.27.0.344'
+}
+
+tasks.register('extractPonderApi') {
+    def createJar = file('deps/create-1.21.1-6.0.10.jar')
+    def outJar = layout.buildDirectory.file('extracted/ponder-api.jar')
+    inputs.file(createJar)
+    outputs.file(outJar)
+    doLast {
+        copy {
+            from(zipTree(createJar))
+            include 'META-INF/jarjar/ponder-neoforge-*.jar'
+            eachFile { details -> details.path = 'ponder-api.jar' }
+            includeEmptyDirs = false
+            into layout.buildDirectory.dir('extracted').get().asFile
+        }
+    }
+}
+
+tasks.named('compileJava').configure {
+    dependsOn('extractPonderApi')
 }
 
 tasks.named('processResources', ProcessResources).configure {

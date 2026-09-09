@@ -9,10 +9,13 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -35,13 +38,22 @@ public class BlockStreetLightDouble extends Block implements EntityBlock {
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        int rotation = CustomAngleCalculator.getRotationForYaw(context.getRotation());
-        return defaultBlockState().setValue(RTCProperties.ROTATION, rotation);
+        return defaultBlockState().setValue(RTCProperties.ROTATION, CustomAngleCalculator.rotationForPlacement(context));
+    }
+
+    @Override
+    protected BlockState rotate(BlockState state, Rotation rotation) {
+        return RTCProperties.rotate16(state, rotation);
+    }
+
+    @Override
+    protected BlockState mirror(BlockState state, Mirror mirror) {
+        return RTCProperties.mirror16(state, mirror);
     }
 
     @Override
     public RenderShape getRenderShape(BlockState state) {
-        return RenderShape.MODEL;
+        return RenderShape.ENTITYBLOCK_ANIMATED;
     }
 
     @Override
@@ -55,8 +67,31 @@ public class BlockStreetLightDouble extends Block implements EntityBlock {
     }
 
     @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
+            BlockEntityType<T> type) {
+        if (level.isClientSide) {
+            return null;
+        }
+        return (lvl, pos, st, be) -> {
+            if (lvl.getGameTime() % 20L == 0L) {
+                refreshLight(lvl, pos);
+            }
+        };
+    }
+
+    private static void refreshLight(Level level, BlockPos pos) {
+        if (com.gamearoosdevelopment.realistictrafficcontrol.compat.PowerGridCompat
+                .streetLightShouldBeOff(level, pos)) {
+            removeLightSources(level, pos);
+        } else {
+            addLightSources(level, pos);
+        }
+    }
+
+    @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return SHAPE;
+        return com.gamearoosdevelopment.realistictrafficcontrol.util.RTCShapes.rotateY(SHAPE,
+                state.getValue(RTCProperties.ROTATION));
     }
 
     @Override
@@ -79,11 +114,7 @@ public class BlockStreetLightDouble extends Block implements EntityBlock {
     public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos,
             boolean isMoving) {
         if (!level.isClientSide) {
-            if (level.hasNeighborSignal(pos)) {
-                removeLightSources(level, pos);
-            } else {
-                addLightSources(level, pos);
-            }
+            refreshLight(level, pos);
         }
         super.neighborChanged(state, level, pos, block, fromPos, isMoving);
     }
@@ -98,10 +129,16 @@ public class BlockStreetLightDouble extends Block implements EntityBlock {
 
     private static void tryPlaceLightSource(Level level, BlockPos pos) {
         BlockState proposed = level.getBlockState(pos);
-        if (proposed.getBlock() != ModBlocks.LIGHT_SOURCE.get() && proposed.getBlock() != Blocks.AIR) {
+        if (proposed.is(ModBlocks.LIGHT_SOURCE.get())) {
+            return;
+        }
+        if (!proposed.isAir()) {
             pos = pos.above();
             proposed = level.getBlockState(pos);
-            if (proposed.getBlock() != ModBlocks.LIGHT_SOURCE.get() && proposed.getBlock() != Blocks.AIR) {
+            if (proposed.is(ModBlocks.LIGHT_SOURCE.get())) {
+                return;
+            }
+            if (!proposed.isAir()) {
                 return;
             }
         }
@@ -124,5 +161,11 @@ public class BlockStreetLightDouble extends Block implements EntityBlock {
         if (level.getBlockState(pos).getBlock() == ModBlocks.LIGHT_SOURCE.get()) {
             level.removeBlock(pos, false);
         }
+    }
+
+    @Override
+    protected java.util.List<net.minecraft.world.item.ItemStack> getDrops(BlockState state,
+            net.minecraft.world.level.storage.loot.LootParams.Builder params) {
+        return com.gamearoosdevelopment.realistictrafficcontrol.util.RTCDrops.self(state);
     }
 }

@@ -21,11 +21,8 @@ import java.util.zip.ZipFile;
 final class SignClientLoader {
 
     static void loadExternalPacks(SignRepository repository) {
-        Path packsDirectory = Minecraft.getInstance().gameDirectory.toPath().resolve("tc_signpacks");
-        try {
-            Files.createDirectories(packsDirectory);
-        } catch (Exception ex) {
-            ModRealisticTrafficControl.LOGGER.error("Could not create tc_signpacks folder.", ex);
+        Path packsDirectory = SignRepository.resolveSignpackDirectory();
+        if (!Files.isDirectory(packsDirectory)) {
             return;
         }
         try (var paths = Files.list(packsDirectory)) {

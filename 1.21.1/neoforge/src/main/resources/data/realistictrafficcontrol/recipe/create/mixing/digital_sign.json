@@ -1,0 +1,30 @@
+{
+  "type": "create:mixing",
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ],
+  "heat_requirement": "heated",
+  "ingredients": [
+    {
+      "item": "minecraft:tinted_glass"
+    },
+    {
+      "item": "minecraft:redstone_lamp"
+    },
+    {
+      "item": "create:iron_sheet"
+    },
+    {
+      "item": "minecraft:redstone"
+    }
+  ],
+  "results": [
+    {
+      "id": "realistictrafficcontrol:digital_sign",
+      "count": 4
+    }
+  ]
+}

@@ -1,11 +1,14 @@
 package com.gamearoosdevelopment.realistictrafficcontrol.client;
 
-import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficControl;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockCrossingGateLamps;
+import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockLampBase;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockOverheadLamps;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.RTCProperties;
+import com.gamearoosdevelopment.realistictrafficcontrol.client.render.CrossingLampRender;
 import com.gamearoosdevelopment.realistictrafficcontrol.menu.CrossingLampsMenu;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.CrossingLampsBlockEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.CrossingLampState;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 
@@ -15,14 +18,10 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.function.Consumer;
@@ -53,6 +52,8 @@ public class CrossingLampsScreen extends AbstractContainerScreen<CrossingLampsMe
 
     @Override
     protected void init() {
+        imageWidth = width;
+        imageHeight = height;
         super.init();
         if (minecraft == null || minecraft.player == null) {
             return;
@@ -148,21 +149,35 @@ public class CrossingLampsScreen extends AbstractContainerScreen<CrossingLampsMe
         if (minecraft == null || minecraft.player == null) {
             return;
         }
+        CrossingLampsBlockEntity te = menu.getLamps(minecraft.player);
         BlockState state = minecraft.player.level().getBlockState(menu.getBlockPos());
-        if (state.getRenderShape() == RenderShape.INVISIBLE) {
+        if (!(state.getBlock() instanceof BlockLampBase lampBlock)) {
             return;
         }
+        String modelPrefix = lampBlock.getLampRegistryName();
+        int ne = te == null ? 0 : te.getNeBulbRotation();
+        int nw = te == null ? 0 : te.getNwBulbRotation();
+        int se = te == null ? 0 : te.getSeBulbRotation();
+        int sw = te == null ? 0 : te.getSwBulbRotation();
+        CrossingLampState lampState = te == null ? CrossingLampState.Off : te.getState();
+
         PoseStack poseStack = graphics.pose();
         poseStack.pushPose();
+        // 1.12 translated the 128px cube from its corner; rotate around the block center so the
+        // cantilever frames stay on the pole instead of ghosting off to the side.
         poseStack.translate(width / 2.0F, height / 2.0F, 150.0F);
-        poseStack.scale(128.0F, -128.0F, 128.0F);
+        poseStack.scale(96.0F, -96.0F, 96.0F);
         poseStack.mulPose(Axis.XP.rotationDegrees(30.0F));
         poseStack.mulPose(Axis.YP.rotationDegrees(minecraft.player.getYHeadRot() + blockRotation * -22.5F));
+        poseStack.translate(-0.5F, -0.5F, -0.5F);
+
+        RenderSystem.enableDepthTest();
         MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
-        Minecraft.getInstance().getBlockRenderer().renderSingleBlock(state, poseStack, buffer, 15728880,
-                OverlayTexture.NO_OVERLAY);
+        CrossingLampRender.renderHousingAndAssemblies(poseStack, buffer, 0x00F000F0, modelPrefix,
+                ne, nw, se, sw, lampState, true);
         buffer.endBatch();
         poseStack.popPose();
+        RenderSystem.disableDepthTest();
     }
 
     private void drawAngleLabels(GuiGraphics graphics) {

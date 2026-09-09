@@ -34,6 +34,20 @@ ordering = "AFTER"
 side = "BOTH"
 
 [[dependencies.${mod_id}]]
+modId = "immersive_railroading"
+type = "optional"
+versionRange = "*"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "trackapi"
+type = "optional"
+versionRange = "*"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.${mod_id}]]
 modId = "create"
 type = "optional"
 versionRange = "*"
@@ -49,6 +63,20 @@ side = "BOTH"
 
 [[dependencies.${mod_id}]]
 modId = "opencomputers"
+type = "optional"
+versionRange = "*"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "powergrid"
+type = "optional"
+versionRange = "*"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "powergrid_essentials"
 type = "optional"
 versionRange = "*"
 ordering = "AFTER"

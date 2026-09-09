@@ -53,6 +53,8 @@ public final class ScannerWorldEvents {
     }
 
     private static boolean hasRailroadCompat() {
-        return ModRealisticTrafficControl.IR_INSTALLED || ModRealisticTrafficControl.CREATE_INSTALLED;
+        return ModRealisticTrafficControl.IR_INSTALLED
+                || ModRealisticTrafficControl.TRACK_API_INSTALLED
+                || ModRealisticTrafficControl.CREATE_INSTALLED;
     }
 }

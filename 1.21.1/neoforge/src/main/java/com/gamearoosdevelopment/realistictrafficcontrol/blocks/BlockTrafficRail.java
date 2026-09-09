@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.CustomAngleCalculator;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.RTCShapes;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -35,8 +36,18 @@ public class BlockTrafficRail extends Block {
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return withChainHints(defaultBlockState()
-                .setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection()), context.getLevel(),
+                .setValue(BlockStateProperties.HORIZONTAL_FACING, CustomAngleCalculator.horizontalFacingForPlacement(context)), context.getLevel(),
                 context.getClickedPos());
+    }
+
+    @Override
+    protected BlockState rotate(BlockState state, net.minecraft.world.level.block.Rotation rotation) {
+        return RTCProperties.rotateFacing(state, rotation, BlockStateProperties.HORIZONTAL_FACING);
+    }
+
+    @Override
+    protected BlockState mirror(BlockState state, net.minecraft.world.level.block.Mirror mirror) {
+        return RTCProperties.mirrorFacing(state, mirror, BlockStateProperties.HORIZONTAL_FACING);
     }
 
     @Override
@@ -93,5 +104,11 @@ public class BlockTrafficRail extends Block {
             }
         }
         super.onPlace(state, level, pos, oldState, movedByPiston);
+    }
+
+    @Override
+    protected java.util.List<net.minecraft.world.item.ItemStack> getDrops(BlockState state,
+            net.minecraft.world.level.storage.loot.LootParams.Builder params) {
+        return com.gamearoosdevelopment.realistictrafficcontrol.util.RTCDrops.self(state);
     }
 }

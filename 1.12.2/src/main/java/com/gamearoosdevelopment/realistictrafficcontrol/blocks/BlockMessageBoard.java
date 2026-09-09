@@ -1,6 +1,5 @@
 package com.gamearoosdevelopment.realistictrafficcontrol.blocks;
 
-import com.gamearoosdevelopment.realistictrafficcontrol.ModBlocks;
 import com.gamearoosdevelopment.realistictrafficcontrol.ModItems;
 import com.gamearoosdevelopment.realistictrafficcontrol.gui.GuiProxy;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.MessageBoardTileEntity;
@@ -40,8 +39,7 @@ public class BlockMessageBoard extends BlockDisplayBase {
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player,
 			EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
 		Item heldItem = player.getHeldItem(hand).getItem();
-		if (heldItem == ModItems.screwdriver
-				|| heldItem == Item.getItemFromBlock(ModBlocks.message_board_controller)) {
+		if (heldItem == ModItems.screwdriver) {
 			return false;
 		}
 		return super.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);

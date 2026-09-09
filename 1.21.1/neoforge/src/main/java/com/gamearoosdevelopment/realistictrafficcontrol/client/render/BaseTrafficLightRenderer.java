@@ -4,11 +4,13 @@ import java.util.List;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficControl;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockBaseTrafficLight;
+import com.gamearoosdevelopment.realistictrafficcontrol.blocks.RTCProperties;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLightBlockEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.EnumTrafficLightBulbTypes;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.PoleAssembly;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.RTCRotation;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.gamearoosdevelopment.realistictrafficcontrol.util.RTCRotation;
 
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -20,6 +22,9 @@ import net.minecraft.world.level.block.state.BlockState;
 /**
  * Shared bulb-quad rendering for every traffic-light frame layout. Ported from the 1.12.2
  * {@code BaseTrafficLightRenderer} TESR; subclasses only supply bulb positions.
+ *
+ * <p>Bulb corners are pole-mounted with the same {@link RTCRotation#rotatePoleMountedXZ}
+ * path as {@code RotatedBlockModelWrapper}, so the lights stay in the housings.
  */
 public abstract class BaseTrafficLightRenderer {
 
@@ -32,29 +37,23 @@ public abstract class BaseTrafficLightRenderer {
             return;
         }
 
-        poseStack.pushPose();
-        poseStack.scale(1f / 16f, 1f / 16f, 1f / 16f);
-        poseStack.translate(8, 8, 8);
-        poseStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees(
-                RTCRotation.placementRotationDegrees(
-                        state.getValue(com.gamearoosdevelopment.realistictrafficcontrol.blocks.RTCProperties.ROTATION))));
-        poseStack.translate(-8, -8, -8);
-        poseStack.translate(0, 0, getBulbZLocation());
+        int rotation = state.getValue(RTCProperties.ROTATION);
+        int mount = PoleAssembly.mountCardinal(state);
+        double bulbZ = getBulbZLocation();
 
         List<BulbRenderer> bulbRenderers = getBulbRenderers();
         int overlay = OverlayTexture.NO_OVERLAY;
         int fullBright = LightTexture.FULL_BRIGHT;
 
         for (BulbRenderer renderer : bulbRenderers) {
-            renderer.renderBlack(entity, poseStack, bufferSource, fullBright, overlay);
+            renderer.renderBlack(entity, poseStack, bufferSource, fullBright, overlay, rotation, mount, bulbZ);
         }
 
         ResourceLocation lastTexture = BLACK;
         for (BulbRenderer renderer : bulbRenderers) {
-            lastTexture = renderer.render(entity, poseStack, bufferSource, fullBright, overlay, lastTexture);
+            lastTexture = renderer.render(entity, poseStack, bufferSource, fullBright, overlay, lastTexture,
+                    rotation, mount, bulbZ);
         }
-
-        poseStack.popPose();
     }
 
     protected abstract double getBulbZLocation();
@@ -73,61 +72,62 @@ public abstract class BaseTrafficLightRenderer {
         }
 
         public void renderBlack(TrafficLightBlockEntity entity, PoseStack poseStack, MultiBufferSource bufferSource,
-                int packedLight, int packedOverlay) {
+                int packedLight, int packedOverlay, int rotation, int mount, double bulbZ) {
             if ((entity.getActiveBySlot(bulbSlot) && entity.getFlashBySlot(bulbSlot) && entity.getFlashCurrentBySlot(bulbSlot))
                     || (entity.getActiveBySlot(bulbSlot) && !entity.getFlashBySlot(bulbSlot))) {
                 return;
             }
-            render(entity, poseStack, bufferSource, packedLight, packedOverlay, BLACK, true);
+            render(entity, poseStack, bufferSource, packedLight, packedOverlay, BLACK, true, rotation, mount, bulbZ);
         }
 
         public ResourceLocation render(TrafficLightBlockEntity entity, PoseStack poseStack, MultiBufferSource bufferSource,
-                int packedLight, int packedOverlay, ResourceLocation lastTexture) {
-            return render(entity, poseStack, bufferSource, packedLight, packedOverlay, lastTexture, false);
+                int packedLight, int packedOverlay, ResourceLocation lastTexture, int rotation, int mount, double bulbZ) {
+            return render(entity, poseStack, bufferSource, packedLight, packedOverlay, lastTexture, false,
+                    rotation, mount, bulbZ);
         }
 
         private ResourceLocation render(TrafficLightBlockEntity entity, PoseStack poseStack, MultiBufferSource bufferSource,
-                int packedLight, int packedOverlay, ResourceLocation lastTexture, boolean renderBlack) {
+                int packedLight, int packedOverlay, ResourceLocation lastTexture, boolean renderBlack,
+                int rotation, int mount, double bulbZ) {
             if (!renderBlack && (!entity.getActiveBySlot(bulbSlot)
                     || (entity.getFlashBySlot(bulbSlot) && !entity.getFlashCurrentBySlot(bulbSlot)))) {
                 return lastTexture;
             }
 
-            poseStack.pushPose();
-            poseStack.translate(x, y, 0);
-
             ResourceLocation texture = renderBlack ? BLACK : textureForBulb(entity.getBulbTypeBySlot(bulbSlot));
             if (!renderBlack && texture.equals(BLACK)) {
-                // No bulb configured in this slot — skip colored pass (black backing still drawn).
-                poseStack.popPose();
                 return lastTexture;
             }
-            drawQuad(poseStack, bufferSource, texture, packedLight, packedOverlay);
-
-            poseStack.popPose();
+            drawQuad(poseStack, bufferSource, texture, packedLight, packedOverlay, x, y, bulbZ, rotation, mount);
             return texture;
         }
     }
 
     private static void drawQuad(PoseStack poseStack, MultiBufferSource bufferSource, ResourceLocation texture,
-            int packedLight, int packedOverlay) {
+            int packedLight, int packedOverlay, double bulbX, double bulbY, double bulbZ, int rotation, int mount) {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(texture));
         PoseStack.Pose pose = poseStack.last();
 
-        addVertex(consumer, pose, 5.6f, 0f, 2f, 1f, 1f, packedLight, packedOverlay);
-        addVertex(consumer, pose, 5.6f, 5.5f, 2f, 1f, 0f, packedLight, packedOverlay);
-        addVertex(consumer, pose, 0f, 5.5f, 2f, 0f, 0f, packedLight, packedOverlay);
-        addVertex(consumer, pose, 0f, 0f, 2f, 0f, 1f, packedLight, packedOverlay);
+        float[] normal = { 0f, 1f };
+        RTCRotation.rotatePoleMountedDirectionXZ(normal, rotation, mount);
+
+        emit(consumer, pose, bulbX + 5.6, bulbY, bulbZ + 2, 1f, 1f, packedLight, packedOverlay, rotation, mount, normal);
+        emit(consumer, pose, bulbX + 5.6, bulbY + 5.5, bulbZ + 2, 1f, 0f, packedLight, packedOverlay, rotation, mount, normal);
+        emit(consumer, pose, bulbX, bulbY + 5.5, bulbZ + 2, 0f, 0f, packedLight, packedOverlay, rotation, mount, normal);
+        emit(consumer, pose, bulbX, bulbY, bulbZ + 2, 0f, 1f, packedLight, packedOverlay, rotation, mount, normal);
     }
 
-    private static void addVertex(VertexConsumer consumer, PoseStack.Pose pose,
-            float x, float y, float z, float u, float v, int packedLight, int packedOverlay) {
-        consumer.addVertex(pose.pose(), x, y, z)
+    private static void emit(VertexConsumer consumer, PoseStack.Pose pose,
+            double px, double py, double pz, float u, float v, int packedLight, int packedOverlay,
+            int rotation, int mount, float[] normal) {
+        float[] xz = { (float) (px / 16.0), (float) (pz / 16.0) };
+        RTCRotation.rotatePoleMountedXZ(xz, rotation, mount);
+        consumer.addVertex(pose.pose(), xz[0], (float) (py / 16.0), xz[1])
                 .setColor(255, 255, 255, 255)
                 .setUv(u, v)
                 .setOverlay(packedOverlay)
                 .setLight(packedLight)
-                .setNormal(pose, 0f, 0f, 1f);
+                .setNormal(pose, normal[0], 0f, normal[1]);
     }
 
     private static ResourceLocation textureForBulb(EnumTrafficLightBulbTypes bulbType) {

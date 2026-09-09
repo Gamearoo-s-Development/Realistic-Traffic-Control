@@ -31,7 +31,9 @@ public class CrossingRelayBoxItem extends Item {
         }
 
         Player player = context.getPlayer();
-        Direction facing = context.getHorizontalDirection();
+        Direction facing = context.getClickedFace().getAxis().isHorizontal()
+                ? context.getClickedFace()
+                : context.getHorizontalDirection();
         BlockPos pos = context.getClickedPos();
 
         if (!checkSpacing(level, pos, facing)) {

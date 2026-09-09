@@ -16,6 +16,8 @@ import com.gamearoosdevelopment.realistictrafficcontrol.crossing.IWigWagBlockEnt
 import com.gamearoosdevelopment.realistictrafficcontrol.scanner.IScannerSubscriber;
 import com.gamearoosdevelopment.realistictrafficcontrol.scanner.ScanCompleteData;
 import com.gamearoosdevelopment.realistictrafficcontrol.scanner.ScanRequest;
+import com.gamearoosdevelopment.realistictrafficcontrol.compat.PowerGridCompat;
+import com.gamearoosdevelopment.realistictrafficcontrol.compat.TrainSignalCompat;
 import com.gamearoosdevelopment.realistictrafficcontrol.scanner.Scanner;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.CrossingLampState;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.Tuple;
@@ -112,13 +114,62 @@ public class RelayBlockEntity extends SyncableBlockEntity implements IScannerSub
             setChanged();
         }
 
-        if ((ModRealisticTrafficControl.IR_INSTALLED || ModRealisticTrafficControl.CREATE_INSTALLED)
+        if (level.getGameTime() % 5L == 0L) {
+            refreshManualPower();
+        }
+        refreshGhostSignals();
+
+        if ((ModRealisticTrafficControl.IR_INSTALLED || ModRealisticTrafficControl.TRACK_API_INSTALLED
+                || ModRealisticTrafficControl.CREATE_INSTALLED)
                 && level instanceof ServerLevel serverLevel) {
             Scanner scanner = Scanner.scannersByWorld.get(serverLevel.dimension());
             if (scanner != null) {
                 scanner.subscribe(this);
             }
         }
+    }
+
+    /**
+     * Border shunts treat a nearby red/powered train signal (or wired redstone) as the
+     * approach circuit. Island shunts are the cutoff: occupied keeps the crossing on,
+     * clear plus no approach turns it off.
+     */
+    private void refreshGhostSignals() {
+        boolean islandOccupied = false;
+        for (Tuple<BlockPos, Direction> island : shuntIslandOriginsAndFacing) {
+            if (TrainSignalCompat.isOccupied(level, island.getFirst(), island.getSecond())) {
+                islandOccupied = true;
+                break;
+            }
+        }
+        boolean approachOccupied = false;
+        for (Tuple<BlockPos, Direction> border : shuntBorderOriginsAndFacing) {
+            if (TrainSignalCompat.isApproach(level, border.getFirst(), border.getSecond())) {
+                approachOccupied = true;
+                break;
+            }
+        }
+        if (islandOccupied || approachOccupied) {
+            lastTrainSeenWorldTime = level.getGameTime();
+            if (!automatedPowerOverride) {
+                alreadyNotifiedBells = false;
+                alreadyNotifiedGates = false;
+                alreadyNotifiedWigWags = false;
+                alreadyNotifiedVerticalWigWags = false;
+                setAutomatedPowered(true);
+            }
+        } else if (automatedPowerOverride && !holdingForCarriages() && !isPowered) {
+            alreadyNotifiedBells = false;
+            alreadyNotifiedGates = false;
+            alreadyNotifiedWigWags = false;
+            alreadyNotifiedVerticalWigWags = false;
+            setAutomatedPowered(false);
+        }
+    }
+
+    private boolean holdingForCarriages() {
+        return lastTrainSeenWorldTime > 0
+                && level.getGameTime() - lastTrainSeenWorldTime < CARRIAGE_HOLD_TICKS;
     }
 
     public void onPlaced(Level level) {
@@ -189,7 +240,7 @@ public class RelayBlockEntity extends SyncableBlockEntity implements IScannerSub
         for (BlockPos lampLocation : crossingLampLocations) {
             try {
                 if (level.getBlockEntity(lampLocation) instanceof ICrossingLampBlockEntity lamp) {
-                    lamp.setState(state);
+                    lamp.setState(adjustedLampState(lampLocation));
                     level.sendBlockUpdated(lampLocation, level.getBlockState(lampLocation),
                             level.getBlockState(lampLocation), 3);
                 } else {
@@ -216,6 +267,22 @@ public class RelayBlockEntity extends SyncableBlockEntity implements IScannerSub
             ModRealisticTrafficControl.LOGGER.error(
                     "Crossing Lamp at {} has been unpaired due to an error", positionToRemove);
         }
+    }
+
+    private CrossingLampState adjustedLampState(BlockPos lampLocation) {
+        if (PowerGridCompat.requiresLivePower(level, lampLocation)
+                && !PowerGridCompat.isEnergizedNearby(level, lampLocation)) {
+            return CrossingLampState.Off;
+        }
+        if (state != CrossingLampState.Flash1 && state != CrossingLampState.Flash2) {
+            return state;
+        }
+        // Alternate nearby lamp blocks to avoid lockstep flashing on pedestrian pairs.
+        int parity = Math.floorMod(lampLocation.getX() + lampLocation.getY() + lampLocation.getZ(), 2);
+        if (parity == 0) {
+            return state;
+        }
+        return state == CrossingLampState.Flash1 ? CrossingLampState.Flash2 : CrossingLampState.Flash1;
     }
 
     private boolean shouldBellsRing() {
@@ -557,6 +624,19 @@ public class RelayBlockEntity extends SyncableBlockEntity implements IScannerSub
         return true;
     }
 
+    private void refreshManualPower() {
+        boolean want = false;
+        for (BlockPos part : enumerateRelayMultiblockParts()) {
+            if (level.hasNeighborSignal(part) || PowerGridCompat.isEnergizedNearby(level, part)) {
+                want = true;
+                break;
+            }
+        }
+        if (want != isPowered) {
+            setPowered(want);
+        }
+    }
+
     public void setPowered(boolean powered) {
         this.isPowered = powered;
         alreadyNotifiedGates = false;
@@ -600,7 +680,8 @@ public class RelayBlockEntity extends SyncableBlockEntity implements IScannerSub
 
     private final UUID islandRequest = UUID.fromString("da2e3487-9fe6-4369-80bc-4b5ce40f0530");
     private final UUID borderRequest = UUID.fromString("c4ba0fb7-3df0-4c18-9edf-491d825899d9");
-    private long lastMovementWorldTime = 0;
+    private long lastTrainSeenWorldTime = 0;
+    private static final int CARRIAGE_HOLD_TICKS = 200;
 
     @Override
     public List<ScanRequest> getScanRequests() {
@@ -630,6 +711,7 @@ public class RelayBlockEntity extends SyncableBlockEntity implements IScannerSub
         UUID scanRequestID = scanCompleteData.getScanRequest().getRequestID();
         if (scanRequestID.equals(islandRequest)) {
             if (scanCompleteData.getTrainFound()) {
+                lastTrainSeenWorldTime = level.getGameTime();
                 if (!automatedPowerOverride) {
                     alreadyNotifiedBells = false;
                     alreadyNotifiedGates = false;
@@ -644,33 +726,42 @@ public class RelayBlockEntity extends SyncableBlockEntity implements IScannerSub
                 return;
             }
             if (scanCompleteData.getTrainFound()) {
-                if (scanCompleteData.getTrainMovingTowardsDestination()) {
-                    lastMovementWorldTime = level.getGameTime();
-                }
-                if (!automatedPowerOverride && scanCompleteData.getTrainMovingTowardsDestination()) {
+                lastTrainSeenWorldTime = level.getGameTime();
+                if (!automatedPowerOverride) {
                     alreadyNotifiedBells = false;
                     alreadyNotifiedGates = false;
                     alreadyNotifiedWigWags = false;
                     alreadyNotifiedVerticalWigWags = false;
                     setAutomatedPowered(true);
                 }
-                if (!(automatedPowerOverride && !scanCompleteData.getTrainMovingTowardsDestination()
-                        && level.getGameTime() - lastMovementWorldTime > 200)) {
-                    scanCompleteData.cancelScanningForTileEntity();
-                }
+                scanCompleteData.cancelScanningForTileEntity();
             }
         }
     }
 
     @Override
     public void onScanRequestsCompleted() {
-        if (automatedPowerOverride) {
-            alreadyNotifiedBells = false;
-            alreadyNotifiedGates = false;
-            alreadyNotifiedWigWags = false;
-            alreadyNotifiedVerticalWigWags = false;
-            setAutomatedPowered(false);
+        if (!automatedPowerOverride) {
+            return;
         }
+        if (holdingForCarriages()) {
+            return;
+        }
+        for (Tuple<BlockPos, Direction> island : shuntIslandOriginsAndFacing) {
+            if (TrainSignalCompat.isOccupied(level, island.getFirst(), island.getSecond())) {
+                return;
+            }
+        }
+        for (Tuple<BlockPos, Direction> border : shuntBorderOriginsAndFacing) {
+            if (TrainSignalCompat.isApproach(level, border.getFirst(), border.getSecond())) {
+                return;
+            }
+        }
+        alreadyNotifiedBells = false;
+        alreadyNotifiedGates = false;
+        alreadyNotifiedWigWags = false;
+        alreadyNotifiedVerticalWigWags = false;
+        setAutomatedPowered(false);
     }
 
     @Override

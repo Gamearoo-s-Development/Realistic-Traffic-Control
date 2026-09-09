@@ -2,6 +2,7 @@ package com.gamearoosdevelopment.realistictrafficcontrol.blocks;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.menu.Type3BarrierMenu;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.Type3BarrierBlockEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.CustomAngleCalculator;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.RTCBlockProperties;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.RTCShapes;
 
@@ -52,7 +53,17 @@ public abstract class BlockType3BarrierBase extends Block implements EntityBlock
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return defaultBlockState().setValue(FACING, context.getHorizontalDirection());
+        return defaultBlockState().setValue(FACING, CustomAngleCalculator.horizontalFacingForPlacement(context));
+    }
+
+    @Override
+    protected BlockState rotate(BlockState state, net.minecraft.world.level.block.Rotation rotation) {
+        return RTCProperties.rotateFacing(state, rotation, FACING);
+    }
+
+    @Override
+    protected BlockState mirror(BlockState state, net.minecraft.world.level.block.Mirror mirror) {
+        return RTCProperties.mirrorFacing(state, mirror, FACING);
     }
 
     @Override
@@ -187,5 +198,11 @@ public abstract class BlockType3BarrierBase extends Block implements EntityBlock
                 furthestLeft.syncConnectedBarriers(false);
             }
         }
+    }
+
+    @Override
+    protected java.util.List<ItemStack> getDrops(BlockState state,
+            net.minecraft.world.level.storage.loot.LootParams.Builder params) {
+        return com.gamearoosdevelopment.realistictrafficcontrol.util.RTCDrops.self(state);
     }
 }

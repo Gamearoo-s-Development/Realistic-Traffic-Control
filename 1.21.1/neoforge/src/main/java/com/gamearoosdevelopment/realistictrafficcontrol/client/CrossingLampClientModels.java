@@ -38,6 +38,7 @@ public final class CrossingLampClientModels {
         event.register(ModelResourceLocation.standalone(modelLocation("crossing_gate_lamps_empty")));
         event.register(ModelResourceLocation.standalone(modelLocation("crossing_gate_lamps_empty_flash1")));
         event.register(ModelResourceLocation.standalone(modelLocation("crossing_gate_lamps_empty_flash2")));
+        event.register(ModelResourceLocation.standalone(modelLocation("overhead_lamps")));
     }
 
     /** Map 1.12-style {@code rotation=X,state=Y} variant keys onto standalone baked lamp models. */

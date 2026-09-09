@@ -1,6 +1,3 @@
 {
-    "parent": "item/generated",
-    "textures": {
-        "layer0": "realistictrafficcontrol:item/street_light_double"
-    }
+  "parent": "realistictrafficcontrol:block/invisible"
 }

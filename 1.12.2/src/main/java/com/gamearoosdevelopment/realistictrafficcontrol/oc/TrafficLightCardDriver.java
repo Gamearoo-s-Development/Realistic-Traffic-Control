@@ -22,7 +22,6 @@ import com.gamearoosdevelopment.realistictrafficcontrol.item.ItemTrafficLightCar
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.BaseTrafficLightTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.DigitalSignControllerTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.DigitalSignTileEntity;
-import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.MessageBoardControllerTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.MessageBoardTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.PedestrianButtonTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLightControlBoxTileEntity;
@@ -340,30 +339,30 @@ public class TrafficLightCardDriver extends DriverItem {
 			return new Object[] { true, mode.name() };
 		}
 
-		@Callback(doc = "linkMessageBoard(controllerX:int, controllerY:int, controllerZ:int, boardX:int, boardY:int, boardZ:int):boolean, string -- Links a message board to its controller")
+		@Callback(doc = "linkMessageBoard(controllerX:int, controllerY:int, controllerZ:int, boardX:int, boardY:int, boardZ:int):boolean, string -- Links a follower message board to a master board")
 		public Object[] linkMessageBoard(Context c, Arguments args) throws Exception {
 			BlockPos controllerPos = getBlockPosFromArgsAt(args, 0);
 			BlockPos boardPos = getBlockPosFromArgsAt(args, 3);
 			TileEntity controller = host.world().getTileEntity(controllerPos);
 			TileEntity board = host.world().getTileEntity(boardPos);
-			if (!(controller instanceof MessageBoardControllerTileEntity) || !(board instanceof MessageBoardTileEntity)) {
-				return new Object[] { false, "Invalid message board controller or board position" };
+			if (!(controller instanceof MessageBoardTileEntity) || !(board instanceof MessageBoardTileEntity)) {
+				return new Object[] { false, "Invalid message board or board position" };
 			}
-			return new Object[] { ((MessageBoardControllerTileEntity) controller).linkBoard(boardPos), "Link updated" };
+			return new Object[] { ((MessageBoardTileEntity) controller).linkBoard(boardPos), "Link updated" };
 		}
 
 		@Callback(doc = "setMessageBoardText(controllerX:int, controllerY:int, controllerZ:int, line:int, text:string):boolean, string -- Sets one line on all linked message boards")
 		public Object[] setMessageBoardText(Context c, Arguments args) throws Exception {
 			BlockPos controllerPos = getBlockPosFromArgsAt(args, 0);
 			TileEntity tile = host.world().getTileEntity(controllerPos);
-			if (!(tile instanceof MessageBoardControllerTileEntity)) {
-				return new Object[] { false, "No message board controller at position" };
+			if (!(tile instanceof MessageBoardTileEntity)) {
+				return new Object[] { false, "No message board at position" };
 			}
 			int line = args.checkInteger(3);
 			if (line < 0 || line >= MessageBoardTileEntity.MAX_LINES) {
 				return new Object[] { false, "Line must be between 0 and " + (MessageBoardTileEntity.MAX_LINES - 1) };
 			}
-			int updated = ((MessageBoardControllerTileEntity) tile).setText(line, args.checkString(4));
+			int updated = ((MessageBoardTileEntity) tile).setText(line, args.checkString(4));
 			return new Object[] { true, updated };
 		}
 
@@ -371,36 +370,36 @@ public class TrafficLightCardDriver extends DriverItem {
 		public Object[] clearMessageBoards(Context c, Arguments args) throws Exception {
 			BlockPos controllerPos = getBlockPosFromArgsAt(args, 0);
 			TileEntity tile = host.world().getTileEntity(controllerPos);
-			if (!(tile instanceof MessageBoardControllerTileEntity)) {
-				return new Object[] { false, "No message board controller at position" };
+			if (!(tile instanceof MessageBoardTileEntity)) {
+				return new Object[] { false, "No message board at position" };
 			}
-			return new Object[] { true, ((MessageBoardControllerTileEntity) tile).clearBoards() };
+			return new Object[] { true, ((MessageBoardTileEntity) tile).clearBoards() };
 		}
 
 		@Callback(doc = "setMessageBoardBrightness(controllerX:int, controllerY:int, controllerZ:int, brightness:number):boolean, string -- Sets linked message board brightness from 0.1 to 1")
 		public Object[] setMessageBoardBrightness(Context c, Arguments args) throws Exception {
 			BlockPos controllerPos = getBlockPosFromArgsAt(args, 0);
 			TileEntity tile = host.world().getTileEntity(controllerPos);
-			if (!(tile instanceof MessageBoardControllerTileEntity)) {
-				return new Object[] { false, "No message board controller at position" };
+			if (!(tile instanceof MessageBoardTileEntity)) {
+				return new Object[] { false, "No message board at position" };
 			}
-			return new Object[] { true, ((MessageBoardControllerTileEntity) tile).setBrightness((float) args.checkDouble(3)) };
+			return new Object[] { true, ((MessageBoardTileEntity) tile).setBrightness((float) args.checkDouble(3)) };
 		}
 
 		@Callback(doc = "setMessageBoardTextScale(controllerX:int, controllerY:int, controllerZ:int, scale:number):boolean, string -- Sets text scale from 0.5 to 1.5")
 		public Object[] setMessageBoardTextScale(Context c, Arguments args) throws Exception {
 			TileEntity tile = host.world().getTileEntity(getBlockPosFromArgsAt(args, 0));
-			if (!(tile instanceof MessageBoardControllerTileEntity)) {
-				return new Object[] { false, "No message board controller at position" };
+			if (!(tile instanceof MessageBoardTileEntity)) {
+				return new Object[] { false, "No message board at position" };
 			}
-			return new Object[] { true, ((MessageBoardControllerTileEntity) tile).setTextScale((float) args.checkDouble(3)) };
+			return new Object[] { true, ((MessageBoardTileEntity) tile).setTextScale((float) args.checkDouble(3)) };
 		}
 
 		@Callback(doc = "setMessageBoardFontStyle(controllerX:int, controllerY:int, controllerZ:int, style:string):boolean, string -- Styles: REGULAR, BOLD, ITALIC, BOLD_ITALIC")
 		public Object[] setMessageBoardFontStyle(Context c, Arguments args) throws Exception {
 			TileEntity tile = host.world().getTileEntity(getBlockPosFromArgsAt(args, 0));
-			if (!(tile instanceof MessageBoardControllerTileEntity)) {
-				return new Object[] { false, "No message board controller at position" };
+			if (!(tile instanceof MessageBoardTileEntity)) {
+				return new Object[] { false, "No message board at position" };
 			}
 			String requested = args.checkString(3).trim().toUpperCase().replace(' ', '_');
 			MessageBoardTileEntity.FontStyle style;
@@ -409,65 +408,68 @@ public class TrafficLightCardDriver extends DriverItem {
 			} catch (IllegalArgumentException ex) {
 				return new Object[] { false, "Unknown font style: " + requested };
 			}
-			return new Object[] { true, ((MessageBoardControllerTileEntity) tile).setFontStyle(style) };
+			return new Object[] { true, ((MessageBoardTileEntity) tile).setFontStyle(style) };
 		}
 
-		@Callback(doc = "setMessageBoardMode(controllerX:int, controllerY:int, controllerZ:int, mode:string):boolean, string -- Sets TEXT, ARROW_LEFT, ARROW_RIGHT, CAUTION, or OFF")
+		@Callback(doc = "setMessageBoardMode(controllerX:int, controllerY:int, controllerZ:int, mode:string):boolean, string -- Sets TEXT, ARROW_LEFT, ARROW_RIGHT, ARROW_BOTH, CAUTION, or OFF")
 		public Object[] setMessageBoardMode(Context c, Arguments args) throws Exception {
 			BlockPos controllerPos = getBlockPosFromArgsAt(args, 0);
 			TileEntity tile = host.world().getTileEntity(controllerPos);
-			if (!(tile instanceof MessageBoardControllerTileEntity)) {
-				return new Object[] { false, "No message board controller at position" };
+			if (!(tile instanceof MessageBoardTileEntity)) {
+				return new Object[] { false, "No message board at position" };
 			}
-			String requested = args.checkString(3).trim().toUpperCase();
+			String requested = args.checkString(3).trim().toUpperCase().replace(' ', '_');
 			if ("ARROW_MERGE_LEFT".equals(requested)) requested = "ARROW_LEFT";
 			if ("ARROW_MERGE_RIGHT".equals(requested)) requested = "ARROW_RIGHT";
+			if ("ARROW_LEFT_RIGHT".equals(requested) || "ARROW_COMBINED".equals(requested) || "BOTH".equals(requested)) {
+				requested = "ARROW_BOTH";
+			}
 			MessageBoardTileEntity.DisplayMode mode;
 			try {
 				mode = MessageBoardTileEntity.DisplayMode.valueOf(requested);
 			} catch (IllegalArgumentException ex) {
 				return new Object[] { false, "Unknown mode: " + requested };
 			}
-			return new Object[] { true, ((MessageBoardControllerTileEntity) tile).setMode(mode) };
+			return new Object[] { true, ((MessageBoardTileEntity) tile).setMode(mode) };
 		}
 
 		@Callback(doc = "setMessageBoardColor(controllerX:int, controllerY:int, controllerZ:int, rgb:int):boolean, string -- Sets the RGB text/lamp color on linked boards")
 		public Object[] setMessageBoardColor(Context c, Arguments args) throws Exception {
 			BlockPos controllerPos = getBlockPosFromArgsAt(args, 0);
 			TileEntity tile = host.world().getTileEntity(controllerPos);
-			if (!(tile instanceof MessageBoardControllerTileEntity)) {
-				return new Object[] { false, "No message board controller at position" };
+			if (!(tile instanceof MessageBoardTileEntity)) {
+				return new Object[] { false, "No message board at position" };
 			}
-			return new Object[] { true, ((MessageBoardControllerTileEntity) tile).setColor(args.checkInteger(3)) };
+			return new Object[] { true, ((MessageBoardTileEntity) tile).setColor(args.checkInteger(3)) };
 		}
 
 		@Callback(doc = "addMessageBoardRotationPage(controllerX:int, controllerY:int, controllerZ:int):boolean, string -- Adds the controller's current text, arrow mode, color, and brightness as a rotation page")
 		public Object[] addMessageBoardRotationPage(Context c, Arguments args) throws Exception {
 			TileEntity tile = host.world().getTileEntity(getBlockPosFromArgsAt(args, 0));
-			if (!(tile instanceof MessageBoardControllerTileEntity)) {
-				return new Object[] { false, "No message board controller at position" };
+			if (!(tile instanceof MessageBoardTileEntity)) {
+				return new Object[] { false, "No message board at position" };
 			}
-			boolean added = ((MessageBoardControllerTileEntity) tile).addCurrentPage();
+			boolean added = ((MessageBoardTileEntity) tile).addCurrentPage();
 			return new Object[] { added, added ? "Rotation page added" : "Rotation is full" };
 		}
 
 		@Callback(doc = "clearMessageBoardRotation(controllerX:int, controllerY:int, controllerZ:int):boolean -- Clears the controller page rotation")
 		public Object[] clearMessageBoardRotation(Context c, Arguments args) throws Exception {
 			TileEntity tile = host.world().getTileEntity(getBlockPosFromArgsAt(args, 0));
-			if (!(tile instanceof MessageBoardControllerTileEntity)) {
-				return new Object[] { false, "No message board controller at position" };
+			if (!(tile instanceof MessageBoardTileEntity)) {
+				return new Object[] { false, "No message board at position" };
 			}
-			((MessageBoardControllerTileEntity) tile).clearRotationPages();
+			((MessageBoardTileEntity) tile).clearRotationPages();
 			return new Object[] { true };
 		}
 
 		@Callback(doc = "setMessageBoardSchedule(controllerX:int, controllerY:int, controllerZ:int, mode:string, amountOrTimes:any?, times:string?):boolean, string -- Interval modes accept an amount; GAME_TIMES accepts HH:MM times")
 		public Object[] setMessageBoardSchedule(Context c, Arguments args) throws Exception {
 			TileEntity tile = host.world().getTileEntity(getBlockPosFromArgsAt(args, 0));
-			if (!(tile instanceof MessageBoardControllerTileEntity)) {
-				return new Object[] { false, "No message board controller at position" };
+			if (!(tile instanceof MessageBoardTileEntity)) {
+				return new Object[] { false, "No message board at position" };
 			}
-			MessageBoardControllerTileEntity controller = (MessageBoardControllerTileEntity) tile;
+			MessageBoardTileEntity controller = (MessageBoardTileEntity) tile;
 			DisplaySchedule.Mode mode = DisplaySchedule.Mode.fromName(args.checkString(3));
 			controller.setScheduleMode(mode);
 			if (args.count() >= 5 && args.isInteger(4)) controller.setScheduleIntervalAmount(args.checkInteger(4));

@@ -60,7 +60,6 @@ public final class ModCreativeTabs {
                 output.accept(ModItems.SCREWDRIVER.get());
                 output.accept(ModItems.CROSSING_RELAY_TUNER.get());
                 output.accept(ModItems.DIGITAL_SIGN_CONTROLLER.get());
-                output.accept(ModItems.MESSAGE_BOARD_CONTROLLER.get());
             }));
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CONES = TABS.register("cones_tab",

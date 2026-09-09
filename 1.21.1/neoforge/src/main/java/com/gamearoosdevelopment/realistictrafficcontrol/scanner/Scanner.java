@@ -12,6 +12,7 @@ import java.util.UUID;
 import com.gamearoosdevelopment.realistictrafficcontrol.Config;
 import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficControl;
 import com.gamearoosdevelopment.realistictrafficcontrol.compat.CreateCompat;
+import com.gamearoosdevelopment.realistictrafficcontrol.compat.TrainSignalCompat;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.ImmersiveRailroadingHelper;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.Tuple;
 
@@ -52,7 +53,8 @@ public class Scanner {
     }
 
     public void tick(ServerLevel world) {
-        if (!ModRealisticTrafficControl.IR_INSTALLED && !ModRealisticTrafficControl.CREATE_INSTALLED) {
+        if (!ModRealisticTrafficControl.IR_INSTALLED && !ModRealisticTrafficControl.TRACK_API_INSTALLED
+                && !ModRealisticTrafficControl.CREATE_INSTALLED) {
             return;
         }
         try {
@@ -74,18 +76,44 @@ public class Scanner {
                     continue;
                 }
 
-                if (scanSession.getBlocksScannedThisSession() == 0
-                        && ModRealisticTrafficControl.CREATE_INSTALLED) {
-                    CreateCompat.TrainScanResult createResult =
-                            CreateCompat.scanForTrain(request, maxDistance(request), world);
-                    if (createResult.trainFound()) {
+                if (scanSession.getBlocksScannedThisSession() == 0) {
+                    boolean ghost = request.getRequestID().equals(ISLAND_REQUEST)
+                            ? TrainSignalCompat.isOccupied(world, request.getStartingPos(),
+                                    request.getStartDirection())
+                            : TrainSignalCompat.isApproach(world, request.getStartingPos(),
+                                    request.getStartDirection());
+                    if (ghost) {
                         scanSession.setFoundTrain(true);
-                    }
-                    if (createResult.movingTowardsDestination()) {
                         scanSession.setTrainMovingTowardsDestination(true);
                     }
+                    if (ModRealisticTrafficControl.CREATE_INSTALLED) {
+                        CreateCompat.TrainScanResult createResult =
+                                CreateCompat.scanForTrain(request, maxDistance(request), world);
+                        if (createResult.trainFound()) {
+                            scanSession.setFoundTrain(true);
+                        }
+                        if (createResult.movingTowardsDestination()) {
+                            scanSession.setTrainMovingTowardsDestination(true);
+                        }
+                    }
+                    if (ImmersiveRailroadingHelper.isAvailable()) {
+                        ImmersiveRailroadingHelper.TrainScanResult irResult =
+                                ImmersiveRailroadingHelper.scanForTrain(request, maxDistance(request), world);
+                        if (irResult.trainFound()) {
+                            scanSession.setFoundTrain(true);
+                        }
+                        if (irResult.movingTowardsDestination()) {
+                            scanSession.setTrainMovingTowardsDestination(true);
+                        }
+                    }
 
-                    if (!ModRealisticTrafficControl.IR_INSTALLED) {
+                    // Create-only worlds have no IR track to walk. IR/Track API still walk the
+                    // rail like 1.12, but a corridor hit is already enough to fire the relay.
+                    if (!ImmersiveRailroadingHelper.isAvailable()) {
+                        completeRequest(scanSession, request, false);
+                        continue;
+                    }
+                    if (scanSession.isFoundTrain()) {
                         completeRequest(scanSession, request, false);
                         continue;
                     }

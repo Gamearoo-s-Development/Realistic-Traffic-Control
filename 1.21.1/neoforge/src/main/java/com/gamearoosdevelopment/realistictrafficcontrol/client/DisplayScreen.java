@@ -11,7 +11,6 @@ import com.gamearoosdevelopment.realistictrafficcontrol.signs.SignHorizontalAlig
 import com.gamearoosdevelopment.realistictrafficcontrol.signs.SignVerticalAlignment;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.DigitalSignControllerBlockEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.MessageBoardBlockEntity;
-import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.MessageBoardControllerBlockEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.util.DisplaySchedule;
 
 import net.minecraft.client.gui.GuiGraphics;
@@ -24,9 +23,9 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 /**
- * Three deliberately separate display editors behind the shared display menu:
- * the simple board editor, the full message-board controller, and the digital
- * sign controller. Their controls and save behavior mirror the 1.12.2 GUIs.
+ * Two display editors behind the shared display menu: the message board
+ * (pages, schedule, and arrow modes baked into the board itself) and the
+ * digital sign controller. Digital signs stay on their own controller.
  */
 public final class DisplayScreen extends AbstractContainerScreen<DisplayMenu> {
     private BlockEntity display;
@@ -58,24 +57,18 @@ public final class DisplayScreen extends AbstractContainerScreen<DisplayMenu> {
 
     @Override
     protected void init() {
+        imageWidth = width;
+        imageHeight = height;
         super.init();
         display = minecraft.player == null ? null : menu.getDisplay(minecraft.player);
         if (display instanceof DigitalSignControllerBlockEntity controller) {
             initDigitalController(controller);
-        } else if (display instanceof MessageBoardControllerBlockEntity controller) {
-            initMessageController(controller);
         } else if (display instanceof MessageBoardBlockEntity board) {
             initMessageBoard(board);
         }
     }
 
-    private void initMessageBoard(MessageBoardBlockEntity board) {
-        int x = width / 2 - 100;
-        int y = height / 2 - 40;
-        addLineFields(board, x, y);
-    }
-
-    private void initMessageController(MessageBoardControllerBlockEntity controller) {
+    private void initMessageBoard(MessageBoardBlockEntity controller) {
         int startY = Math.max(18, height / 2 - 120);
         int controlsX = Math.max(4, width / 2 - 206);
         int previewX = width / 2 + 8;
@@ -85,7 +78,7 @@ public final class DisplayScreen extends AbstractContainerScreen<DisplayMenu> {
         modeButton = addRenderableWidget(Button.builder(modeLabel(controller), b -> {
             saveLines(controller);
             controller.setMode(controller.getMode().next());
-            b.setMessage(modeLabel(controller));
+            persistMessageStyle(controller);
         }).bounds(controlsX, startY + 60, 200, 20).build());
         addRenderableWidget(Button.builder(Component.literal("<"), b -> selectMessagePage(controller, -1))
                 .bounds(controlsX, startY + 82, 30, 20).build());
@@ -124,23 +117,23 @@ public final class DisplayScreen extends AbstractContainerScreen<DisplayMenu> {
 
         fontButton = addRenderableWidget(Button.builder(fontLabel(controller), b -> {
             controller.setFontStyle(controller.getFontStyle().next());
-            refreshMessageControls(controller);
+            persistMessageStyle(controller);
         }).bounds(previewX, startY + 90, 200, 20).build());
         addRenderableWidget(Button.builder(Component.literal("-"), b -> {
             controller.setTextScale(controller.getTextScale() - .1F);
-            refreshMessageControls(controller);
+            persistMessageStyle(controller);
         }).bounds(previewX, startY + 112, 28, 20).build());
         sizeButton = addRenderableWidget(Button.builder(sizeLabel(controller), b -> {})
                 .bounds(previewX + 32, startY + 112, 136, 20).build());
         sizeButton.active = false;
         addRenderableWidget(Button.builder(Component.literal("+"), b -> {
             controller.setTextScale(controller.getTextScale() + .1F);
-            refreshMessageControls(controller);
+            persistMessageStyle(controller);
         }).bounds(previewX + 172, startY + 112, 28, 20).build());
         brightnessButton = addRenderableWidget(Button.builder(brightnessLabel(controller), b -> {
             float next = controller.getBrightness() >= 1F ? .1F : controller.getBrightness() + .1F;
             controller.setBrightness(next);
-            refreshMessageControls(controller);
+            persistMessageStyle(controller);
         }).bounds(previewX, startY + 134, 98, 20).build());
         color = edit(previewX + 102, startY + 134, 98, 20, 6,
                 String.format("%06X", controller.getColor()), "RGB hex");
@@ -235,7 +228,7 @@ public final class DisplayScreen extends AbstractContainerScreen<DisplayMenu> {
         return addRenderableWidget(box);
     }
 
-    private void selectMessagePage(MessageBoardControllerBlockEntity controller, int delta) {
+    private void selectMessagePage(MessageBoardBlockEntity controller, int delta) {
         saveMessageController(controller, true);
         if (controller.getRotationPageCount() > 0) {
             editingPage = Math.floorMod(editingPage + delta, controller.getRotationPageCount());
@@ -245,7 +238,15 @@ public final class DisplayScreen extends AbstractContainerScreen<DisplayMenu> {
         sync(controller);
     }
 
-    private void saveMessageController(MessageBoardControllerBlockEntity controller, boolean updatePage) {
+    private void persistMessageStyle(MessageBoardBlockEntity controller) {
+        refreshMessageControls(controller);
+        if (editingPage >= 0) {
+            controller.updateCurrentPage();
+        }
+        sync(controller);
+    }
+
+    private void saveMessageController(MessageBoardBlockEntity controller, boolean updatePage) {
         saveLines(controller);
         if (color != null) {
             try {
@@ -257,13 +258,13 @@ public final class DisplayScreen extends AbstractContainerScreen<DisplayMenu> {
         if (updatePage && editingPage >= 0) controller.updateCurrentPage();
     }
 
-    private void reloadMessage(MessageBoardControllerBlockEntity controller) {
+    private void reloadMessage(MessageBoardBlockEntity controller) {
         for (int i = 0; i < lines.length; i++) lines[i].setValue(controller.getLine(i));
         color.setValue(String.format("%06X", controller.getColor()));
         refreshMessageControls(controller);
     }
 
-    private void refreshMessageControls(MessageBoardControllerBlockEntity controller) {
+    private void refreshMessageControls(MessageBoardBlockEntity controller) {
         editingPage = controller.getRotationIndex();
         if (pageButton != null) pageButton.setMessage(pageLabel(controller));
         if (modeButton != null) modeButton.setMessage(modeLabel(controller));
@@ -272,13 +273,13 @@ public final class DisplayScreen extends AbstractContainerScreen<DisplayMenu> {
         if (brightnessButton != null) brightnessButton.setMessage(brightnessLabel(controller));
     }
 
-    private void commitMessageSchedule(MessageBoardControllerBlockEntity controller) {
+    private void commitMessageSchedule(MessageBoardBlockEntity controller) {
         if (interval != null) controller.setScheduleIntervalAmount(
                 positiveInt(interval.getValue(), controller.getScheduleIntervalAmount()));
         if (gameTimes != null) controller.setScheduleTimes(gameTimes.getValue());
     }
 
-    private void refreshSchedule(MessageBoardControllerBlockEntity controller) {
+    private void refreshSchedule(MessageBoardBlockEntity controller) {
         scheduleButton.setMessage(scheduleLabel(controller));
         interval.setEditable(controller.getScheduleMode().isInterval());
         gameTimes.setEditable(controller.getScheduleMode() == DisplaySchedule.Mode.GAME_TIMES);
@@ -406,12 +407,12 @@ public final class DisplayScreen extends AbstractContainerScreen<DisplayMenu> {
     private static Component brightnessLabel(MessageBoardBlockEntity board) {
         return Component.literal("Brightness: " + Math.round(board.getBrightness() * 100) + "%");
     }
-    private static Component pageLabel(MessageBoardControllerBlockEntity controller) {
+    private static Component pageLabel(MessageBoardBlockEntity controller) {
         int count = controller.getRotationPageCount();
         return Component.literal(count == 0 ? "Page 0 / 0"
                 : "Page " + (controller.getRotationIndex() + 1) + " / " + count);
     }
-    private static Component scheduleLabel(MessageBoardControllerBlockEntity controller) {
+    private static Component scheduleLabel(MessageBoardBlockEntity controller) {
         return Component.literal("Timing: " + scheduleText(controller.getScheduleMode(),
                 controller.getScheduleIntervalAmount()));
     }
@@ -453,11 +454,8 @@ public final class DisplayScreen extends AbstractContainerScreen<DisplayMenu> {
         if (display instanceof DigitalSignControllerBlockEntity controller) {
             saveDigitalPage(controller);
             sync(controller);
-        } else if (display instanceof MessageBoardControllerBlockEntity controller) {
-            saveMessageController(controller, true);
-            sync(controller);
         } else if (display instanceof MessageBoardBlockEntity board) {
-            saveLines(board);
+            saveMessageController(board, true);
             sync(board);
         }
         super.onClose();
@@ -466,25 +464,21 @@ public final class DisplayScreen extends AbstractContainerScreen<DisplayMenu> {
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         renderBackground(graphics, mouseX, mouseY, partialTick);
-        if (display instanceof MessageBoardControllerBlockEntity controller) {
-            renderMessageController(graphics, controller);
-        } else if (display instanceof MessageBoardBlockEntity) {
-            graphics.drawCenteredString(font, "Message Board", width / 2, height / 2 - 78, 0xFFFFA000);
-            graphics.drawCenteredString(font, "Use the controller or OpenComputers for remote control.",
-                    width / 2, height / 2 + 42, 0xFFAAAAAA);
+        if (display instanceof MessageBoardBlockEntity board) {
+            renderMessageBoard(graphics, board);
         } else if (display instanceof DigitalSignControllerBlockEntity controller) {
             renderDigitalController(graphics, controller);
         }
         super.render(graphics, mouseX, mouseY, partialTick);
     }
 
-    private void renderMessageController(GuiGraphics graphics, MessageBoardControllerBlockEntity controller) {
+    private void renderMessageBoard(GuiGraphics graphics, MessageBoardBlockEntity board) {
         int startY = Math.max(18, height / 2 - 120);
         int previewX = width / 2 + 8;
-        graphics.drawCenteredString(font, "Message / Arrow Board Controller", width / 2, 5, 0xFFFFA000);
-        graphics.drawCenteredString(font, "Linked boards: " + controller.getLinkedBoards().size(),
+        graphics.drawCenteredString(font, "Message / Arrow Board", width / 2, 5, 0xFFFFA000);
+        graphics.drawCenteredString(font, "Linked boards: " + board.getLinkedBoards().size(),
                 width / 2, startY + 211, 0xFFFFFFFF);
-        graphics.drawCenteredString(font, "Use tuner on controller, then board. OpenComputers can also control it.", width / 2,
+        graphics.drawCenteredString(font, "Use tuner on this board, then another. OpenComputers can also control it.", width / 2,
                 startY + 223, 0xFFAAAAAA);
         graphics.drawCenteredString(font, "Interval amount", width / 2 - 106, startY + 149, 0xFFAAAAAA);
         graphics.drawCenteredString(font, "Game times (HH:MM, comma-separated)", width / 2 - 106,
@@ -495,17 +489,30 @@ public final class DisplayScreen extends AbstractContainerScreen<DisplayMenu> {
         int bottom = startY + 86;
         graphics.fill(left, top, right, bottom, 0xFF181A1C);
         graphics.fill(left + 5, top + 5, right - 5, bottom - 5, 0xFF050606);
-        int lit = litColor(controller);
-        if (controller.getMode() == MessageBoardBlockEntity.DisplayMode.TEXT) {
+        int lit = litColor(board);
+        float scale = board.getTextScale();
+        graphics.enableScissor(left + 5, top + 5, right - 5, bottom - 5);
+        graphics.pose().pushPose();
+        if (board.getMode() == MessageBoardBlockEntity.DisplayMode.TEXT) {
+            graphics.pose().translate((left + right) / 2F, top + 14, 0);
+            graphics.pose().scale(scale, scale, 1);
             for (int i = 0; i < lines.length; i++) {
-                String text = styled(lines[i].getValue(), controller.getFontStyle());
-                graphics.drawCenteredString(font, text, (left + right) / 2, top + 14 + i * 20, lit);
+                String text = styled(lines[i].getValue(), board.getFontStyle());
+                graphics.drawCenteredString(font, text, 0, i * 20, lit);
             }
-        } else if (controller.getMode() != MessageBoardBlockEntity.DisplayMode.OFF) {
-            String text = controller.getMode() == MessageBoardBlockEntity.DisplayMode.ARROW_LEFT ? "\u2190"
-                    : controller.getMode() == MessageBoardBlockEntity.DisplayMode.ARROW_RIGHT ? "\u2192" : "CAUTION";
-            graphics.drawCenteredString(font, text, (left + right) / 2, (top + bottom) / 2 - 4, lit);
+        } else if (board.getMode() != MessageBoardBlockEntity.DisplayMode.OFF) {
+            String text = switch (board.getMode()) {
+                case ARROW_LEFT -> "\u2190";
+                case ARROW_RIGHT -> "\u2192";
+                case ARROW_BOTH -> "\u2190\u2500\u2500\u2192";
+                default -> "CAUTION";
+            };
+            graphics.pose().translate((left + right) / 2F, (top + bottom) / 2F - 4, 0);
+            graphics.pose().scale(scale, scale, 1);
+            graphics.drawCenteredString(font, text, 0, 0, lit);
         }
+        graphics.pose().popPose();
+        graphics.disableScissor();
     }
 
     private void renderDigitalController(GuiGraphics graphics, DigitalSignControllerBlockEntity controller) {
@@ -647,6 +654,9 @@ public final class DisplayScreen extends AbstractContainerScreen<DisplayMenu> {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (GuiTypingGuard.shouldConsumeInventoryKey(keyCode, scanCode, isTypingInAnyField())) {
+            return true;
+        }
         if (display instanceof DigitalSignControllerBlockEntity controller) {
             Sign sign = getEditingDigitalSign();
             if (digitalTextEditMode && sign != null && !sign.getTextLines().isEmpty()) {
@@ -686,6 +696,26 @@ public final class DisplayScreen extends AbstractContainerScreen<DisplayMenu> {
             }
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    private boolean isTypingInAnyField() {
+        if (digitalTextEditMode) {
+            return true;
+        }
+        if (isFocused(interval) || isFocused(gameTimes) || isFocused(signTime) || isFocused(color)
+                || isFocused(digitalSearch)) {
+            return true;
+        }
+        for (EditBox line : lines) {
+            if (isFocused(line)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isFocused(EditBox field) {
+        return field != null && field.isFocused();
     }
 
     @Override

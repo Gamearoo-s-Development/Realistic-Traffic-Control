@@ -68,38 +68,65 @@ public final class MessageBoardBlockEntityRenderer implements BlockEntityRendere
             }
             pose.popPose();
         } else if (board.getMode() == MessageBoardBlockEntity.DisplayMode.ARROW_LEFT
-                || board.getMode() == MessageBoardBlockEntity.DisplayMode.ARROW_RIGHT) {
-            renderArrow(board, pose, buffers, color);
+                || board.getMode() == MessageBoardBlockEntity.DisplayMode.ARROW_RIGHT
+                || board.getMode() == MessageBoardBlockEntity.DisplayMode.ARROW_BOTH) {
+            renderArrows(board, pose, buffers, color);
         } else if (board.getMode() == MessageBoardBlockEntity.DisplayMode.CAUTION) {
-            renderCaution(pose, buffers, color);
+            renderCaution(board, pose, buffers, color);
         }
     }
 
-    private static void renderArrow(MessageBoardBlockEntity board, PoseStack pose, MultiBufferSource buffers,
+    private static void renderArrows(MessageBoardBlockEntity board, PoseStack pose, MultiBufferSource buffers,
             int color) {
+        float scale = board.getTextScale();
         VertexConsumer out = buffers.getBuffer(RenderType.debugQuads());
         Matrix4f matrix = pose.last().pose();
         float z = .271F;
-        if (board.getMode() == MessageBoardBlockEntity.DisplayMode.ARROW_LEFT) {
-            triangle(out, matrix, .58F, 1.94F, 1.52F, 2.34F, .58F, 2.74F, z, color);
-            rectangle(out, matrix, -.48F, 2.22F, .78F, 2.46F, z, color);
+        MessageBoardBlockEntity.DisplayMode mode = board.getMode();
+        if (mode == MessageBoardBlockEntity.DisplayMode.ARROW_BOTH) {
+            triangle(out, matrix, mapX(.90F, scale), mapY(1.94F, scale),
+                    mapX(1.52F, scale), mapY(2.34F, scale),
+                    mapX(.90F, scale), mapY(2.74F, scale), z, color);
+            triangle(out, matrix, mapX(.10F, scale), mapY(1.94F, scale),
+                    mapX(-.52F, scale), mapY(2.34F, scale),
+                    mapX(.10F, scale), mapY(2.74F, scale), z, color);
+            rectangle(out, matrix, mapX(.10F, scale), mapY(2.22F, scale),
+                    mapX(.90F, scale), mapY(2.46F, scale), z, color);
+        } else if (mode == MessageBoardBlockEntity.DisplayMode.ARROW_LEFT) {
+            triangle(out, matrix, mapX(.58F, scale), mapY(1.94F, scale),
+                    mapX(1.52F, scale), mapY(2.34F, scale),
+                    mapX(.58F, scale), mapY(2.74F, scale), z, color);
+            rectangle(out, matrix, mapX(-.48F, scale), mapY(2.22F, scale),
+                    mapX(.78F, scale), mapY(2.46F, scale), z, color);
         } else {
-            triangle(out, matrix, .42F, 1.94F, -.52F, 2.34F, .42F, 2.74F, z, color);
-            rectangle(out, matrix, .22F, 2.22F, 1.48F, 2.46F, z, color);
+            triangle(out, matrix, mapX(.42F, scale), mapY(1.94F, scale),
+                    mapX(-.52F, scale), mapY(2.34F, scale),
+                    mapX(.42F, scale), mapY(2.74F, scale), z, color);
+            rectangle(out, matrix, mapX(.22F, scale), mapY(2.22F, scale),
+                    mapX(1.48F, scale), mapY(2.46F, scale), z, color);
         }
     }
 
-    private static void renderCaution(PoseStack pose, MultiBufferSource buffers, int color) {
+    private static float mapX(float x, float scale) {
+        return .5F + (x - .5F) * scale;
+    }
+    private static float mapY(float y, float scale) {
+        return 2.34F + (y - 2.34F) * scale;
+    }
+
+    private static void renderCaution(MessageBoardBlockEntity board, PoseStack pose, MultiBufferSource buffers,
+            int color) {
+        float scale = board.getTextScale();
         VertexConsumer out = buffers.getBuffer(RenderType.debugQuads());
         Matrix4f matrix = pose.last().pose();
-        diamond(out, matrix, -.43F, 2.05F, .11F, .14F, .271F, color);
-        diamond(out, matrix, 1.43F, 2.05F, .11F, .14F, .271F, color);
-        diamond(out, matrix, -.43F, 2.63F, .11F, .14F, .271F, color);
-        diamond(out, matrix, 1.43F, 2.63F, .11F, .14F, .271F, color);
+        diamond(out, matrix, mapX(-.43F, scale), mapY(2.05F, scale), .11F * scale, .14F * scale, .271F, color);
+        diamond(out, matrix, mapX(1.43F, scale), mapY(2.05F, scale), .11F * scale, .14F * scale, .271F, color);
+        diamond(out, matrix, mapX(-.43F, scale), mapY(2.63F, scale), .11F * scale, .14F * scale, .271F, color);
+        diamond(out, matrix, mapX(1.43F, scale), mapY(2.63F, scale), .11F * scale, .14F * scale, .271F, color);
         Font font = Minecraft.getInstance().font;
         pose.pushPose();
         pose.translate(.5, 2.46, .269);
-        pose.scale(-1F / 40F, -1F / 40F, 1);
+        pose.scale(-board.getTextScale() / 40F, -board.getTextScale() / 40F, 1);
         String text = "CAUTION";
         font.drawInBatch(text, -font.width(text) / 2F, 0, color, false, pose.last().pose(),
                 buffers, Font.DisplayMode.POLYGON_OFFSET, 0, LightTexture.FULL_BRIGHT);

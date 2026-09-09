@@ -38,6 +38,8 @@ public class SignScreen extends AbstractContainerScreen<SignMenu> {
 
     @Override
     protected void init() {
+        imageWidth = width;
+        imageHeight = height;
         super.init();
         signEntity = menu.getSign(minecraft.player);
         if (signEntity == null) {
@@ -168,6 +170,10 @@ public class SignScreen extends AbstractContainerScreen<SignMenu> {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (GuiTypingGuard.shouldConsumeInventoryKey(keyCode, scanCode,
+                textEditMode || (searchBox != null && searchBox.isFocused()))) {
+            return true;
+        }
         if (textEditMode && signEntity != null && signEntity.getSign() != null) {
             String currentText = signEntity.getTextLine(currentTextLine);
             if (currentText == null) {

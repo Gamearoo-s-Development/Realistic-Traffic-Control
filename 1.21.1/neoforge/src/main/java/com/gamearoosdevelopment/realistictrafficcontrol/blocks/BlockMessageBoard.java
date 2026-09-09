@@ -1,5 +1,6 @@
 package com.gamearoosdevelopment.realistictrafficcontrol.blocks;
 
+import com.gamearoosdevelopment.realistictrafficcontrol.ModBlockEntities;
 import com.gamearoosdevelopment.realistictrafficcontrol.ModItems;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.MessageBoardBlockEntity;
 
@@ -9,6 +10,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -19,10 +22,15 @@ public final class BlockMessageBoard extends BlockDisplayBase {
     @Override public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new MessageBoardBlockEntity(pos, state);
     }
+    @Override public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
+            BlockEntityType<T> type) {
+        return !level.isClientSide && type == ModBlockEntities.MESSAGE_BOARD.get()
+                ? (l, p, s, be) -> MessageBoardBlockEntity.serverTick(l, p, s, (MessageBoardBlockEntity) be)
+                : null;
+    }
     @Override protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
             Player player, BlockHitResult hit) {
-        if (player.getMainHandItem().is(ModItems.SCREWDRIVER.get())
-                || player.getMainHandItem().is(ModItems.MESSAGE_BOARD_CONTROLLER.get())) {
+        if (player.getMainHandItem().is(ModItems.SCREWDRIVER.get())) {
             return InteractionResult.PASS;
         }
         return super.useWithoutItem(state, level, pos, player, hit);

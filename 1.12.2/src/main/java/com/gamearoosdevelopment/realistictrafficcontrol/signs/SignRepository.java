@@ -109,12 +109,12 @@ public class SignRepository {
 			ModRealisticTrafficControl.logger.error("Could not process signpack base mod signpack." , ex);
 		}
 		
-		File signpackDir = new File(Loader.instance().getConfigDir(), "..\\tc_signpacks");
+		File signpackDir = resolveSignpackDirectory();
 		if (!signpackDir.exists())
 		{
 			try
 			{
-				signpackDir.mkdir();
+				signpackDir.mkdirs();
 			}
 			catch(Exception ex)
 			{
@@ -187,6 +187,17 @@ public class SignRepository {
 		}
 		
 		signsInitialized = true;
+	}
+
+	/**
+	 * Signpacks live next to the config folder ({@code .minecraft/tc_signpacks}),
+	 * matching historical Windows behavior on every OS.
+	 */
+	private static File resolveSignpackDirectory() {
+		File configDir = Loader.instance().getConfigDir();
+		File signpackDir = new File(configDir.getParentFile(), "tc_signpacks");
+		ModRealisticTrafficControl.logger.info("Loading signpacks from " + signpackDir.getAbsolutePath());
+		return signpackDir;
 	}
 	
 	private void processSignFile(JsonObject signsFile, ZipFile zipFile, Consumer<String> splashUpdate, IntConsumer stepsUpdate) throws Exception

@@ -2,8 +2,14 @@ package com.gamearoosdevelopment.realistictrafficcontrol.util;
 
 import java.util.Arrays;
 
+import com.gamearoosdevelopment.realistictrafficcontrol.blocks.RTCProperties;
+
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * Converts between the mod's 0-15 "rotation" property (16 rotational steps around Y) and vanilla
@@ -27,6 +33,83 @@ public class CustomAngleCalculator {
         return Mth.floor((double) ((yaw + 180.0F) * 16.0F / 360.0F) + 0.5D) & 15;
     }
 
+    /** 1.12.2 display-block yaw (no +180 offset). */
+    public static int getRotationForYawRaw(float yaw) {
+        return Mth.floor((double) (yaw * 16.0F / 360.0F) + 0.5D) & 15;
+    }
+
+    /**
+     * Placement rotation for 16-step blocks.
+     * Side click: sit on that face, then copy the support's extra 22.5° so a
+     * 45° pole and its frame turn as one (Create-style pair).
+     * Top/bottom clicks copy the support, or fall back to look yaw.
+     */
+    public static int rotationForPlacement(UseOnContext context) {
+        return rotationForPlacement(context, true);
+    }
+
+    public static int rotationForPlacement(UseOnContext context, boolean yawAdds180) {
+        Direction face = context.getClickedFace();
+        BlockState support = supportState(context);
+        if (face.getAxis().isHorizontal()) {
+            int mount = getRotationForFacingCardinal(face);
+            if (support.hasProperty(RTCProperties.ROTATION)) {
+                return (mount + RTCRotation.deltaFromCardinal(support.getValue(RTCProperties.ROTATION))) & 15;
+            }
+            return mount;
+        }
+        if (support.hasProperty(RTCProperties.ROTATION)) {
+            return support.getValue(RTCProperties.ROTATION);
+        }
+        return yawAdds180 ? getRotationForYaw(context.getRotation()) : getRotationForYawRaw(context.getRotation());
+    }
+
+    /**
+     * Horizontal bars use the same 16-step mount as frames: sit on the clicked
+     * face and copy the support's extra 22.5°.
+     */
+    public static int rotationForBarPlacement(UseOnContext context) {
+        return rotationForPlacement(context);
+    }
+
+    /** 4-way facing: bind to the clicked side so the piece meets that face. */
+    public static Direction horizontalFacingForPlacement(BlockPlaceContext context) {
+        Direction face = context.getClickedFace();
+        if (face.getAxis().isHorizontal()) {
+            return face;
+        }
+        BlockState support = supportState(context);
+        if (support.hasProperty(RTCProperties.ROTATION)) {
+            return rotationToFacing(nearestCardinal(support.getValue(RTCProperties.ROTATION)));
+        }
+        return context.getHorizontalDirection();
+    }
+
+    public static int nearestCardinal(int rotation) {
+        int raw = rotation & 15;
+        int best = cardinals[0];
+        int bestDist = 16;
+        for (int c : cardinals) {
+            int dist = Math.abs(raw - c);
+            dist = Math.min(dist, 16 - dist);
+            if (dist < bestDist) {
+                bestDist = dist;
+                best = c;
+            }
+        }
+        return best;
+    }
+
+    public static BlockState supportState(UseOnContext context) {
+        if (context instanceof BlockPlaceContext place) {
+            BlockPos supportPos = place.replacingClickedOnBlock()
+                    ? place.getClickedPos()
+                    : place.getClickedPos().relative(place.getClickedFace().getOpposite());
+            return place.getLevel().getBlockState(supportPos);
+        }
+        return context.getLevel().getBlockState(context.getClickedPos());
+    }
+
     /** Nearest 4-way step (S/W/N/E) for frame-style placement. */
     public static int getRotationForYawCardinal(float yaw) {
         int raw = getRotationForYaw(yaw);
@@ -41,6 +124,19 @@ public class CustomAngleCalculator {
             }
         }
         return best;
+    }
+
+    public static int getRotationForFacingCardinal(Direction facing) {
+        if (facing == null) {
+            return 0;
+        }
+        return switch (facing) {
+            case SOUTH -> 0;
+            case WEST -> 4;
+            case NORTH -> 8;
+            case EAST -> 12;
+            default -> 0;
+        };
     }
 
     public static boolean isCardinal(int rotation) {

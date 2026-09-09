@@ -55,4 +55,10 @@ public class BlockWireAnchor extends Block implements EntityBlock {
         }
         super.onPlace(state, level, pos, oldState, movedByPiston);
     }
+
+    @Override
+    protected java.util.List<net.minecraft.world.item.ItemStack> getDrops(BlockState state,
+            net.minecraft.world.level.storage.loot.LootParams.Builder params) {
+        return com.gamearoosdevelopment.realistictrafficcontrol.util.RTCDrops.self(state);
+    }
 }

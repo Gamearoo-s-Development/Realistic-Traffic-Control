@@ -70,7 +70,17 @@ public class BellBlock extends Block implements EntityBlock, IBellBlock {
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return defaultBlockState().setValue(RTCProperties.ROTATION,
-                CustomAngleCalculator.getRotationForYaw(context.getRotation()));
+                CustomAngleCalculator.rotationForPlacement(context));
+    }
+
+    @Override
+    protected BlockState rotate(BlockState state, net.minecraft.world.level.block.Rotation rotation) {
+        return RTCProperties.rotate16(state, rotation);
+    }
+
+    @Override
+    protected BlockState mirror(BlockState state, net.minecraft.world.level.block.Mirror mirror) {
+        return RTCProperties.mirror16(state, mirror);
     }
 
     @Override
@@ -107,8 +117,13 @@ public class BellBlock extends Block implements EntityBlock, IBellBlock {
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        int rotation = state.getValue(RTCProperties.ROTATION);
-        boolean northSouth = rotation >= 14 || rotation < 2 || (rotation >= 6 && rotation < 10);
-        return northSouth ? nsShape : ewShape;
+        return com.gamearoosdevelopment.realistictrafficcontrol.util.RTCShapes.rotateY(nsShape,
+                state.getValue(RTCProperties.ROTATION));
+    }
+
+    @Override
+    protected java.util.List<net.minecraft.world.item.ItemStack> getDrops(BlockState state,
+            net.minecraft.world.level.storage.loot.LootParams.Builder params) {
+        return com.gamearoosdevelopment.realistictrafficcontrol.util.RTCDrops.self(state);
     }
 }
