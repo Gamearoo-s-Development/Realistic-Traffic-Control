@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " P ",
+    "IRI",
+    " G "
+  ],
+  "key": {
+    "P": {
+      "item": "minecraft:painting",
+      "data": 0
+    },
+    "I": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIron"
+    },
+    "R": {
+      "type": "forge:ore_dict",
+      "ore": "dustRedstone"
+    },
+    "G": {
+      "item": "minecraft:glass_pane",
+      "data": 0
+    }
+  },
+  "result": {
+    "item": "realistictrafficcontrol:digital_sign",
+    "count": 1
+  }
+}

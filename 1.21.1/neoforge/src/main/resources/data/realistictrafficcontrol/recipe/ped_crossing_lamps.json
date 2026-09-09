@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "realistictrafficcontrol:crossing_gate_lamps"
+    },
+    {
+      "tag": "minecraft:wooden_buttons"
+    }
+  ],
+  "result": {
+    "id": "realistictrafficcontrol:ped_crossing_lamps"
+  }
+}

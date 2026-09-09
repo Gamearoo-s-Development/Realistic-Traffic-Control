@@ -83,6 +83,8 @@ public class TrafficLightControlBoxScreen extends AbstractContainerScreen<Traffi
 
     @Override
     protected void init() {
+        imageWidth = width;
+        imageHeight = height;
         super.init();
         clearWidgets();
         manualBindings.clear();
@@ -455,6 +457,9 @@ public class TrafficLightControlBoxScreen extends AbstractContainerScreen<Traffi
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (GuiTypingGuard.shouldConsumeInventoryKey(keyCode, scanCode, hasFocusedAutoField())) {
+            return true;
+        }
         if (currentMode == Mode.AUTOMATIC) {
             TrafficLightControlBoxBlockEntity box = getBox();
             if (box != null) {
@@ -480,6 +485,21 @@ public class TrafficLightControlBoxScreen extends AbstractContainerScreen<Traffi
             }
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    private boolean hasFocusedAutoField() {
+        return isFocused(greenMinimumNS) || isFocused(greenMinimumEW)
+                || isFocused(greenMaxNS) || isFocused(greenMaxEW)
+                || isFocused(yellowTimeNS) || isFocused(yellowTimeEW)
+                || isFocused(redTimeNS) || isFocused(redTimeEW)
+                || isFocused(arrowMinimumNS) || isFocused(arrowMinimumEW)
+                || isFocused(arrowMaxNS) || isFocused(arrowMaxEW)
+                || isFocused(crossTime) || isFocused(crossWarningTime)
+                || isFocused(rightArrowMinimum);
+    }
+
+    private static boolean isFocused(EditBox box) {
+        return box != null && box.isFocused();
     }
 
     private void bindAutoField(EditBox field, Consumer<Double> setter) {

@@ -9,7 +9,6 @@ import com.gamearoosdevelopment.realistictrafficcontrol.blocks.RTCProperties;
 import com.gamearoosdevelopment.realistictrafficcontrol.gui.FrameGuiType;
 import com.gamearoosdevelopment.realistictrafficcontrol.menu.TrafficLightFrameMenu;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLightBlockEntity;
-import com.gamearoosdevelopment.realistictrafficcontrol.util.CustomAngleCalculator;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -55,7 +54,7 @@ public class BaseItemTrafficLightFrame extends Item {
 
     public BaseItemTrafficLightFrame(Properties properties, int bulbCount, Supplier<? extends Block> baseBlock,
             String typeLabel, FrameGuiType guiLayout, boolean placesUpperHalf) {
-        super(properties.stacksTo(1));
+        super(properties);
         this.bulbCount = bulbCount;
         this.baseBlock = baseBlock;
         this.typeLabel = typeLabel;
@@ -117,24 +116,25 @@ public class BaseItemTrafficLightFrame extends Item {
             return InteractionResult.PASS;
         }
 
-        net.minecraft.core.BlockPos pos = context.getClickedPos();
-        if (!level.getBlockState(pos).canBeReplaced()) {
-            pos = pos.relative(context.getClickedFace());
+        var place = com.gamearoosdevelopment.realistictrafficcontrol.util.PoleAssembly.placeOnSupport(context);
+        if (!level.getBlockState(place.pos()).canBeReplaced()) {
+            return InteractionResult.FAIL;
         }
-
-        int rotation = CustomAngleCalculator.getRotationForYawCardinal(context.getPlayer().getYRot());
-        BlockState placed = baseBlock.get().defaultBlockState().setValue(RTCProperties.ROTATION, rotation);
-        level.setBlock(pos, placed, 3);
+        BlockState placed = baseBlock.get().defaultBlockState()
+                .setValue(RTCProperties.ROTATION, place.rotation())
+                .setValue(RTCProperties.MOUNT_FACE, place.mount());
+        level.setBlock(place.pos(), placed, 3);
 
         if (placesUpperHalf) {
-            BlockPos above = pos.above();
+            BlockPos above = place.pos().above();
             if (level.getBlockState(above).canBeReplaced()) {
                 level.setBlock(above, ModBlocks.TRAFFIC_LIGHT_5_UPPER.get().defaultBlockState()
-                        .setValue(RTCProperties.ROTATION, rotation), 3);
+                        .setValue(RTCProperties.ROTATION, place.rotation())
+                        .setValue(RTCProperties.MOUNT_FACE, place.mount()), 3);
             }
         }
 
-        BlockEntity be = level.getBlockEntity(pos);
+        BlockEntity be = level.getBlockEntity(place.pos());
         if (be instanceof TrafficLightBlockEntity tl) {
             CompoundTag data = context.getItemInHand().get(RTCDataComponents.FRAME_DATA.get());
             if (data != null) {

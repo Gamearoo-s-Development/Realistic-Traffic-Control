@@ -36,7 +36,17 @@ public abstract class BlockDisplayControllerBase extends Block implements Entity
     @Override
     public BlockState getStateForPlacement(net.minecraft.world.item.context.BlockPlaceContext context) {
         return defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING,
-                context.getHorizontalDirection().getOpposite());
+                com.gamearoosdevelopment.realistictrafficcontrol.util.CustomAngleCalculator.horizontalFacingForPlacement(context).getOpposite());
+    }
+
+    @Override
+    protected BlockState rotate(BlockState state, net.minecraft.world.level.block.Rotation rotation) {
+        return RTCProperties.rotateFacing(state, rotation, BlockStateProperties.HORIZONTAL_FACING);
+    }
+
+    @Override
+    protected BlockState mirror(BlockState state, net.minecraft.world.level.block.Mirror mirror) {
+        return RTCProperties.mirrorFacing(state, mirror, BlockStateProperties.HORIZONTAL_FACING);
     }
 
     @Override
@@ -53,5 +63,11 @@ public abstract class BlockDisplayControllerBase extends Block implements Entity
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return Block.box(1, 0, 1, 15, 16, 15);
+    }
+
+    @Override
+    protected java.util.List<net.minecraft.world.item.ItemStack> getDrops(BlockState state,
+            net.minecraft.world.level.storage.loot.LootParams.Builder params) {
+        return com.gamearoosdevelopment.realistictrafficcontrol.util.RTCDrops.self(state);
     }
 }

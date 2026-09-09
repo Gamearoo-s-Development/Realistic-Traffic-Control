@@ -4,6 +4,8 @@ import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockSign;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockDigitalSign;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.RTCProperties;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.SignBlockEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.PoleAssembly;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.RTCRotation;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -39,8 +41,17 @@ public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEnt
 
         poseStack.pushPose();
         if (block.getBlock() instanceof BlockDigitalSign) {
+            int mount = PoleAssembly.mountCardinal(block);
+            int extra = RTCRotation.wrapDelta(rotation - mount);
             poseStack.translate(.5, 0, .5);
-            poseStack.mulPose(Axis.YP.rotationDegrees(rotation * -22.5F));
+            poseStack.mulPose(Axis.YP.rotationDegrees(mount * -22.5F));
+            if (extra != 0) {
+                float px = RTCRotation.poleOffsetX(mount);
+                float pz = RTCRotation.poleOffsetZ(mount);
+                poseStack.translate(px, 0, pz);
+                poseStack.mulPose(Axis.YP.rotationDegrees(extra * -22.5F));
+                poseStack.translate(-px, 0, -pz);
+            }
             boolean left = BlockDigitalSign.hasNeighbor(te.getLevel(), te.getBlockPos(), block, -1, 0);
             boolean right = BlockDigitalSign.hasNeighbor(te.getLevel(), te.getBlockPos(), block, 1, 0);
             boolean down = BlockDigitalSign.hasNeighbor(te.getLevel(), te.getBlockPos(), block, 0, -1);
@@ -58,7 +69,7 @@ public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEnt
             SignTextRenderHelper.renderDigitalSignText(
                     poseStack, buffer, LightTexture.FULL_BRIGHT, sign, te::getTextLine);
         } else {
-            SignTextRenderHelper.applySignRotation(poseStack, rotation);
+            SignTextRenderHelper.applySignRotation(poseStack, rotation, PoleAssembly.mountCardinal(block));
             SignTextRenderHelper.renderSignFace(poseStack, buffer, packedLight,
                     sign.getFrontImageResourceLocation(), 1, 1, false);
             SignTextRenderHelper.renderSignText(poseStack, buffer, packedLight, sign, te::getTextLine);

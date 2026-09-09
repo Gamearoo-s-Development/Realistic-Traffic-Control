@@ -19,32 +19,39 @@ public class BlockTrafficLight5Upper extends Block {
 
     public BlockTrafficLight5Upper(Properties properties) {
         super(properties);
-        registerDefaultState(defaultBlockState().setValue(RTCProperties.ROTATION, 0));
+        registerDefaultState(defaultBlockState()
+                .setValue(RTCProperties.ROTATION, 0)
+                .setValue(RTCProperties.MOUNT_FACE, net.minecraft.core.Direction.SOUTH));
     }
 
     @Override
     protected void createBlockStateDefinition(net.minecraft.world.level.block.state.StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(RTCProperties.ROTATION);
+        builder.add(RTCProperties.ROTATION, RTCProperties.MOUNT_FACE);
     }
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        int rotation = CustomAngleCalculator.getRotationForYaw(context.getRotation());
-        return defaultBlockState().setValue(RTCProperties.ROTATION, rotation);
+        return defaultBlockState()
+                .setValue(RTCProperties.ROTATION, CustomAngleCalculator.rotationForPlacement(context))
+                .setValue(RTCProperties.MOUNT_FACE, com.gamearoosdevelopment.realistictrafficcontrol.util.PoleAssembly.mountFace(context));
+    }
+
+    @Override
+    protected BlockState rotate(BlockState state, net.minecraft.world.level.block.Rotation rotation) {
+        return RTCProperties.rotate16(state, rotation);
+    }
+
+    @Override
+    protected BlockState mirror(BlockState state, net.minecraft.world.level.block.Mirror mirror) {
+        return RTCProperties.mirror16(state, mirror);
     }
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        int rotation = state.getValue(RTCProperties.ROTATION);
-        return switch (rotation) {
-            case 0 -> box(3, 0, 7, 13, 16, 12);
-            case 8 -> box(3, 0, 4, 13, 16, 9);
-            case 4 -> box(4, 0, 3, 9, 16, 13);
-            case 12 -> box(7, 0, 3, 12, 16, 13);
-            case 1, 15, 7, 9, 3, 5, 11, 13 -> box(6, 0, 6, 12, 16, 12);
-            case 2, 6, 10, 14 -> box(3.2, 0, 3.2, 12.8, 16, 12.8);
-            default -> Block.box(0, 0, 0, 16, 16, 16);
-        };
+        return com.gamearoosdevelopment.realistictrafficcontrol.util.RTCShapes.rotateYPoleMounted(
+                box(3, 0, -6, 13, 16, 0),
+                state.getValue(RTCProperties.ROTATION),
+                com.gamearoosdevelopment.realistictrafficcontrol.util.PoleAssembly.mountCardinal(state));
     }
 
     @Override

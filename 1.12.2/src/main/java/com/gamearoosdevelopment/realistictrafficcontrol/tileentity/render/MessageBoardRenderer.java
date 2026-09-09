@@ -63,7 +63,8 @@ public class MessageBoardRenderer extends TileEntitySpecialRenderer<MessageBoard
 			renderText(board);
 			GlStateManager.disableTexture2D();
 		} else if (board.getMode() == MessageBoardTileEntity.DisplayMode.ARROW_LEFT
-				|| board.getMode() == MessageBoardTileEntity.DisplayMode.ARROW_RIGHT) {
+				|| board.getMode() == MessageBoardTileEntity.DisplayMode.ARROW_RIGHT
+				|| board.getMode() == MessageBoardTileEntity.DisplayMode.ARROW_BOTH) {
 			renderArrow(board);
 		} else if (board.getMode() == MessageBoardTileEntity.DisplayMode.CAUTION) {
 			renderCaution(board);
@@ -95,9 +96,14 @@ public class MessageBoardRenderer extends TileEntitySpecialRenderer<MessageBoard
 		builder.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_COLOR);
 		int color = litColor(board);
 		double z = SCREEN_Z - 0.012;
-		if (board.getMode() == MessageBoardTileEntity.DisplayMode.ARROW_LEFT) {
-			// The display face is mirrored relative to the cabinet model, so +X is
-			// visually left from the road-facing side.
+		MessageBoardTileEntity.DisplayMode mode = board.getMode();
+		// Display face is mirrored; +X reads as left from the road.
+		if (mode == MessageBoardTileEntity.DisplayMode.ARROW_BOTH) {
+			// Combined ◄──► : heads at the ends with a connecting shaft.
+			triangle(builder, 0.90, 1.94, 1.52, 2.34, 0.90, 2.74, z, color);
+			triangle(builder, 0.10, 1.94, -0.52, 2.34, 0.10, 2.74, z, color);
+			quadAsTriangles(builder, 0.10, 2.22, 0.90, 2.46, z, color);
+		} else if (mode == MessageBoardTileEntity.DisplayMode.ARROW_LEFT) {
 			triangle(builder, 0.58, 1.94, 1.52, 2.34, 0.58, 2.74, z, color);
 			quadAsTriangles(builder, -0.48, 2.22, 0.78, 2.46, z, color);
 		} else {

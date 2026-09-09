@@ -40,7 +40,17 @@ public abstract class ShuntBlockBase extends Block implements EntityBlock {
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection());
+        return defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, com.gamearoosdevelopment.realistictrafficcontrol.util.CustomAngleCalculator.horizontalFacingForPlacement(context));
+    }
+
+    @Override
+    protected BlockState rotate(BlockState state, net.minecraft.world.level.block.Rotation rotation) {
+        return RTCProperties.rotateFacing(state, rotation, BlockStateProperties.HORIZONTAL_FACING);
+    }
+
+    @Override
+    protected BlockState mirror(BlockState state, net.minecraft.world.level.block.Mirror mirror) {
+        return RTCProperties.mirrorFacing(state, mirror, BlockStateProperties.HORIZONTAL_FACING);
     }
 
     @Override
@@ -91,5 +101,11 @@ public abstract class ShuntBlockBase extends Block implements EntityBlock {
         super.triggerEvent(state, level, pos, id, param);
         BlockEntity blockEntity = level.getBlockEntity(pos);
         return blockEntity != null && blockEntity.triggerEvent(id, param);
+    }
+
+    @Override
+    protected java.util.List<ItemStack> getDrops(BlockState state,
+            net.minecraft.world.level.storage.loot.LootParams.Builder params) {
+        return com.gamearoosdevelopment.realistictrafficcontrol.util.RTCDrops.self(state);
     }
 }

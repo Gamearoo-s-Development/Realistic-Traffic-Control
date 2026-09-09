@@ -3,6 +3,8 @@ package com.gamearoosdevelopment.realistictrafficcontrol.client.render;
 import com.gamearoosdevelopment.realistictrafficcontrol.signs.Sign;
 import com.gamearoosdevelopment.realistictrafficcontrol.signs.SignHorizontalAlignment;
 import com.gamearoosdevelopment.realistictrafficcontrol.signs.SignVerticalAlignment;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.CustomAngleCalculator;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.RTCRotation;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 
@@ -28,7 +30,7 @@ public final class SignTextRenderHelper {
         if (backFace) {
             poseStack.translate(0, 0, -0.01);
         }
-        var consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(texture));
+        var consumer = buffer.getBuffer(RenderType.entityCutout(texture));
         Matrix4f matrix = poseStack.last().pose();
         if (backFace) {
             putVertex(consumer, matrix, packedLight, width, height, 0, 0, 0);
@@ -134,17 +136,21 @@ public final class SignTextRenderHelper {
     }
 
     public static void applySignRotation(PoseStack poseStack, int rotation) {
-        float degrees = rotation * -22.5F;
-        if (degrees == -90) {
-            poseStack.translate(1.44, 0.4, 0.41);
-        } else if (degrees == 0) {
-            poseStack.translate(0.4, 0.4, -0.44);
-        } else if (degrees == -180) {
-            poseStack.translate(0.6, 0.4, 1.44);
-        } else {
-            poseStack.translate(-0.44, 0.4, 0.59);
+        applySignRotation(poseStack, rotation, CustomAngleCalculator.nearestCardinal(rotation));
+    }
+
+    public static void applySignRotation(PoseStack poseStack, int rotation, int mountCardinal) {
+        int extra = RTCRotation.wrapDelta(rotation - mountCardinal);
+        poseStack.translate(0.5, 0.4, 0.5);
+        poseStack.mulPose(Axis.YP.rotationDegrees(mountCardinal * -22.5F));
+        if (extra != 0) {
+            float px = RTCRotation.poleOffsetX(mountCardinal);
+            float pz = RTCRotation.poleOffsetZ(mountCardinal);
+            poseStack.translate(px, 0, pz);
+            poseStack.mulPose(Axis.YP.rotationDegrees(extra * -22.5F));
+            poseStack.translate(-px, 0, -pz);
         }
-        poseStack.mulPose(Axis.YP.rotationDegrees(degrees));
+        poseStack.translate(-0.1, 0, -0.94);
         poseStack.translate(-0.4, -0.4, 0.06875);
     }
 }

@@ -20,7 +20,6 @@ import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.VerticalWigWa
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.DigitalSignBlockEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.DigitalSignControllerBlockEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.MessageBoardBlockEntity;
-import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.MessageBoardControllerBlockEntity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -98,7 +97,7 @@ public class CrossingRelayTunerItem extends Item {
         if (pairingPos == null) {
             if (!(te instanceof RelayBlockEntity || te instanceof TrafficLightControlBoxBlockEntity
                     || te instanceof DigitalSignControllerBlockEntity
-                    || te instanceof MessageBoardControllerBlockEntity)) {
+                    || te instanceof MessageBoardBlockEntity)) {
                 return false;
             }
 
@@ -114,10 +113,12 @@ public class CrossingRelayTunerItem extends Item {
             } else if (te instanceof TrafficLightControlBoxBlockEntity) {
                 relayPos = te.getBlockPos();
                 typeOfPairing = "Traffic Light Control Box";
+            } else if (te instanceof DigitalSignControllerBlockEntity) {
+                relayPos = te.getBlockPos();
+                typeOfPairing = "Digital Sign Controller";
             } else {
                 relayPos = te.getBlockPos();
-                typeOfPairing = te instanceof DigitalSignControllerBlockEntity
-                        ? "Digital Sign Controller" : "Message Board Controller";
+                typeOfPairing = "Message Board";
             }
 
             setPairingPos(stack, relayPos);
@@ -138,9 +139,25 @@ public class CrossingRelayTunerItem extends Item {
                                 : "Could not sync controllers; invalid link"), false);
                 return false;
             }
+            if (first instanceof MessageBoardBlockEntity master
+                    && te instanceof MessageBoardBlockEntity follower) {
+                if (!firstPos.equals(follower.getBlockPos())) {
+                    boolean wasLinked = master.getLinkedBoards().contains(follower.getBlockPos());
+                    boolean ok = wasLinked
+                            ? master.unlinkBoard(follower.getBlockPos())
+                            : master.linkBoard(follower.getBlockPos());
+                    player.displayClientMessage(Component.literal(ok
+                            ? (wasLinked ? "Unpaired Message Board" : "Paired Message Board")
+                            : (wasLinked ? "Could not unpair Message Board" : "Could not pair Message Board")), false);
+                    return false;
+                }
+                clearPairingPos(stack);
+                player.displayClientMessage(Component.literal("Stopped pairing with Message Board at "
+                        + pairingPos[0] + ", " + pairingPos[1] + ", " + pairingPos[2]), false);
+                return false;
+            }
             if (te instanceof RelayBlockEntity || te instanceof TrafficLightControlBoxBlockEntity
-                    || te instanceof DigitalSignControllerBlockEntity
-                    || te instanceof MessageBoardControllerBlockEntity) {
+                    || te instanceof DigitalSignControllerBlockEntity) {
                 BlockPos relayPos;
                 String typeOfPairing;
                 if (te instanceof RelayBlockEntity relayTE) {
@@ -155,8 +172,7 @@ public class CrossingRelayTunerItem extends Item {
                     typeOfPairing = "Traffic Light Control Box";
                 } else {
                     relayPos = te.getBlockPos();
-                    typeOfPairing = te instanceof DigitalSignControllerBlockEntity
-                            ? "Digital Sign Controller" : "Message Board Controller";
+                    typeOfPairing = "Digital Sign Controller";
                 }
 
                 clearPairingPos(stack);
@@ -188,7 +204,7 @@ public class CrossingRelayTunerItem extends Item {
                 if (!(teAtPairingPos instanceof RelayBlockEntity
                         || teAtPairingPos instanceof TrafficLightControlBoxBlockEntity
                         || teAtPairingPos instanceof DigitalSignControllerBlockEntity
-                        || teAtPairingPos instanceof MessageBoardControllerBlockEntity)) {
+                        || teAtPairingPos instanceof MessageBoardBlockEntity)) {
                     clearPairingPos(stack);
                     player.displayClientMessage(Component.literal("Could not find pair at "
                             + pairingPos[0] + ", " + pairingPos[1] + ", " + pairingPos[2] + ". Unpaired."), false);
@@ -306,12 +322,12 @@ public class CrossingRelayTunerItem extends Item {
                     ? (controller.unlinkSign(te.getBlockPos()) ? "Unpaired Digital Sign" : "Could not unpair Digital Sign")
                     : (controller.linkSign(te.getBlockPos()) ? "Paired Digital Sign" : "Could not pair Digital Sign")), false);
         }
-        if (pairedTE instanceof MessageBoardControllerBlockEntity controller
-                && te instanceof MessageBoardBlockEntity
-                && !(te instanceof MessageBoardControllerBlockEntity)) {
-            player.displayClientMessage(Component.literal(controller.getLinkedBoards().contains(te.getBlockPos())
-                    ? (controller.unlinkBoard(te.getBlockPos()) ? "Unpaired Message Board" : "Could not unpair Message Board")
-                    : (controller.linkBoard(te.getBlockPos()) ? "Paired Message Board" : "Could not pair Message Board")), false);
+        if (pairedTE instanceof MessageBoardBlockEntity master
+                && te instanceof MessageBoardBlockEntity follower
+                && !master.getBlockPos().equals(follower.getBlockPos())) {
+            player.displayClientMessage(Component.literal(master.getLinkedBoards().contains(te.getBlockPos())
+                    ? (master.unlinkBoard(te.getBlockPos()) ? "Unpaired Message Board" : "Could not unpair Message Board")
+                    : (master.linkBoard(te.getBlockPos()) ? "Paired Message Board" : "Could not pair Message Board")), false);
         }
     }
 

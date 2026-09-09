@@ -43,13 +43,23 @@ public class BlockPedestrianButton extends Block implements EntityBlock {
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        int rotation = CustomAngleCalculator.getRotationForYaw(context.getRotation());
-        return defaultBlockState().setValue(RTCProperties.ROTATION, rotation);
+        return defaultBlockState().setValue(RTCProperties.ROTATION, CustomAngleCalculator.rotationForPlacement(context));
+    }
+
+    @Override
+    protected BlockState rotate(BlockState state, net.minecraft.world.level.block.Rotation rotation) {
+        return RTCProperties.rotate16(state, rotation);
+    }
+
+    @Override
+    protected BlockState mirror(BlockState state, net.minecraft.world.level.block.Mirror mirror) {
+        return RTCProperties.mirror16(state, mirror);
     }
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return SHAPE;
+        return com.gamearoosdevelopment.realistictrafficcontrol.util.RTCShapes.rotateY(SHAPE,
+                state.getValue(RTCProperties.ROTATION));
     }
 
     @Override
@@ -93,5 +103,11 @@ public class BlockPedestrianButton extends Block implements EntityBlock {
             }
         }
         super.onRemove(state, level, pos, newState, movedByPiston);
+    }
+
+    @Override
+    protected java.util.List<net.minecraft.world.item.ItemStack> getDrops(BlockState state,
+            net.minecraft.world.level.storage.loot.LootParams.Builder params) {
+        return com.gamearoosdevelopment.realistictrafficcontrol.util.RTCDrops.self(state);
     }
 }

@@ -87,13 +87,25 @@ public final class CreateCompat {
         boolean movingTowardsDestination = false;
 
         for (Entity entity : level.getEntities((Entity) null, scanVolume,
-                candidate -> type.isInstance(candidate) && isInRequestCorridor(candidate, request, maxDistance))) {
+                candidate -> isTrainCarriage(candidate, type) && isInRequestCorridor(candidate, request, maxDistance))) {
             found = true;
             if (isMovingTowardsDestination(entity, destinations)) {
                 movingTowardsDestination = true;
             }
         }
         return found ? new TrainScanResult(true, movingTowardsDestination) : TrainScanResult.NONE;
+    }
+
+    private static boolean isTrainCarriage(Entity entity, Class<?> carriageType) {
+        if (carriageType != null && carriageType.isInstance(entity)) {
+            return true;
+        }
+        String className = entity.getClass().getName();
+        if (className.contains("CarriageContraption")) {
+            return true;
+        }
+        var key = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+        return key != null && "create".equals(key.getNamespace()) && key.getPath().contains("carriage");
     }
 
     private static AABB buildScanVolume(ScanRequest request, List<BlockPos> destinations, int maxDistance) {
@@ -113,7 +125,7 @@ public final class CreateCompat {
             }
         }
         // Create carriage entity positions are near their anchors, not necessarily at the body edge.
-        return volume.inflate(6.0);
+        return volume.inflate(10.0);
     }
 
     private static boolean isInRequestCorridor(Entity entity, ScanRequest request, int maxDistance) {
@@ -122,7 +134,7 @@ public final class CreateCompat {
         Vec3 fromStart = position.subtract(start);
         Direction direction = request.getStartDirection();
         Vec3 forward = new Vec3(direction.getStepX(), direction.getStepY(), direction.getStepZ());
-        if (fromStart.dot(forward) < -6.0 || fromStart.lengthSqr() > square(maxDistance + 6.0)) {
+        if (fromStart.dot(forward) < -10.0 || fromStart.lengthSqr() > square(maxDistance + 10.0)) {
             return false;
         }
 
@@ -130,11 +142,11 @@ public final class CreateCompat {
         if (destinations.isEmpty()) {
             double forwardDistance = fromStart.dot(forward);
             Vec3 nearest = start.add(forward.scale(Math.max(0.0, Math.min(maxDistance, forwardDistance))));
-            return position.distanceToSqr(nearest) <= square(6.0);
+            return position.distanceToSqr(nearest) <= square(10.0);
         }
 
         for (BlockPos destination : destinations) {
-            if (distanceToSegmentSqr(position, start, Vec3.atCenterOf(destination)) <= square(6.0)) {
+            if (distanceToSegmentSqr(position, start, Vec3.atCenterOf(destination)) <= square(10.0)) {
                 return true;
             }
         }

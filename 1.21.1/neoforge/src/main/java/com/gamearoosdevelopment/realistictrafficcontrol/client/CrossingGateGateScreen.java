@@ -31,6 +31,8 @@ public class CrossingGateGateScreen extends AbstractContainerScreen<CrossingGate
 
     @Override
     protected void init() {
+        imageWidth = width;
+        imageHeight = height;
         super.init();
         CrossingGateGateBlockEntity te = menu.getGate(minecraft.player);
         if (te == null) {
@@ -102,6 +104,16 @@ public class CrossingGateGateScreen extends AbstractContainerScreen<CrossingGate
     }
 
     @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        boolean typing = isFocused(length) || isFocused(upperRotation) || isFocused(lowerRotation)
+                || isFocused(delay) || isFocused(lightStartOffset);
+        if (GuiTypingGuard.shouldConsumeInventoryKey(keyCode, scanCode, typing)) {
+            return true;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
     public void onClose() {
         CrossingGateGateBlockEntity te = menu.getGate(minecraft.player);
         if (te != null) {
@@ -122,6 +134,10 @@ public class CrossingGateGateScreen extends AbstractContainerScreen<CrossingGate
         } catch (Exception ex) {
             return 0F;
         }
+    }
+
+    private static boolean isFocused(EditBox field) {
+        return field != null && field.isFocused();
     }
 
     @Override

@@ -1,6 +1,6 @@
 {
-    "parent": "item/generated",
-    "textures": {
-        "layer0": "realistictrafficcontrol:item/street_sign"
-    }
+  "parent": "realistictrafficcontrol:block/invisible",
+  "textures": {
+    "particle": "realistictrafficcontrol:block/street_sign"
+  }
 }

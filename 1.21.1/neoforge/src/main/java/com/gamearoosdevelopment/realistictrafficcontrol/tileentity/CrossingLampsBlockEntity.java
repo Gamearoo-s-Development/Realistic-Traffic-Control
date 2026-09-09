@@ -38,9 +38,15 @@ public class CrossingLampsBlockEntity extends SyncableBlockEntity implements ICr
         }
         this.state = state;
         setChanged();
-        if (level != null) {
-            BlockState newState = getBlockState().setValue(RTCProperties.LAMP_STATE, state);
-            level.setBlockAndUpdate(worldPosition, newState);
+        if (level != null && !level.isClientSide) {
+            BlockState current = getBlockState();
+            if (current.hasProperty(RTCProperties.LAMP_STATE)
+                    && current.getValue(RTCProperties.LAMP_STATE) != state) {
+                level.setBlock(worldPosition, current.setValue(RTCProperties.LAMP_STATE, state),
+                        net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
+            } else {
+                level.sendBlockUpdated(worldPosition, current, current, 3);
+            }
         }
     }
 
@@ -51,6 +57,7 @@ public class CrossingLampsBlockEntity extends SyncableBlockEntity implements ICr
     public void setNwBulbRotation(int nwBulbRotation) {
         this.nwBulbRotation = nwBulbRotation;
         setChanged();
+        syncClients();
     }
 
     public int getNeBulbRotation() {
@@ -60,6 +67,7 @@ public class CrossingLampsBlockEntity extends SyncableBlockEntity implements ICr
     public void setNeBulbRotation(int neBulbRotation) {
         this.neBulbRotation = neBulbRotation;
         setChanged();
+        syncClients();
     }
 
     public int getSwBulbRotation() {
@@ -69,6 +77,7 @@ public class CrossingLampsBlockEntity extends SyncableBlockEntity implements ICr
     public void setSwBulbRotation(int swBulbRotation) {
         this.swBulbRotation = swBulbRotation;
         setChanged();
+        syncClients();
     }
 
     public int getSeBulbRotation() {
@@ -78,6 +87,14 @@ public class CrossingLampsBlockEntity extends SyncableBlockEntity implements ICr
     public void setSeBulbRotation(int seBulbRotation) {
         this.seBulbRotation = seBulbRotation;
         setChanged();
+        syncClients();
+    }
+
+    private void syncClients() {
+        if (level != null && !level.isClientSide) {
+            BlockState blockState = getBlockState();
+            level.sendBlockUpdated(worldPosition, blockState, blockState, 3);
+        }
     }
 
     @Override

@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "realistictrafficcontrol:wood_pole",
+    "realistictrafficcontrol:cone",
+    "realistictrafficcontrol:channelizer",
+    "realistictrafficcontrol:drum"
+  ]
+}

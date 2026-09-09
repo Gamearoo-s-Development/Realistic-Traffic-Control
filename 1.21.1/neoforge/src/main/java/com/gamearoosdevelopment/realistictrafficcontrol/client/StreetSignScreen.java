@@ -29,6 +29,8 @@ public class StreetSignScreen extends AbstractContainerScreen<StreetSignMenu> {
 
     @Override
     protected void init() {
+        imageWidth = width;
+        imageHeight = height;
         super.init();
         streetSignEntity = menu.getStreetSignEntity(minecraft.player);
         if (streetSignEntity == null) {
@@ -98,6 +100,9 @@ public class StreetSignScreen extends AbstractContainerScreen<StreetSignMenu> {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (GuiTypingGuard.shouldConsumeInventoryKey(keyCode, scanCode, hasActiveTextEntry())) {
+            return true;
+        }
         if (streetSignEntity != null) {
             for (int i = 0; i < StreetSignBlockEntity.MAX_STREET_SIGNS; i++) {
                 StreetSign sign = streetSignEntity.getStreetSign(i);
@@ -111,6 +116,19 @@ public class StreetSignScreen extends AbstractContainerScreen<StreetSignMenu> {
             }
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    private boolean hasActiveTextEntry() {
+        if (streetSignEntity == null) {
+            return false;
+        }
+        for (int i = 0; i < StreetSignBlockEntity.MAX_STREET_SIGNS; i++) {
+            StreetSign sign = streetSignEntity.getStreetSign(i);
+            if (sign != null && sign.getIsNew()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

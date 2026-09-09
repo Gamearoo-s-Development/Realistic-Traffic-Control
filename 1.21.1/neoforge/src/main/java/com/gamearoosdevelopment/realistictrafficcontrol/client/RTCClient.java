@@ -28,8 +28,10 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
@@ -76,6 +78,13 @@ public final class RTCClient {
         });
     }
 
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onLoadComplete(FMLLoadCompleteEvent event) {
+        if (ModRealisticTrafficControl.CREATE_INSTALLED) {
+            event.enqueueWork(com.gamearoosdevelopment.realistictrafficcontrol.compat.ponder.RTCPonderClient::reload);
+        }
+    }
+
     @SubscribeEvent
     public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(ModBlockEntities.TRAFFIC_LIGHT.get(), TrafficLightBlockEntityRenderer::new);
@@ -107,6 +116,7 @@ public final class RTCClient {
 
     @SubscribeEvent
     public static void onModifyBakingResult(ModelEvent.ModifyBakingResult event) {
+        CrossingLampClientModels.aliasLampStateVariants(event.getModels());
         Map<ModelResourceLocation, BakedModel> models = event.getModels();
         List<ModelResourceLocation> toWrap = new ArrayList<>();
         for (ModelResourceLocation loc : models.keySet()) {
@@ -116,7 +126,7 @@ public final class RTCClient {
             toWrap.add(loc);
         }
         for (ModelResourceLocation loc : toWrap) {
-            models.put(loc, new RotatedBlockModelWrapper(models.get(loc)));
+            models.put(loc, new RotatedBlockModelWrapper(models.get(loc), isPoleMountedModel(loc)));
         }
     }
 
@@ -131,15 +141,36 @@ public final class RTCClient {
         if (variant.contains("inventory") || variant.contains("standalone")) {
             return false;
         }
+        String path = loc.id().getPath();
+        // BER-only blocks: wrapping an empty model is wasted work and can fight the TESR.
+        if (path.startsWith("street_light") || path.equals("street_sign") || path.equals("light_source")) {
+            return false;
+        }
         if (variant.contains("rotation=")) {
             return true;
         }
-        String path = loc.id().getPath();
         // Multipart blockstate model locations use the block registry path, not "block/<model>".
-        return path.startsWith("traffic_light") || path.startsWith("street_light")
+        return path.startsWith("traffic_light")
                 || path.startsWith("crossing_gate") || path.startsWith("wig_wag")
                 || path.equals("ped_crossing_lamps") || path.equals("crossing_gate_lamps")
-                || path.equals("overhead_lamps");
+                || path.equals("overhead_lamps") || path.equals("horizontal_pole")
+                || path.equals("overhead") || path.equals("overhead_pole")
+                || path.equals("overhead_crossbuck") || path.equals("tag")
+                || path.equals("sign") || path.equals("digital_sign")
+                || path.endsWith("_pole") || path.equals("pole");
+    }
+
+    /** Frames and signs orbit the pole; hoz bars spin in-cell like a Create shaft. */
+    private static boolean isPoleMountedModel(ModelResourceLocation loc) {
+        String path = loc.id().getPath();
+        if (path.startsWith("block/")) {
+            path = path.substring("block/".length());
+        }
+        if (path.contains("control")) {
+            return false;
+        }
+        return path.equals("sign") || path.equals("digital_sign")
+                || path.startsWith("traffic_light");
     }
 
     private RTCClient() {

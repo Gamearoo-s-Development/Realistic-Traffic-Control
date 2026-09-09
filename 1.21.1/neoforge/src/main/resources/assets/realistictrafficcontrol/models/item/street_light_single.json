@@ -1,3 +1,6 @@
 {
-  "parent": "realistictrafficcontrol:block/street_light_single"
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "realistictrafficcontrol:item/street_light_single"
+  }
 }

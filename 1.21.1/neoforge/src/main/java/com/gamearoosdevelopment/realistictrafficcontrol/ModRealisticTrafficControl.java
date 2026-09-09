@@ -10,6 +10,8 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.api.distmarker.Dist;
 import org.slf4j.Logger;
 
 /**
@@ -25,18 +27,23 @@ public class ModRealisticTrafficControl {
     public static final double MAX_RENDER_DISTANCE = 262144;
 
     public static boolean IR_INSTALLED = false;
+    public static boolean TRACK_API_INSTALLED = false;
     public static boolean CREATE_INSTALLED = false;
     public static boolean CC_INSTALLED = false;
     public static boolean OC_INSTALLED = false;
+    public static boolean POWERGRID_INSTALLED = false;
 
     /** Sign pack repository (initialized on common setup). */
     public static SignRepository signRepo = new SignRepository();
 
     public ModRealisticTrafficControl(IEventBus modBus, ModContainer modContainer) {
-        IR_INSTALLED = ModList.get().isLoaded("immersiverailroading");
+        IR_INSTALLED = ModList.get().isLoaded("immersiverailroading")
+                || ModList.get().isLoaded("immersive_railroading");
+        TRACK_API_INSTALLED = ModList.get().isLoaded("trackapi");
         CREATE_INSTALLED = ModList.get().isLoaded("create");
         CC_INSTALLED = ModList.get().isLoaded("computercraft");
         OC_INSTALLED = ModList.get().isLoaded("opencomputers");
+        POWERGRID_INSTALLED = ModList.get().isLoaded("powergrid");
 
         ModBlocks.BLOCKS.register(modBus);
         ModItems.ITEMS.register(modBus);
@@ -55,8 +62,12 @@ public class ModRealisticTrafficControl {
         modBus.addListener(this::onConfigReload);
         modBus.addListener(this::onCommonSetup);
 
-        LOGGER.info("Realistic Traffic Control loading (IR={}, Create={}, CC={}, OC={})",
-                IR_INSTALLED, CREATE_INSTALLED, CC_INSTALLED, OC_INSTALLED);
+        LOGGER.info("Realistic Traffic Control loading (IR={}, TrackAPI={}, Create={}, PowerGrid={}, CC={}, OC={})",
+                IR_INSTALLED, TRACK_API_INSTALLED, CREATE_INSTALLED, POWERGRID_INSTALLED, CC_INSTALLED, OC_INSTALLED);
+
+        if (CREATE_INSTALLED && FMLEnvironment.dist == Dist.CLIENT) {
+            com.gamearoosdevelopment.realistictrafficcontrol.compat.ponder.RTCPonderClient.register();
+        }
     }
 
     private void onCommonSetup(FMLCommonSetupEvent event) {

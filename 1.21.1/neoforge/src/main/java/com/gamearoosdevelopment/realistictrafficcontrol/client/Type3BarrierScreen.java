@@ -47,6 +47,8 @@ public class Type3BarrierScreen extends AbstractContainerScreen<Type3BarrierMenu
 
     @Override
     protected void init() {
+        imageWidth = width;
+        imageHeight = height;
         super.init();
         barrierEntity = menu.getBarrier(minecraft.player);
         if (barrierEntity == null) {
@@ -294,6 +296,10 @@ public class Type3BarrierScreen extends AbstractContainerScreen<Type3BarrierMenu
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        boolean typing = textLineEditorActive || (imageListVisible && imageListFilter != null && imageListFilter.isFocused());
+        if (GuiTypingGuard.shouldConsumeInventoryKey(keyCode, scanCode, typing)) {
+            return true;
+        }
         if (imageListVisible) {
             if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
                 closeImageList();

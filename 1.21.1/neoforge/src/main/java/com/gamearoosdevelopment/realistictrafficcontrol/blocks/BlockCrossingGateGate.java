@@ -12,6 +12,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -49,7 +50,17 @@ public class BlockCrossingGateGate extends Block implements EntityBlock {
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return defaultBlockState().setValue(RTCProperties.ROTATION,
-                CustomAngleCalculator.getRotationForYaw(context.getRotation()));
+                CustomAngleCalculator.rotationForPlacement(context));
+    }
+
+    @Override
+    protected BlockState rotate(BlockState state, net.minecraft.world.level.block.Rotation rotation) {
+        return RTCProperties.rotate16(state, rotation);
+    }
+
+    @Override
+    protected BlockState mirror(BlockState state, net.minecraft.world.level.block.Mirror mirror) {
+        return RTCProperties.mirror16(state, mirror);
     }
 
     @Override
@@ -59,7 +70,8 @@ public class BlockCrossingGateGate extends Block implements EntityBlock {
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return STATIC_SHAPE;
+        return com.gamearoosdevelopment.realistictrafficcontrol.util.RTCShapes.rotateY(STATIC_SHAPE,
+                state.getValue(RTCProperties.ROTATION));
     }
 
     @Override
@@ -109,5 +121,11 @@ public class BlockCrossingGateGate extends Block implements EntityBlock {
             }
         }
         super.onRemove(state, level, pos, newState, movedByPiston);
+    }
+
+    @Override
+    protected java.util.List<ItemStack> getDrops(BlockState state,
+            net.minecraft.world.level.storage.loot.LootParams.Builder params) {
+        return com.gamearoosdevelopment.realistictrafficcontrol.util.RTCDrops.self(state);
     }
 }

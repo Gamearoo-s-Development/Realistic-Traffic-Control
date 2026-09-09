@@ -2,6 +2,7 @@ package com.gamearoosdevelopment.realistictrafficcontrol.item;
 
 import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficControl;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.RTCProperties;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.StreetSignBlockEntity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -54,7 +55,8 @@ public class ScrewdriverItem extends Item {
                 if (next >= 16) {
                     next = 0;
                 }
-                level.setBlockAndUpdate(pos, state.setValue(RTCProperties.ROTATION, next));
+                int delta = next - current;
+                com.gamearoosdevelopment.realistictrafficcontrol.util.PoleAssembly.rotateLinked(level, pos, delta);
                 damage(context, player);
                 return InteractionResult.SUCCESS;
             }
@@ -66,6 +68,11 @@ public class ScrewdriverItem extends Item {
                 damage(context, player);
                 return InteractionResult.SUCCESS;
             }
+        }
+
+        if (level.getBlockEntity(pos) instanceof StreetSignBlockEntity signs && signs.cycleRotations(sneaking)) {
+            damage(context, player);
+            return InteractionResult.SUCCESS;
         }
 
         return InteractionResult.PASS;

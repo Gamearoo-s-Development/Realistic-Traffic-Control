@@ -53,7 +53,7 @@ public abstract class RelayBlockBase extends Block implements EntityBlock {
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection());
+        return defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, com.gamearoosdevelopment.realistictrafficcontrol.util.CustomAngleCalculator.horizontalFacingForPlacement(context));
     }
 
     @Override
@@ -191,7 +191,9 @@ public abstract class RelayBlockBase extends Block implements EntityBlock {
         if (level.getBlockEntity(pos) instanceof RelayBlockEntity relay) {
             RelayBlockEntity master = relay.getMaster(level);
             if (master != null) {
-                master.setPowered(level.hasNeighborSignal(pos));
+                master.setPowered(level.hasNeighborSignal(pos)
+                        || com.gamearoosdevelopment.realistictrafficcontrol.compat.PowerGridCompat
+                                .isEnergizedNearby(level, pos));
             }
         }
     }

@@ -1,0 +1,34 @@
+{
+  "type": "create:compacting",
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ],
+  "ingredients": [
+    {
+      "item": "create:iron_sheet"
+    },
+    {
+      "item": "create:iron_sheet"
+    },
+    {
+      "item": "create:iron_sheet"
+    },
+    {
+      "item": "create:electron_tube"
+    },
+    {
+      "item": "minecraft:redstone_block"
+    },
+    {
+      "tag": "c:ingots/gold"
+    }
+  ],
+  "results": [
+    {
+      "id": "realistictrafficcontrol:traffic_light_control_box"
+    }
+  ]
+}

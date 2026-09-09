@@ -1,5 +1,8 @@
 package com.gamearoosdevelopment.realistictrafficcontrol.client;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.gamearoosdevelopment.realistictrafficcontrol.ModRealisticTrafficControl;
 import com.gamearoosdevelopment.realistictrafficcontrol.gui.FrameGuiType;
 import com.gamearoosdevelopment.realistictrafficcontrol.gui.FrameGuiType.CheckboxOrientation;
@@ -10,9 +13,11 @@ import com.gamearoosdevelopment.realistictrafficcontrol.network.FrameFacingUpdat
 import com.gamearoosdevelopment.realistictrafficcontrol.network.FrameGuiUpdatePayload;
 
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -39,6 +44,7 @@ public class TrafficLightFrameScreen extends AbstractContainerScreen<TrafficLigh
     private Button facingSouth;
     private Button facingEast;
     private Button facingWest;
+    private final List<AbstractWidget> customControls = new ArrayList<>();
 
     public TrafficLightFrameScreen(TrafficLightFrameMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -51,18 +57,19 @@ public class TrafficLightFrameScreen extends AbstractContainerScreen<TrafficLigh
     @Override
     protected void init() {
         super.init();
+        customControls.clear();
         ItemStack frameStack = menu.getFrameStack();
         int facingY = topPos - 24;
 
-        facingAuto = addRenderableWidget(Button.builder(Component.literal("Auto"), b -> setFacing(null))
+        facingAuto = addCustomControl(Button.builder(Component.literal("Auto"), b -> setFacing(null))
                 .bounds(leftPos + 44, facingY, 34, 16).build());
-        facingNorth = addRenderableWidget(Button.builder(Component.literal("N"), b -> setFacing(Direction.NORTH))
+        facingNorth = addCustomControl(Button.builder(Component.literal("N"), b -> setFacing(Direction.NORTH))
                 .bounds(leftPos + 82, facingY, 22, 16).build());
-        facingSouth = addRenderableWidget(Button.builder(Component.literal("S"), b -> setFacing(Direction.SOUTH))
+        facingSouth = addCustomControl(Button.builder(Component.literal("S"), b -> setFacing(Direction.SOUTH))
                 .bounds(leftPos + 106, facingY, 22, 16).build());
-        facingEast = addRenderableWidget(Button.builder(Component.literal("E"), b -> setFacing(Direction.EAST))
+        facingEast = addCustomControl(Button.builder(Component.literal("E"), b -> setFacing(Direction.EAST))
                 .bounds(leftPos + 130, facingY, 22, 16).build());
-        facingWest = addRenderableWidget(Button.builder(Component.literal("W"), b -> setFacing(Direction.WEST))
+        facingWest = addCustomControl(Button.builder(Component.literal("W"), b -> setFacing(Direction.WEST))
                 .bounds(leftPos + 154, facingY, 22, 16).build());
 
         for (int i = 0; i < layout.getSlots().size(); i++) {
@@ -89,10 +96,27 @@ public class TrafficLightFrameScreen extends AbstractContainerScreen<TrafficLigh
                         PacketDistributor.sendToServer(new FrameGuiUpdatePayload(slotIndex, checked));
                     })
                     .build();
-            addRenderableWidget(box);
+            addCustomControl(box);
         }
 
         updateFacingSelection();
+    }
+
+    private <T extends AbstractWidget> T addCustomControl(T widget) {
+        customControls.add(widget);
+        return addRenderableWidget(widget);
+    }
+
+    public List<Rect2i> getJeiExtraAreas() {
+        int panelRight = leftPos + imageWidth;
+        int panelBottom = topPos + imageHeight;
+        return customControls.stream()
+                .filter(widget -> widget.getX() < leftPos
+                        || widget.getY() < topPos
+                        || widget.getX() + widget.getWidth() > panelRight
+                        || widget.getY() + widget.getHeight() > panelBottom)
+                .map(widget -> new Rect2i(widget.getX(), widget.getY(), widget.getWidth(), widget.getHeight()))
+                .toList();
     }
 
     private void setFacing(Direction facing) {

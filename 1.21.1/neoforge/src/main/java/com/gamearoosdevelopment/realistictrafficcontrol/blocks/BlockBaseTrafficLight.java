@@ -9,6 +9,7 @@ import com.gamearoosdevelopment.realistictrafficcontrol.ModBlockEntities;
 import com.gamearoosdevelopment.realistictrafficcontrol.ModItems;
 import com.gamearoosdevelopment.realistictrafficcontrol.RTCDataComponents;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.TrafficLightBlockEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.RTCShapes;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -59,7 +60,8 @@ public class BlockBaseTrafficLight extends Block implements EntityBlock, ITraffi
         this.upperHalfBlock = upperHalfBlock;
         registerDefaultState(getStateDefinition().any()
                 .setValue(RTCProperties.ROTATION, 0)
-                .setValue(RTCProperties.COVER, true)
+                .setValue(RTCProperties.MOUNT_FACE, net.minecraft.core.Direction.SOUTH)
+                .setValue(RTCProperties.COVER, false)
                 .setValue(RTCProperties.POLE, false));
     }
 
@@ -84,7 +86,17 @@ public class BlockBaseTrafficLight extends Block implements EntityBlock, ITraffi
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(RTCProperties.ROTATION, RTCProperties.COVER, RTCProperties.POLE);
+        builder.add(RTCProperties.ROTATION, RTCProperties.MOUNT_FACE, RTCProperties.COVER, RTCProperties.POLE);
+    }
+
+    @Override
+    protected BlockState rotate(BlockState state, net.minecraft.world.level.block.Rotation rotation) {
+        return RTCProperties.rotate16(state, rotation);
+    }
+
+    @Override
+    protected BlockState mirror(BlockState state, net.minecraft.world.level.block.Mirror mirror) {
+        return RTCProperties.mirror16(state, mirror);
     }
 
     @Override
@@ -154,27 +166,18 @@ public class BlockBaseTrafficLight extends Block implements EntityBlock, ITraffi
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         int rotation = state.getValue(RTCProperties.ROTATION);
-        switch (rotation) {
-            case 0:
-                return box(3, 0, 7, 13, 16, 12);
-            case 8:
-                return box(3, 0, 4, 13, 16, 9);
-            case 4:
-                return box(4, 0, 3, 9, 16, 13);
-            case 12:
-                return box(7, 0, 3, 12, 16, 13);
-            case 1:
-            case 15:
-            case 7:
-            case 9:
-            case 3:
-            case 5:
-            case 11:
-            case 13:
-                return box(6, 0, 6, 12, 16, 12);
-            default:
-                return box(3.2, 0, 3.2, 12.8, 16, 12.8);
-        }
+        String path = BuiltInRegistries.BLOCK.getKey(this).getPath();
+        VoxelShape base = path.contains("hoz")
+                ? box(-2, 3, -6, 19, 13, 0)
+                : box(3, -6, -6, 13, 16, 0);
+        return RTCShapes.rotateYPoleMounted(base, rotation,
+                com.gamearoosdevelopment.realistictrafficcontrol.util.PoleAssembly.mountCardinal(state));
+    }
+
+    @Override
+    protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos,
+            CollisionContext context) {
+        return RTCShapes.clipToBlock(getShape(state, level, pos, context));
     }
 
     public ItemStack buildFrameStack(TrafficLightBlockEntity be) {

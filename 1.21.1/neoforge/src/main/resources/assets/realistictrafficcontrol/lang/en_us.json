@@ -260,5 +260,16 @@
   "block.realistictrafficcontrol.digital_sign": "(RTC) Digital Sign",
   "block.realistictrafficcontrol.digital_sign_controller": "(RTC) Digital Sign Controller",
   "block.realistictrafficcontrol.message_board": "(RTC) Message / Arrow Board",
-  "block.realistictrafficcontrol.message_board_controller": "(RTC) Message Board Controller"
+  "realistictrafficcontrol.ponder.pole_mount.header": "Mounting on a pole",
+  "realistictrafficcontrol.ponder.pole_mount.text_1": "Click a pole face. The piece sits on that face and copies the extra 22.5°.",
+  "realistictrafficcontrol.ponder.pole_mount.text_2": "Off-90° poles keep that extra angle, so the frame stays flush.",
+  "realistictrafficcontrol.ponder.screwdriver_pair.header": "Turning an assembly",
+  "realistictrafficcontrol.ponder.screwdriver_pair.text_1": "A screwdriver turns the pole and every mounted piece as one assembly.",
+  "realistictrafficcontrol.ponder.screwdriver_pair.text_2": "The extra 22.5° is shared, so the frame stays on the clicked face.",
+  "realistictrafficcontrol.ponder.hoz_attach.header": "Horizontal poles, frames, and signs",
+  "realistictrafficcontrol.ponder.hoz_attach.text_1": "Click a pole face with a horizontal pole. The bar sits on that face.",
+  "realistictrafficcontrol.ponder.hoz_attach.text_2": "Click the end of the bar with another hoz to extend the run.",
+  "realistictrafficcontrol.ponder.hoz_attach.text_3": "Click the side of the bar with a frame or sign. It hangs on that face.",
+  "realistictrafficcontrol.ponder.tag.traffic_control": "Traffic Control",
+  "realistictrafficcontrol.ponder.tag.traffic_control.description": "Poles, frames, signs, and 16-step mounting"
 }

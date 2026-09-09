@@ -15,7 +15,7 @@ import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.CrossingGateG
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.CrossingLampsTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.DigitalSignControllerTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.DigitalSignTileEntity;
-import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.MessageBoardControllerTileEntity;
+import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.MessageBoardTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.MessageBoardTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.PedestrianButtonTileEntity;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.RelayTileEntity;
@@ -141,7 +141,7 @@ public class ItemCrossingRelayTuner extends Item {
 		if (nbt == null || !nbt.hasKey("pairingpos"))
 		{
 			if (te == null || (!(te instanceof RelayTileEntity) && !(te instanceof TrafficLightControlBoxTileEntity)
-					&& !(te instanceof DigitalSignControllerTileEntity) && !(te instanceof MessageBoardControllerTileEntity)))
+					&& !(te instanceof DigitalSignControllerTileEntity) && !(te instanceof MessageBoardTileEntity)))
 			{
 				return false;
 			}
@@ -179,11 +179,11 @@ public class ItemCrossingRelayTuner extends Item {
 				typeOfPairing = "Digital Sign Controller";
 			}
 
-			if (te instanceof MessageBoardControllerTileEntity)
+			if (te instanceof MessageBoardTileEntity)
 			{
 				relayPos = te.getPos();
 				addTileEntityPosToNBT(nbt, "pairingpos", te);
-				typeOfPairing = "Message Board Controller";
+				typeOfPairing = "Message Board";
 			}
 
 			player.inventory.getCurrentItem().setTagCompound(nbt);
@@ -227,7 +227,7 @@ public class ItemCrossingRelayTuner extends Item {
 			}
 
 			if (te != null && (te instanceof RelayTileEntity || te instanceof TrafficLightControlBoxTileEntity
-					|| te instanceof DigitalSignControllerTileEntity || te instanceof MessageBoardControllerTileEntity))
+					|| te instanceof DigitalSignControllerTileEntity))
 			{
 				BlockPos relayPos = null;
 				String typeOfPairing = "";
@@ -252,12 +252,6 @@ public class ItemCrossingRelayTuner extends Item {
 				{
 					relayPos = te.getPos();
 					typeOfPairing = "Digital Sign Controller";
-				}
-
-				if (te instanceof MessageBoardControllerTileEntity)
-				{
-					relayPos = te.getPos();
-					typeOfPairing = "Message Board Controller";
 				}
 
 				nbt.removeTag("pairingpos");
@@ -298,7 +292,7 @@ public class ItemCrossingRelayTuner extends Item {
 				if (teAtPairingPos == null || (!(teAtPairingPos instanceof RelayTileEntity)
 						&& !(teAtPairingPos instanceof TrafficLightControlBoxTileEntity)
 						&& !(teAtPairingPos instanceof DigitalSignControllerTileEntity)
-						&& !(teAtPairingPos instanceof MessageBoardControllerTileEntity)))
+						&& !(teAtPairingPos instanceof MessageBoardTileEntity)))
 				{
 					nbt.removeTag("pairingpos");
 					player.inventory.getCurrentItem().setTagCompound(nbt);
@@ -508,21 +502,22 @@ public class ItemCrossingRelayTuner extends Item {
 			}
 		}
 
-		if (pairedTE instanceof MessageBoardControllerTileEntity && te instanceof MessageBoardTileEntity)
+		if (pairedTE instanceof MessageBoardTileEntity && te instanceof MessageBoardTileEntity
+				&& !pairedTE.getPos().equals(te.getPos()))
 		{
-			MessageBoardControllerTileEntity controller = (MessageBoardControllerTileEntity) pairedTE;
-			if (controller.getLinkedBoards().contains(te.getPos()))
+			MessageBoardTileEntity master = (MessageBoardTileEntity) pairedTE;
+			if (master.getLinkedBoards().contains(te.getPos()))
 			{
-				controller.unlinkBoard(te.getPos());
-				player.sendMessage(new TextComponentString("Unpaired Message Board from Message Board Controller"));
+				master.unlinkBoard(te.getPos());
+				player.sendMessage(new TextComponentString("Unpaired Message Board"));
 			}
-			else if (controller.linkBoard(te.getPos()))
+			else if (master.linkBoard(te.getPos()))
 			{
-				player.sendMessage(new TextComponentString("Paired Message Board to Message Board Controller"));
+				player.sendMessage(new TextComponentString("Paired Message Board"));
 			}
 			else
 			{
-				player.sendMessage(new TextComponentString("Could not pair Message Board; the controller may be full"));
+				player.sendMessage(new TextComponentString("Could not pair Message Board; the master may be full"));
 			}
 		}
 	}

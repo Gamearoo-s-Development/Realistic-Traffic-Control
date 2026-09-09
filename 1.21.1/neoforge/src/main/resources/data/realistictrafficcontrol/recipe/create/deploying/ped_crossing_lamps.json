@@ -1,0 +1,22 @@
+{
+  "type": "create:deploying",
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ],
+  "ingredients": [
+    {
+      "item": "realistictrafficcontrol:crossing_gate_lamps"
+    },
+    {
+      "tag": "minecraft:wooden_buttons"
+    }
+  ],
+  "results": [
+    {
+      "id": "realistictrafficcontrol:ped_crossing_lamps"
+    }
+  ]
+}

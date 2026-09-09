@@ -39,8 +39,18 @@ public class BlockWigWag extends Block implements EntityBlock {
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return defaultBlockState()
-                .setValue(RTCProperties.ROTATION, CustomAngleCalculator.getRotationForYaw(context.getRotation()))
+                .setValue(RTCProperties.ROTATION, CustomAngleCalculator.rotationForPlacement(context))
                 .setValue(RTCProperties.ACTIVE, false);
+    }
+
+    @Override
+    protected BlockState rotate(BlockState state, net.minecraft.world.level.block.Rotation rotation) {
+        return RTCProperties.rotate16(state, rotation);
+    }
+
+    @Override
+    protected BlockState mirror(BlockState state, net.minecraft.world.level.block.Mirror mirror) {
+        return RTCProperties.mirror16(state, mirror);
     }
 
     @Override
@@ -58,15 +68,8 @@ public class BlockWigWag extends Block implements EntityBlock {
         if (state.getBlock() != ModBlocks.WIG_WAG.get()) {
             return super.getShape(state, level, pos, context);
         }
-        return switch (state.getValue(RTCProperties.ROTATION)) {
-            case 0 -> RTCShapes.blockBox(-6, 0, 10, 9, 16, 6);
-            case 8 -> RTCShapes.blockBox(7, 0, 10, 22, 16, 6);
-            case 4 -> RTCShapes.blockBox(6, 0, 9, 10, 16, -6);
-            case 12 -> RTCShapes.blockBox(6, 0, 6, 10, 16, 21);
-            case 1, 15, 7, 9, 3, 5, 11, 13 -> RTCShapes.blockBox(6, 0, 6, 12, 16, 12);
-            case 2, 6, 10, 14 -> RTCShapes.blockBox(3.2, 0, 3.2, 12.8, 16, 12.8);
-            default -> super.getShape(state, level, pos, context);
-        };
+        return RTCShapes.rotateY(RTCShapes.blockBox(-6, 0, 6, 9, 16, 10),
+                state.getValue(RTCProperties.ROTATION));
     }
 
     @Override
@@ -88,5 +91,11 @@ public class BlockWigWag extends Block implements EntityBlock {
     private static <A extends BlockEntity, E extends BlockEntity> BlockEntityTicker<A> createTickerHelper(
             BlockEntityType<A> served, BlockEntityType<E> expected, BlockEntityTicker<? super E> ticker) {
         return expected == served ? (BlockEntityTicker<A>) ticker : null;
+    }
+
+    @Override
+    protected java.util.List<net.minecraft.world.item.ItemStack> getDrops(BlockState state,
+            net.minecraft.world.level.storage.loot.LootParams.Builder params) {
+        return com.gamearoosdevelopment.realistictrafficcontrol.util.RTCDrops.self(state);
     }
 }

@@ -7,20 +7,19 @@ import com.gamearoosdevelopment.realistictrafficcontrol.client.render.TesrBoxHel
 import com.gamearoosdevelopment.realistictrafficcontrol.client.render.TesrBoxHelper.TextureInfoCollection;
 import com.gamearoosdevelopment.realistictrafficcontrol.tileentity.StreetLightSingleBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/** Port of 1.12.2 {@code StreetLightSingleRenderer}. */
+/** Port of 1.12.2 {@code StreetLightSingleRenderer}. Boxes stay in pixel units; no pose scale. */
 public class StreetLightSingleBlockEntityRenderer implements BlockEntityRenderer<StreetLightSingleBlockEntity> {
 
     private static final ResourceLocation GENERIC = ResourceLocation.fromNamespaceAndPath(
@@ -43,45 +42,57 @@ public class StreetLightSingleBlockEntityRenderer implements BlockEntityRenderer
             return;
         }
         BlockState state = te.getLevel().getBlockState(te.getBlockPos());
+        if (!(state.getBlock() instanceof com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockStreetLightSingle)
+                || !state.hasProperty(RTCProperties.ROTATION)) {
+            return;
+        }
         int rotation = state.getValue(RTCProperties.ROTATION);
 
         poseStack.pushPose();
         poseStack.translate(0.5, 0.5, 0.5);
         poseStack.mulPose(Axis.YP.rotationDegrees(rotation * -22.5F));
         poseStack.translate(-0.5, -0.5, -0.5);
-        poseStack.scale(1 / 16F, 1 / 16F, 1 / 16F);
 
         List<Box> boxes = new ArrayList<>();
-        boxes.add(new Box(6, 0, 6, 4, 16, 4, POST_THICK));
-        boxes.add(new Box(6, 16, 6, 4, 16, 4, POST_THICK));
-        boxes.add(new Box(7, 32, 7, 2, 16, 2, POST_THIN));
-        boxes.add(new Box(7, 48, 7, 2, 16, 2, POST_THIN));
-        boxes.add(new Box(7, 65.35, 23.2, 2, 2, 16, ARM));
-        boxes.add(new Box(5, 64.35, 25.2, 1, 1, 14, ARM));
-        boxes.add(new Box(10, 64.35, 25.2, 1, 1, 14, ARM));
-        boxes.add(new Box(6, 64.35, 25.2, 4, 1, 1, ARM));
-        boxes.add(new Box(6, 64.35, 38.2, 4, 1, 1, ARM));
-        boxes.add(new Box(6, 65.34, 25.2, 4, 0, 14, ARM));
-        boxes.add(new Box(7, 64.83, 26.2, 2, 0.5, 12, LAMP));
+        boxes.add(px(6, 0, 6, 4, 16, 4, POST_THICK));
+        boxes.add(px(6, 16, 6, 4, 16, 4, POST_THICK));
+        boxes.add(px(7, 32, 7, 2, 16, 2, POST_THIN));
+        boxes.add(px(7, 48, 7, 2, 16, 2, POST_THIN));
+        boxes.add(px(7, 65.35, 23.2, 2, 2, 16, ARM));
+        boxes.add(px(5, 64.35, 25.2, 1, 1, 14, ARM));
+        boxes.add(px(10, 64.35, 25.2, 1, 1, 14, ARM));
+        boxes.add(px(6, 64.35, 25.2, 4, 1, 1, ARM));
+        boxes.add(px(6, 64.35, 38.2, 4, 1, 1, ARM));
+        boxes.add(px(6, 65.34, 25.2, 4, 0, 14, ARM));
+        boxes.add(px(7, 64.83, 26.2, 2, 0.5, 12, LAMP));
+        for (Box box : boxes) {
+            box.render(poseStack, buffer, packedLight);
+        }
 
-        renderBoxes(poseStack, buffer, packedLight, boxes);
-
-        poseStack.pushPose();
-        poseStack.translate(0.4375 * 16, 3.75 * 16, 0.5625 * 16);
+        poseStack.translate(0.4375, 3.75, 0.5625);
         poseStack.mulPose(Axis.XP.rotationDegrees(-20));
-        new Box(0, 0, 0, 2, 2, 16, ARM).render(poseStack,
-                buffer.getBuffer(RenderType.entitySolid(GENERIC)), packedLight, rl -> {
-                });
-        poseStack.popPose();
+        px(0, 0, 0, 2, 2, 16, ARM).render(poseStack, buffer, packedLight);
         poseStack.popPose();
     }
 
-    private static void renderBoxes(PoseStack poseStack, MultiBufferSource buffer, int packedLight, List<Box> boxes) {
-        for (Box box : boxes) {
-            ResourceLocation tex = GENERIC;
-            box.render(poseStack, buffer.getBuffer(RenderType.entitySolid(tex)), packedLight, rl -> {
-            });
-        }
+    @Override
+    public boolean shouldRenderOffScreen(StreetLightSingleBlockEntity blockEntity) {
+        return true;
+    }
+
+    @Override
+    public AABB getRenderBoundingBox(StreetLightSingleBlockEntity blockEntity) {
+        return new AABB(blockEntity.getBlockPos()).inflate(4, 0, 4).expandTowards(0, 5, 0);
+    }
+
+    @Override
+    public int getViewDistance() {
+        return 256;
+    }
+
+    private static Box px(double x, double y, double z, double width, double height, double depth,
+            TextureInfoCollection textures) {
+        return new Box(x, y, z, width, height, depth, textures, true, true);
     }
 
     private static TextureInfoCollection boxCollection(ResourceLocation tex, double side, double height, double end) {

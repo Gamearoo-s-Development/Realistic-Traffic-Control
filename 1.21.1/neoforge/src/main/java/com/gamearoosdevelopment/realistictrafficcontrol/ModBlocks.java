@@ -40,10 +40,11 @@ import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockConcreteBarr
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockDigitalSign;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockDigitalSignController;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockMessageBoard;
-import com.gamearoosdevelopment.realistictrafficcontrol.blocks.BlockMessageBoardController;
+import com.gamearoosdevelopment.realistictrafficcontrol.blocks.ConnectingPoleBlock;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.RotatedBlock;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.TrafficSensorBlock;
 import com.gamearoosdevelopment.realistictrafficcontrol.blocks.TrafficSensorBlock.SensorKind;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.RTCShapes;
 
 import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
@@ -51,6 +52,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -67,12 +69,23 @@ public final class ModBlocks {
     public static final DeferredRegister.Blocks BLOCKS =
             DeferredRegister.createBlocks(ModRealisticTrafficControl.MODID);
 
-    private static final VoxelShape POLE_SHAPE = Block.box(6.92, 0, 6.92, 8.92, 16, 8.92);
-    private static final VoxelShape POLE_BASE_SHAPE = Block.box(6, 0, 6, 10, 16, 10);
+    /** Matches pole models (`from`/`to` 6–10) so click, outline, and highlight sit on the visible faces. */
+    private static final VoxelShape POLE_SHAPE = Block.box(6, 0, 6, 10, 16, 10);
+    private static final VoxelShape POLE_BASE_SHAPE = Shapes.or(
+            Block.box(6, 4, 6, 10, 16, 10),
+            Block.box(2, 0, 2, 14, 1, 14),
+            Block.box(3, 1, 3, 13, 2.5, 13),
+            Block.box(4, 2, 4, 12, 4.5, 12));
+    /** Stand model feet are baked at ±22.5° and hang past the cell ({@code z=-4..20}). */
+    private static final VoxelShape STAND_SHAPE = Shapes.or(
+            Block.box(6, 4, 6, 10, 16, 10),
+            Block.box(6.5, 1, 6.5, 9.5, 4, 9.5),
+            RTCShapes.rotateY(Block.box(6, 0, -4, 10, 1, 19), 1),
+            RTCShapes.rotateY(Block.box(6, 0, -4, 10, 1, 20), 15));
     private static final VoxelShape CONE_SHAPE = Block.box(4.8, 0, 4.8, 11.2, 16, 11.2);
 
     private static BlockBehaviour.Properties metal() {
-        return BlockBehaviour.Properties.of().strength(2f).noOcclusion().sound(SoundType.METAL).requiresCorrectToolForDrops();
+        return BlockBehaviour.Properties.of().strength(2f).noOcclusion().sound(SoundType.METAL);
     }
 
     private static DeferredBlock<RotatedBlock> rotated(String name, VoxelShape shape) {
@@ -83,21 +96,36 @@ public final class ModBlocks {
         return BLOCKS.register(name, () -> new RotatedBlock(props, shape));
     }
 
-    // --- poles ---
-    public static final DeferredBlock<RotatedBlock> POLE = rotated("pole", POLE_SHAPE);
-    public static final DeferredBlock<RotatedBlock> WOOD_POLE = rotated("wood_pole", POLE_SHAPE);
-    public static final DeferredBlock<RotatedBlock> PLUS_POLE = rotated("plus_pole", POLE_SHAPE);
-    public static final DeferredBlock<RotatedBlock> T_POLE = rotated("t_pole", POLE_SHAPE);
-    public static final DeferredBlock<RotatedBlock> D_POLE = rotated("d_pole", POLE_SHAPE);
-    public static final DeferredBlock<RotatedBlock> DH_POLE = rotated("dh_pole", POLE_SHAPE);
-    public static final DeferredBlock<RotatedBlock> C_POLE = rotated("c_pole", POLE_SHAPE);
-    public static final DeferredBlock<RotatedBlock> CH_POLE = rotated("ch_pole", POLE_SHAPE);
-    public static final DeferredBlock<RotatedBlock> H_POLE = rotated("h_pole", POLE_SHAPE);
-    public static final DeferredBlock<RotatedBlock> U_T_POLE = rotated("u_t_pole", POLE_SHAPE);
+    private static DeferredBlock<ConnectingPoleBlock> connectingPole(String name, VoxelShape shape) {
+        return BLOCKS.register(name, () -> new ConnectingPoleBlock(metal(), shape));
+    }
+
+    private static DeferredBlock<ConnectingPoleBlock> connectingPole(String name, VoxelShape shape,
+            java.util.Set<ConnectingPoleBlock.SkippedArm> skippedArms) {
+        return BLOCKS.register(name, () -> new ConnectingPoleBlock(metal(), shape, skippedArms));
+    }
+
+    // --- poles (multipart blockstates need north/west/south/east) ---
+    public static final DeferredBlock<ConnectingPoleBlock> POLE = connectingPole("pole", POLE_SHAPE);
+    public static final DeferredBlock<ConnectingPoleBlock> WOOD_POLE = connectingPole("wood_pole", POLE_SHAPE);
+    public static final DeferredBlock<ConnectingPoleBlock> PLUS_POLE = connectingPole("plus_pole", POLE_SHAPE,
+            java.util.EnumSet.allOf(ConnectingPoleBlock.SkippedArm.class));
+    public static final DeferredBlock<ConnectingPoleBlock> T_POLE =
+            connectingPole("t_pole", POLE_SHAPE, ConnectingPoleBlock.diagonalTeeArms());
+    public static final DeferredBlock<ConnectingPoleBlock> D_POLE = connectingPole("d_pole", POLE_SHAPE);
+    public static final DeferredBlock<ConnectingPoleBlock> DH_POLE = connectingPole("dh_pole", POLE_SHAPE);
+    public static final DeferredBlock<ConnectingPoleBlock> C_POLE =
+            connectingPole("c_pole", POLE_SHAPE, ConnectingPoleBlock.cantileverArms());
+    public static final DeferredBlock<ConnectingPoleBlock> CH_POLE =
+            connectingPole("ch_pole", POLE_SHAPE, ConnectingPoleBlock.cantileverArms());
+    public static final DeferredBlock<ConnectingPoleBlock> H_POLE =
+            connectingPole("h_pole", POLE_SHAPE, ConnectingPoleBlock.northSouthBeamArms());
+    public static final DeferredBlock<ConnectingPoleBlock> U_T_POLE =
+            connectingPole("u_t_pole", POLE_SHAPE, ConnectingPoleBlock.diagonalTeeArms());
     public static final DeferredBlock<RotatedBlock> POLE_BASE = rotated("pole_base", POLE_BASE_SHAPE);
-    public static final DeferredBlock<RotatedBlock> STAND = rotated("stand", POLE_BASE_SHAPE);
-    public static final DeferredBlock<RotatedBlock> GENERATOR = rotated("generator", POLE_BASE_SHAPE);
-    public static final DeferredBlock<RotatedBlock> TAG = rotated("tag", POLE_SHAPE);
+    public static final DeferredBlock<RotatedBlock> STAND = rotated("stand", STAND_SHAPE);
+    public static final DeferredBlock<RotatedBlock> GENERATOR = rotated("generator", Shapes.block());
+    public static final DeferredBlock<ConnectingPoleBlock> TAG = connectingPole("tag", POLE_SHAPE);
 
     public static final DeferredBlock<HorizontalPoleBlock> HORIZONTAL_POLE =
             BLOCKS.register("horizontal_pole", () -> new HorizontalPoleBlock(metal()));
@@ -117,10 +145,11 @@ public final class ModBlocks {
     // --- simple crossing decoratives (no block entity) ---
     private static final VoxelShape SIGNAL_SHAPE = Block.box(6, 0, 6, 10, 16, 10);
 
-    public static final DeferredBlock<RotatedBlock> CROSSING_GATE_POLE = rotated("crossing_gate_pole", POLE_SHAPE);
+    public static final DeferredBlock<ConnectingPoleBlock> CROSSING_GATE_POLE =
+            connectingPole("crossing_gate_pole", POLE_SHAPE);
     public static final DeferredBlock<RotatedBlock> QUIET_ZONE_SIGNAL = rotated("quiet_zone_signal", SIGNAL_SHAPE);
     public static final DeferredBlock<RotatedBlock> GATE_GUARD = rotated("gate_guard", CONE_SHAPE,
-            BlockBehaviour.Properties.of().strength(1f).noOcclusion().sound(SoundType.STONE).requiresCorrectToolForDrops());
+            BlockBehaviour.Properties.of().strength(1f).noOcclusion().sound(SoundType.STONE));
 
     // --- overhead span family + crossbucks (simple rotated decoratives) ---
     private static final VoxelShape OVERHEAD_BEAM = Block.box(0, 10, 6, 16, 16, 10);
@@ -152,11 +181,11 @@ public final class ModBlocks {
     // --- barriers ---
     public static final DeferredBlock<BlockConcreteBarrier> CONCRETE_BARRIER = BLOCKS.register("concrete_barrier",
             () -> new BlockConcreteBarrier(BlockBehaviour.Properties.of().strength(2f).noOcclusion()
-                    .sound(SoundType.STONE).requiresCorrectToolForDrops()));
+                    .sound(SoundType.STONE)));
 
     // --- vehicle detection sensors (queried by the control box) ---
     private static BlockBehaviour.Properties sensorProps() {
-        return BlockBehaviour.Properties.of().strength(2f).sound(SoundType.METAL).requiresCorrectToolForDrops();
+        return BlockBehaviour.Properties.of().strength(2f).sound(SoundType.METAL);
     }
 
     private static DeferredBlock<TrafficSensorBlock> sensor(String name, SensorKind kind) {
@@ -170,8 +199,7 @@ public final class ModBlocks {
     // --- control box + pedestrian button (automation engine) ---
     public static final DeferredBlock<BlockTrafficLightControlBox> TRAFFIC_LIGHT_CONTROL_BOX =
             BLOCKS.register("traffic_light_control_box", () -> new BlockTrafficLightControlBox(
-                    BlockBehaviour.Properties.of().strength(2f).sound(SoundType.METAL)
-                            .requiresCorrectToolForDrops().noOcclusion()));
+                    BlockBehaviour.Properties.of().strength(2f).sound(SoundType.METAL).noOcclusion()));
 
     public static final DeferredBlock<BlockPedestrianButton> PEDESTRIAN_BUTTON =
             BLOCKS.register("pedestrian_button", () -> new BlockPedestrianButton(metal()));
@@ -185,8 +213,7 @@ public final class ModBlocks {
     private static DeferredBlock<BlockBaseTrafficLight> trafficLight(String name, int bulbCount,
             Supplier<? extends Item> frameItem, Supplier<Block> upperHalfBlock) {
         return BLOCKS.register(name, () -> new BlockBaseTrafficLight(
-                BlockBehaviour.Properties.of().strength(2f).noOcclusion().sound(SoundType.METAL)
-                        .requiresCorrectToolForDrops(),
+                BlockBehaviour.Properties.of().strength(2f).noOcclusion().sound(SoundType.METAL),
                 bulbCount, frameItem, upperHalfBlock));
     }
 
@@ -206,8 +233,7 @@ public final class ModBlocks {
             trafficLight("traffic_light_4_hoz", 4, () -> ModItems.TRAFFIC_LIGHT_4_HOZ_FRAME.get());
     public static final DeferredBlock<BlockTrafficLight5Upper> TRAFFIC_LIGHT_5_UPPER =
             BLOCKS.register("traffic_light_5_upper", () -> new BlockTrafficLight5Upper(
-                    BlockBehaviour.Properties.of().strength(2f).noOcclusion().sound(SoundType.METAL)
-                            .requiresCorrectToolForDrops()));
+                    BlockBehaviour.Properties.of().strength(2f).noOcclusion().sound(SoundType.METAL)));
     public static final DeferredBlock<BlockBaseTrafficLight> TRAFFIC_LIGHT_5 =
             trafficLight("traffic_light_5", 5, () -> ModItems.TRAFFIC_LIGHT_5_FRAME.get(), () -> TRAFFIC_LIGHT_5_UPPER.get());
     public static final DeferredBlock<BlockBaseTrafficLight> TRAFFIC_LIGHT_5_HOZ =
@@ -229,8 +255,7 @@ public final class ModBlocks {
 
     private static DeferredBlock<BellBlock> bell(String name, Holder<SoundEvent> sound, VoxelShape ns, VoxelShape ew) {
         return BLOCKS.register(name, () -> new BellBlock(
-                BlockBehaviour.Properties.of().strength(2f).noOcclusion().sound(SoundType.METAL)
-                        .requiresCorrectToolForDrops(),
+                BlockBehaviour.Properties.of().strength(2f).noOcclusion().sound(SoundType.METAL),
                 sound, ns, ew));
     }
 
@@ -287,26 +312,20 @@ public final class ModBlocks {
             BLOCKS.register("digital_sign_controller", () -> new BlockDigitalSignController(metal()));
     public static final DeferredBlock<BlockMessageBoard> MESSAGE_BOARD =
             BLOCKS.register("message_board", () -> new BlockMessageBoard(metal()));
-    public static final DeferredBlock<BlockMessageBoardController> MESSAGE_BOARD_CONTROLLER =
-            BLOCKS.register("message_board_controller", () -> new BlockMessageBoardController(metal()));
     public static final DeferredBlock<BlockStreetSign> STREET_SIGN =
             BLOCKS.register("street_sign", () -> new BlockStreetSign(metal()));
     public static final DeferredBlock<BlockStreetLightSingle> STREET_LIGHT_SINGLE =
             BLOCKS.register("street_light_single", () -> new BlockStreetLightSingle(
-                    BlockBehaviour.Properties.of().strength(2f).noOcclusion().sound(SoundType.STONE)
-                            .requiresCorrectToolForDrops()));
+                    BlockBehaviour.Properties.of().strength(2f).noOcclusion().sound(SoundType.STONE)));
     public static final DeferredBlock<BlockStreetLightDouble> STREET_LIGHT_DOUBLE =
             BLOCKS.register("street_light_double", () -> new BlockStreetLightDouble(
-                    BlockBehaviour.Properties.of().strength(2f).noOcclusion().sound(SoundType.STONE)
-                            .requiresCorrectToolForDrops()));
+                    BlockBehaviour.Properties.of().strength(2f).noOcclusion().sound(SoundType.STONE)));
     public static final DeferredBlock<BlockType3Barrier> TYPE_3_BARRIER =
             BLOCKS.register("type_3_barrier", () -> new BlockType3Barrier(
-                    BlockBehaviour.Properties.of().strength(1f).noOcclusion().sound(SoundType.METAL)
-                            .requiresCorrectToolForDrops()));
+                    BlockBehaviour.Properties.of().strength(1f).noOcclusion().sound(SoundType.METAL)));
     public static final DeferredBlock<BlockType3BarrierRight> TYPE_3_BARRIER_RIGHT =
             BLOCKS.register("type_3_barrier_right", () -> new BlockType3BarrierRight(
-                    BlockBehaviour.Properties.of().strength(1f).noOcclusion().sound(SoundType.METAL)
-                            .requiresCorrectToolForDrops()));
+                    BlockBehaviour.Properties.of().strength(1f).noOcclusion().sound(SoundType.METAL)));
 
     /** All bell / horn blocks, used to build the shared bell block entity type. */
     public static List<Block> bellBlocks() {

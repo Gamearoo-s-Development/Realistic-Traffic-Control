@@ -35,7 +35,7 @@ public class ItemStreetSign extends BlockItem {
             if (level.getBlockEntity(pos) instanceof StreetSignBlockEntity streetSignTE) {
                 StreetSign newSign = new StreetSign();
                 if (player != null) {
-                    newSign.setRotation(CustomAngleCalculator.getRotationForYaw(player.getYRot()));
+                    newSign.setRotation(CustomAngleCalculator.rotationForPlacement(context));
                 }
                 if (streetSignTE.addStreetSign(newSign)) {
                     if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {

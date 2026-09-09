@@ -6,7 +6,7 @@ import com.gamearoosdevelopment.realistictrafficcontrol.menu.DisplayMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Mth;
+import com.gamearoosdevelopment.realistictrafficcontrol.util.CustomAngleCalculator;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
@@ -14,6 +14,8 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
@@ -24,21 +26,31 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 public abstract class BlockDisplayBase extends Block implements EntityBlock {
     protected BlockDisplayBase(Properties properties) {
         super(properties);
-        registerDefaultState(stateDefinition.any().setValue(RTCProperties.ROTATION, 0));
+        registerDefaultState(stateDefinition.any()
+                .setValue(RTCProperties.ROTATION, 0)
+                .setValue(RTCProperties.MOUNT_FACE, net.minecraft.core.Direction.SOUTH));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(RTCProperties.ROTATION);
+        builder.add(RTCProperties.ROTATION, RTCProperties.MOUNT_FACE);
     }
 
     @Override
     public BlockState getStateForPlacement(net.minecraft.world.item.context.BlockPlaceContext context) {
-        // Display blocks used the player's raw yaw in 1.12.2. The shared RTC
-        // calculator adds 180 degrees for traffic-light placement, which made
-        // digital signs and message boards face backwards after the port.
-        int rotation = Mth.floor(context.getRotation() * 16.0F / 360.0F + 0.5D) & 15;
-        return defaultBlockState().setValue(RTCProperties.ROTATION, rotation);
+        return defaultBlockState()
+                .setValue(RTCProperties.ROTATION, CustomAngleCalculator.rotationForPlacement(context, false))
+                .setValue(RTCProperties.MOUNT_FACE, com.gamearoosdevelopment.realistictrafficcontrol.util.PoleAssembly.mountFace(context));
+    }
+
+    @Override
+    protected BlockState rotate(BlockState state, Rotation rotation) {
+        return RTCProperties.rotate16(state, rotation);
+    }
+
+    @Override
+    protected BlockState mirror(BlockState state, Mirror mirror) {
+        return RTCProperties.mirror16(state, mirror);
     }
 
     @Override
@@ -57,16 +69,28 @@ public abstract class BlockDisplayBase extends Block implements EntityBlock {
         return displayShape(state, .5, .22, 1);
     }
 
+    @Override
+    protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos,
+            CollisionContext context) {
+        return com.gamearoosdevelopment.realistictrafficcontrol.util.RTCShapes.clipToBlock(
+                getShape(state, level, pos, context));
+    }
+
     /**
-     * Reproduces the axis-aligned bounds used by the 1.12.2 display blocks for
-     * every one of their sixteen placement angles.
+     * Unrotated plate matching the BER face, then the same pole-mount yaw as the renderer.
      */
     protected static VoxelShape displayShape(BlockState state, double halfWidth, double halfDepth,
             double height) {
-        double angle = Math.toRadians(state.getValue(RTCProperties.ROTATION) * 22.5);
-        double xRadius = Math.abs(Math.cos(angle)) * halfWidth + Math.abs(Math.sin(angle)) * halfDepth;
-        double zRadius = Math.abs(Math.sin(angle)) * halfWidth + Math.abs(Math.cos(angle)) * halfDepth;
-        return Block.box((.5 - xRadius) * 16, 0, (.5 - zRadius) * 16,
-                (.5 + xRadius) * 16, height * 16, (.5 + zRadius) * 16);
+        VoxelShape base = Block.box((.5 - halfWidth) * 16, 0, (.5 - halfDepth) * 16,
+                (.5 + halfWidth) * 16, height * 16, (.5 + halfDepth) * 16);
+        return com.gamearoosdevelopment.realistictrafficcontrol.util.RTCShapes.rotateYPoleMounted(
+                base, state.getValue(RTCProperties.ROTATION),
+                com.gamearoosdevelopment.realistictrafficcontrol.util.PoleAssembly.mountCardinal(state));
+    }
+
+    @Override
+    protected java.util.List<net.minecraft.world.item.ItemStack> getDrops(BlockState state,
+            net.minecraft.world.level.storage.loot.LootParams.Builder params) {
+        return com.gamearoosdevelopment.realistictrafficcontrol.util.RTCDrops.self(state);
     }
 }

@@ -65,10 +65,24 @@ public class StreetSignBlockEntityRenderer implements BlockEntityRenderer<Street
         poseStack.scale(-1, -1, 1);
         poseStack.translate(-8, -2.8 - yRenderOffset, 7.99);
         int width = font.width(sign.getText());
+        if (width <= 0) {
+            poseStack.popPose();
+            return;
+        }
         double scaleFactor = 15.0 / width;
         if (scaleFactor > 0.25) {
             scaleFactor = 0.25;
         }
+        poseStack.scale((float) scaleFactor, 0.25F, 1);
+        font.drawInBatch(sign.getText(), -(width / 2F), 0, sign.getTextColor(), false, poseStack.last().pose(), buffer,
+                Font.DisplayMode.POLYGON_OFFSET, 0, packedLight);
+
+        poseStack.scale(1 / (float) scaleFactor, 4, 1);
+        poseStack.translate(8, 2.8 + yRenderOffset, -7.99);
+        poseStack.scale(-1, -1, 1);
+        poseStack.mulPose(Axis.YP.rotationDegrees(180));
+        poseStack.scale(-1, -1, 1);
+        poseStack.translate(8, -2.8 - yRenderOffset, -8.01);
         poseStack.scale((float) scaleFactor, 0.25F, 1);
         font.drawInBatch(sign.getText(), -(width / 2F), 0, sign.getTextColor(), false, poseStack.last().pose(), buffer,
                 Font.DisplayMode.POLYGON_OFFSET, 0, packedLight);

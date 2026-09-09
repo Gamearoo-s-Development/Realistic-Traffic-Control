@@ -33,6 +33,29 @@ public class StreetSignBlockEntity extends SyncableBlockEntity {
         return streetSigns[index];
     }
 
+    public boolean cycleRotations(boolean reverse) {
+        boolean changed = false;
+        for (StreetSign sign : streetSigns) {
+            if (sign == null) {
+                continue;
+            }
+            int next = sign.getRotation() + (reverse ? -1 : 1);
+            if (next < 0) {
+                next = 15;
+            }
+            if (next > 15) {
+                next = 0;
+            }
+            sign.setRotation(next);
+            changed = true;
+        }
+        if (changed) {
+            setChanged();
+            notifyBlockUpdate();
+        }
+        return changed;
+    }
+
     public int getOccupiedCount() {
         int count = 0;
         for (StreetSign sign : streetSigns) {
